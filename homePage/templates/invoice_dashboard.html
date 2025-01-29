@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Dashboard - Mocha Cafe</title>
+
+    <!-- Favicons -->
+    <link href="{% static 'img/favicon.png' %}" rel="icon">
+    <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,600,600i,700,700i|Satisfy|Comic+Neue:300,300i,400,400i,700,700i" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'vendor/animate.css/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/admin_dashboard.css' %}" rel="stylesheet">
+</head>
+<body>
+    <!-- ======= Top Bar ======= -->
+    <section id="topbar" class="d-flex align-items-center fixed-top">
+        <div class="container-fluid container-xl d-flex align-items-center justify-content-center justify-content-lg-start">
+            <i class="bi bi-phone d-flex align-items-center"><span>+250 782 987 011</span></i>
+            <i class="bi bi-clock ms-4 d-none d-lg-flex align-items-center"><span>Wed-Mon: 8:00 AM - 7:00 PM</span></i>
+        </div>
+    </section>
+
+    <!-- ======= Header ======= -->
+    <header id="header" class="fixed-top d-flex align-items-center header-dark">
+        <div class="container-fluid container-xl d-flex align-items-center justify-content-lg-between">
+            <h1 class="logo me-auto me-lg-0">
+                <a href="/" class="logo-light">Mocha Cafe</a>
+            </h1>
+            <nav id="navbar" class="navbar order-last order-lg-0">
+                <ul>
+                    <li><a class="nav-link" href="/">Home</a></li>
+                    <li><a class="nav-link" href="/#menu">Menu</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+                    {% else %}
+                        <li><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="dashboard-section">
+        <div class="container">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            
+            <div class="dashboard-header animate__animated animate__fadeIn">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="dashboard-title">Invoice Dashboard</h2>
+                        <p class="text-muted">Manage and track all invoices</p>
+                    </div>
+                    <div>
+                        <a href="/admin_dashboard/" class="btn btn-home me-2">
+                            <i class="bi bi-speedometer2"></i> Admin Dashboard
+                        </a>
+                        <a href="/" class="btn btn-home">
+                            <i class="bi bi-house-door"></i> Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Filter -->
+            <form method="get" class="mb-4 animate__animated animate__fadeInUp">
+                <div class="row">
+                    <div class="col-md-6">
+                        <select name="table_id" class="form-select">
+                            <option value="">All Tables</option>
+                            {% for table in tables %}
+                            <option value="{{ table.id }}" {% if table.id|stringformat:"s" == selected_table_id %}selected{% endif %}>
+                                Table {{ table.number }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-funnel"></i> Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Invoices Section -->
+            <div class="dashboard-card animate__animated animate__fadeInUp">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4><i class="bi bi-receipt"></i> Invoices</h4>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Table</th>
+                                    <th>Total Amount</th>
+                                    <th>Created At</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invoice in invoices %}
+                                <tr>
+                                    <td>{{ invoice.id }}</td>
+                                    <td>Table {{ invoice.table.number }}</td>
+                                    <td>${{ invoice.total_amount }}</td>
+                                    <td>{{ invoice.created_at|date:"Y-m-d H:i" }}</td>
+                                    <td>
+                                        <select 
+                                            name="is_paid" 
+                                            class="form-select form-select-sm status-select"
+                                            onchange="updateInvoiceStatus({{ invoice.id }}, this.value)">
+                                            <option value="1" {% if invoice.is_paid %}selected{% endif %}>
+                                                <span class="badge badge-success">Paid</span>
+                                            </option>
+                                            <option value="0" {% if not invoice.is_paid %}selected{% endif %}>
+                                                <span class="badge badge-pending">Unpaid</span>
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="{% url 'view_invoice' invoice.id %}" class="btn btn-action btn-view">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                            <a href="#" class="btn btn-action btn-print" onclick="printInvoice({{ invoice.id }})">
+                                                <i class="bi bi-printer"></i> Print
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="empty-state">
+                                            <i class="bi bi-receipt-cutoff fs-1 mb-3"></i>
+                                            <p>No invoices found</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vendor JS Files -->
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
+    <script type="module" src="{% static 'js/invoice.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Profile</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #fff7f0;
+            color: #4b4b4b;
+        }
+
+        .navbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+        }
+
+        .navbar a {
+            color: #4b4b4b;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .container {
+            margin-top: 40px;
+            max-width: 800px;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            background-color: #ffffff;
+        }
+
+        .card-header {
+            background-color: #ff7a59;
+            color: #ffffff;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            font-weight: 700;
+            font-size: 18px;
+            padding: 15px;
+        }
+
+        .btn-primary {
+            background-color: #ff7a59;
+            border: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        .btn-primary:hover {
+            background-color: #e6694d;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .list-group-item {
+            border: none;
+            padding: 15px 20px;
+            font-size: 16px;
+            background-color: #fff7f0;
+        }
+
+        .list-group-item:nth-child(even) {
+            background-color: #ffe8dc;
+        }
+
+        .alert {
+            border: none;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffefd5;
+            color: #4b4b4b;
+            font-weight: 500;
+        }
+
+        h2, h4 {
+            color: #4b4b4b;
+            font-weight: 700;
+        }
+
+        .form-group label {
+            font-weight: 600;
+        }
+
+        .form-control {
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        .form-control:disabled {
+            background-color: #f8f9fa;
+        }
+
+        .profile-section {
+            margin-top: 30px;
+        }
+
+        .loyalty-section, .order-history-section {
+            margin-top: 40px;
+        }
+
+        .progress {
+            height: 20px;
+            background-color: #f3f3f3;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            background-color: #ff7a59;
+            height: 100%;
+            text-align: center;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .filter-sort-section {
+            margin-bottom: 20px;
+        }
+
+        .filter-sort-section select {
+            margin-right: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <a href="{% url 'index' %}" class="navbar-brand">
+            <img src="{% static 'images/logo.png' %}" alt="Mocha Cafe Logo" style="height: 40px;">
+        </a>
+    </nav>
+
+    <div class="container">
+        <h2 class="text-center">Customer Profile</h2>
+
+        <!-- Display messages (success, error) -->
+        {% if messages %}
+            <div class="alert alert-success">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Profile Information -->
+        <div class="card profile-section">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Profile Information</span>
+                <button type="button" id="edit-btn" class="btn btn-secondary">Edit</button>
+            </div>
+            <div class="card-body">
+                <form id="profile-form" method="POST" action="{% url 'customer_profile' %}"></form>>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ customer.user.username }}" required disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ customer.user.email }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone_number">Phone Number</label>
+                        <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ customer.phone_number }}" required disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" class="form-control" id="address" name="address" value="{{ customer.address }}" required disabled>
+                    </div>
+                    <button type="submit" id="update-profile-btn" class="btn btn-primary" disabled>Update Profile</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Loyalty Points -->
+        <div class="loyalty-section">
+            <h4>Loyalty Points</h4>
+            <p>Your current loyalty points: <strong>{{ customer.loyalty_points }}</strong></p>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: {{ customer.loyalty_points_percentage }}%;">
+                    {{ customer.loyalty_points_percentage }}%
+                </div>
+            </div>
+        </div>
+
+        <!-- Order History -->
+        <div class="order-history-section">
+            <h4>Order History</h4>
+            <div class="filter-sort-section">
+                <label for="filter">Filter:</label>
+                <select id="filter">
+                    <option value="all">All</option>
+                    <option value="last-week">Last Week</option>
+                    <option value="last-month">Last Month</option>
+                </select>
+
+                <label for="sort">Sort by:</label>
+                <select id="sort">
+                    <option value="date-desc">Date (Newest)</option>
+                    <option value="date-asc">Date (Oldest)</option>
+                    <option value="amount-desc">Amount (High to Low)</option>
+                    <option value="amount-asc">Amount (Low to High)</option>
+                </select>
+            </div>
+
+            <ul class="list-group">
+                {% for order in orders %}
+                    <li class="list-group-item">
+                        Order ID: {{ order.id }} - Total: {{ order.total_amount }} RWF - Date: {{ order.ordered_at }}
+                    </li>
+                {% empty %}
+                    <p>You haven't made any orders yet.</p>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script type="module" src="{% static 'js/profile.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('profile-form');
+            const inputs = form.querySelectorAll('input');
+            const updateButton = document.getElementById('update-profile-btn');
+
+            inputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    updateButton.disabled = false;
+                });
+            });
+
+            const filter = document.getElementById('filter');
+            const sort = document.getElementById('sort');
+
+            filter.addEventListener('change', () => {
+                // Add filter logic here
+                console.log(`Filter changed to: ${filter.value}`);
+            });
+
+            sort.addEventListener('change', () => {
+                // Add sort logic here
+                console.log(`Sort changed to: ${sort.value}`);
+            });
+        });
+    </script>
+</body>
+</html>

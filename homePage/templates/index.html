@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% load static %}
+
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Mocha Cafe</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href={% static 'img/favicon.png' %} rel="icon">
+  <link href={% static "img/apple-touch-icon.png" %} rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,600,600i,700,700i|Satisfy|Comic+Neue:300,300i,400,400i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'vendor/animate.css/animate.min.css'%}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/boxicons/css/boxicons.min.css'%}" rel="stylesheet">
+  <link href="{% static 'vendor/glightbox/css/glightbox.min.css'%}" rel="stylesheet">
+  <link href="{% static 'vendor/swiper/swiper-bundle.min.css'%}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: Delicious
+  * Template URL: https://bootstrapmade.com/delicious-free-restaurant-bootstrap-theme/
+  * Updated: May 16 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+
+
+  <!-- ======= Top Bar ======= -->
+<!-- ======= Top Bar ======= -->
+<!-- <section id="topbar" class="d-flex align-items-center fixed-top topbar-transparent">
+  <div class="container-fluid container-xl d-flex align-items-center justify-content-center justify-content-lg-start">
+      <i class="bi bi-phone d-flex align-items-center me-2"><span>+250 782 987 011</span></i>
+      <i class="bi bi-clock ms-4 d-none d-lg-flex align-items-center"><span>Wed-Mon: 8:00 AM - 7:00 PM</span></i>
+  </div>
+</section> -->
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="fixed-top d-flex align-items-center ">
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+
+      <div class="logo me-auto">
+        <!-- <h1><a href="index.html">Mocha</a></h1> -->
+        
+        <!-- Uncomment below if you prefer to use an image logo -->
+      <a href="index.html"><img src="{% static 'img/logo.png' %}" alt="" class="img-fluid"></a>
+      <!-- <h1 class="logo me-auto"><a href="index.html">Mocha Cafe</a></h1> -->
+    </div>
+      <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+        <i class="bi bi-phone d-flex align-items-center me-2"><span>+250 782 987 011</span></i>
+        <i class="bi bi-clock d-none d-lg-flex align-items-center"><span>Wed-Mon: 8:00 AM - 7:00 PM</span></i>
+        <!-- Add your logo or other header content here -->
+      
+    </div>
+      <nav id="navbar" class="navbar order-last order-lg-0">
+        <ul>
+          <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
+          <li><a class="nav-link scrollto" href="#about">About</a></li>
+          <li><a class="nav-link scrollto" href="#menu">Menu</a></li>
+          <li><a class="nav-link scrollto" href="#specials">Specials</a></li>
+          <li><a class="nav-link scrollto" href="{% url 'orderDetails' %}">My Order</a></li>
+          <li>
+        
+            {% if user.is_authenticated %}
+              {% if user.staff %}
+                <a class="nav-link scrollto" href="{% url 'admin_dashboard' %}">dashboard</a>
+              {% elif user.customer %}
+                <a class="nav-link scrollto" href="{% url 'customer_profile' %}">profile</a>
+              {% else %}
+                <a class="nav-link scrollto" href="#">Default</a>
+              {% endif %}
+            {% else %}
+              <a class="nav-link scrollto" href="{% url 'login' %}">Login</a>
+            {% endif %}
+          </li>
+          <li>
+            {% if user.is_authenticated %}
+              {% if user.staff %}
+              <a href="{% url 'logout' %}" class="nav-link" onclick="return confirm('Are you sure you want to log out?');">Logout</a>
+              {% elif user.customer %}
+              <a href="{% url 'logout' %}" class="nav-link" onclick="return confirm('Are you sure you want to log out?');">Logout</a>
+              {% else %}
+                <a class="nav-link scrollto" href="#">Default</a>
+              {% endif %}
+            {% else %}
+         
+            {% endif %}
+          </li>
+        
+   
+     <!--   <li><a class="nav-link scrollto" href="#chefs">Chefs</a></li>-->
+          <li><a class="nav-link scrollto" href="#gallery">Gallery</a></li>
+          <!-- <li><a class="nav-link scrollto" href="#events">Events</a></li> -->
+          <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav><!-- .navbar -->
+
+    <!--  <a href="#book-a-table" class="book-a-table-btn scrollto">Book a table</a>-->
+
+    </div>
+  </header><!-- End Header -->
+
+  <!-- ======= Hero Section ======= -->
+
+  <section id="hero">
+    <div class="hero-container">
+      <div id="heroCarousel" data-bs-interval="5000" class="carousel slide carousel-fade" data-bs-ride="carousel">
+
+        <ol class="carousel-indicators" id="hero-carousel-indicators"></ol>
+
+        <div class="carousel-inner" role="listbox">
+
+          <!-- Slide 1 -->
+          <div class="carousel-item active" style="background-image: url({% static 'img/slide/slide-1.webp' %});">
+            <div class="carousel-container">
+              <div class="carousel-content">
+                <h2 class="animate__animated animate__fadeInDown"><span>Mocha</span>Cafe</h2>
+                <p class="animate__animated animate__fadeInUp">Memories of <span style="color:var(--color-orange-light) ;">joy</span> and <span style="color:var(--color-orange-light) ;">happiness</span></p>
+                <div>
+                  <a href="#menu" class="btn-menu animate__animated animate__fadeInUp scrollto">Our Menu</a>
+           <!--     <a href="#book-a-table" class="btn-book animate__animated animate__fadeInUp scrollto">Book a Table</a>-->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 2 -->
+          <div class="carousel-item" style="background-image: url({% static 'img/slide/slide-2.webp' %});">
+            <div class="carousel-container">
+              <div class="carousel-content">
+                                              <!-- find sth meaningfull and related to the photo to write here  -->
+                <h2 class="animate__animated animate__fadeInDown">Our Story</h2>
+                <p class="animate__animated animate__fadeInUp">Founded by passionate coffee enthusiasts from Yemen, Mocha Café brings a unique blend of tradition and modernity to Kigali. Our mission is to provide a cozy, friendly environment where everyone feels welcome.</p>
+                <div>
+                  <a href="#menu" class="btn-menu animate__animated animate__fadeInUp scrollto">Our Menu</a>
+              <!--    <a href="#book-a-table" class="btn-book animate__animated animate__fadeInUp scrollto">Book a Table</a>-->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 3 -->
+          <div class="carousel-item" style="background-image: url({% static "/img/slide/slide-3.webp"%});">
+            <div class="carousel-container">
+              <div class="carousel-content">
+                <!-- find sth meaningfull and related to the photo to write here  -->
+                <h2 class="animate__animated animate__fadeInDown">Your Cozy Corner for Coffee and Conversations</h2>
+                <p class="animate__animated animate__fadeInUp">At Mocha Café, we blend international flavors with local hospitality to create a warm and welcoming space for coffee lovers. Whether you're here for a quick coffee break or a leisurely meal, our homemade food and artisanal coffee will make you feel right at home.</p>
+                <div>
+                  <a href="#menu" class="btn-menu animate__animated animate__fadeInUp scrollto">Our Menu</a>
+             <!--     <a href="#book-a-table" class="btn-book animate__animated animate__fadeInUp scrollto">Book a Table</a>-->
+                </div>
+              </div>  
+            </div>
+          </div>
+
+        </div>
+
+        <a class="carousel-control-prev" href="#heroCarousel" role="button" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon bi bi-chevron-left" aria-hidden="true"></span>
+        </a>
+
+        <a class="carousel-control-next" href="#heroCarousel" role="button" data-bs-slide="next">
+          <span class="carousel-control-next-icon bi bi-chevron-right" aria-hidden="true"></span>
+        </a>
+
+      </div>
+    </div>
+  </section><!-- End Hero -->
+
+  <main id="main">
+
+    <!-- ======= About Section ======= -->
+ 
+    <section id="about" class="about">
+      <div class="container-fluid">
+
+        <div class="row">
+
+          <div class="col-lg-5 align-items-stretch video-box" style='background-image: url("{% static "img/about.webp" %}");'>
+            <a href="https://www.youtube.com/watch?v=LXb3EKWsInQ" class="glightbox play-btn mb-4"></a>
+          </div>
+
+          <div class="col-lg-7 d-flex flex-column justify-content-center align-items-stretch">
+
+            <div class="content">
+              <h3>About Mocha <strong>not only a cafe</strong></h3>
+              <p>
+                Welcome to Mocha Cafe, a charming eatery located in Gacuriro. Our cafe offers a unique fusion of Yemeni, Arabic, and International cuisine, providing a diverse and delightful dining experience. Enjoy our cozy indoor seating or relax in our beautiful garden area, perfect for families. Whether you're craving traditional Yemeni Food, a hearty American breakfast, or an authentic Italian espresso, Mocha Cafe is your go-to destination for delicious meals and a welcoming atmosphere. Join us for an unforgettable culinary journey!
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section><!-- End About Section -->
+
+    <!-- ======= Whu Us Section ======= -->
+    <section id="why-us" class="why-us">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Why choose <span>Our Restaurant</span></h2>
+          <p> Our welcoming atmosphere, complete with cozy indoor seating and a serene garden area, provides an ideal setting for relaxing, working and socializing.</p>
+        </div>
+
+        <div class="row">
+
+          <div class="col-lg-4">
+            <div class="box">
+              <span>01</span>
+              <h4>Diverse Cuisine</h4>
+              <p>Experience a unique blend of Yemeni, Arabic, and International dishes, offering something delicious for every palate.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-4 mt-4 mt-lg-0">
+            <div class="box">
+              <span>02</span>
+              <h4>Family-Friendly Atmosphere</h4>
+              <p> Enjoy our cozy indoor seating and beautiful garden area, perfect for relaxing and socializing.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-4 mt-4 mt-lg-0">
+            <div class="box">
+              <span>03</span>
+              <h4> Quality and Authenticity</h4>
+              <p>Savor traditional recipes and high-quality ingredients, providing an authentic and memorable dining experience.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section><!-- End Whu Us Section -->
+
+    <!-- ======= Menu Section ======= -->
+    <section id="menu" class="menu">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Check our tasty <span>Menu</span></h2>
+        </div>
+     {% if table %}
+  <h2>
+      You are ordering from Table: {{ table.number }} ({{ table.section }})
+  </h2>
+{% else %}
+  <h2>
+
+      No table information detected. Please scan the QR code to associate your order with a table.
+  </h2>
+{% endif %}
+       
+        <div class="row">
+          <div class="col-lg-12 d-flex justify-content-center">
+            <ul id="menu-flters">
+              <li data-filter="*" class="filter-all">Show All</li>
+            <!--  <li data-filter=".filter-breakfast">BreakFast</li>  -->
+              <li data-filter=".filter-salads">Salads</li>
+              <li data-filter=".filter-lunch">Lunch</li>
+              <li data-filter=".filter-sandwiches">Sandwiches and wraps</li>
+            <li data-filter=".filter-soups">Soups</li>
+            <li data-filter=".filter-pizza">Pizza</li> 
+            <li data-filter=".filter-burgers">Burgers</li> 
+            <li data-filter=".filter-bowls">Smoothie Bowls</li>   
+            <li data-filter=".filter-pancake">Pancakes and crepes</li>    
+              <li data-filter=".filter-hotDrinks">Coffee and Tea</li>
+              <li data-filter=".filter-coldDrinks">Cold Drinks</li>
+              <li data-filter=".filter-extra">Extras</li>  
+          
+            </ul>
+          </div>
+        </div>
+
+        <!--
+        --------------------- this is to activate the sub menu ---still in progress 
+
+        <div class="row sub-filter-container" id="sub-filter-drinks">
+          <div class="col-lg-12 d-flex justify-content-center">
+            <ul id="subMenu-filters">
+              <li data-filter=".filter-hotDrinks">Fresh Juice</li>
+              <li data-filter=".filter-coldDrinks">Tea</li>
+            </ul>
+          </div>
+        </div>
+      
+         -->
+
+      <div class="row menu-container">
+        <!------------------------------------------------ Lunch Menue ------------------------------------------>
+        {% for item in lunch %}
+     
+
+        <div class="col-lg-6 menu-item filter-lunch">
+          <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
+        <div class="menu-content-wrapper">
+            <div class="menu-img-wrapper">
+              {% if item.image %}
+                <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
+              {% else %}
+                <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
+              {% endif %}
+            </div>
+            <div class="menu-details">
+              <div class="menu-content">
+                <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+              </div>
+              <div class="menu-ingredients">
+                {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+              </div>
+            </div>
+          </div>
+          </a>
+        </div>
+
+        {% endfor %}
+
+
+
+            <!------------------------------------------------ Sandwiches Menue ------------------------------------------>
+
+            {% for item in sandwich %}
+                  <div class="col-lg-6 menu-item filter-sandwiches">
+          <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
+        <div class="menu-content-wrapper">
+            <div class="menu-img-wrapper">
+              {% if item.image %}
+                <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
+              {% else %}
+                <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
+              {% endif %}
+            </div>
+            <div class="menu-details">
+              <div class="menu-content">
+                <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+              </div>
+              <div class="menu-ingredients">
+                {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+              </div>
+            </div>
+          </div>
+          </a>
+        </div>
+            {% endfor %}
+                 <!------------------------------------------------ Breakfast Menue ------------------------------------------>
+                 {% for item in breakFast %}
+                 <div class="col-lg-6 menu-item filter-breakfast">
+                  <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
+                <div class="menu-content-wrapper">
+                    <div class="menu-img-wrapper">
+                      {% if item.image %}
+                        <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
+                      {% else %}
+                        <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
+                      {% endif %}
+                    </div>
+                    <div class="menu-details">
+                      <div class="menu-content">
+                        <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+                      </div>
+                      <div class="menu-ingredients">
+                        {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+                      </div>
+                    </div>
+                  </div>
+                  </a>
+                </div>
+         
+                 {% endfor %}
+
+
+             <!------------------------------------------------ Pizza Menue ------------------------------------------>
+             {% for item in pizza %}
+             <div class="col-lg-6 menu-item filter-pizza">
+              <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
+            <div class="menu-content-wrapper">
+                <div class="menu-img-wrapper">
+                  {% if item.image %}
+                    <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
+                  {% else %}
+                    <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
+                  {% endif %}
+                </div>
+                <div class="menu-details">
+                  <div class="menu-content">
+                    <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+                  </div>
+                  <div class="menu-ingredients">
+                    {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+                  </div>
+                </div>
+              </div>
+              </a>
+            </div>
+     
+             {% endfor %}
+
+             <!------------------------------------------------ Burgers Menue ------------------------------------------>
+             {% for item in burger %}
+             <div class="col-lg-6 menu-item filter-burgers">
+              <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
+            <div class="menu-content-wrapper">
+                <div class="menu-img-wrapper">
+                  {% if item.image %}
+                    <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
+                  {% else %}
+                    <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
+                  {% endif %}
+                </div>
+                <div class="menu-details">
+                  <div class="menu-content">
+                    <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+                  </div>
+                  <div class="menu-ingredients">
+                    {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+                  </div>
+                </div>
+              </div>
+              </a>
+            </div>
+     
+             {% endfor %}
+      
+                 <!------------------------------------------------ Salads Menue ------------------------------------------>
+
+
+
+                 {% for item in salad %}
+                 <div class="col-lg-6 menu-item filter-salads">
+                  <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
+                <div class="menu-content-wrapper">
+                    <div class="menu-img-wrapper">
+                      {% if item.image %}
+                        <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
+                      {% else %}
+                        <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
+                      {% endif %}
+                    </div>
+                    <div class="menu-details">
+                      <div class="menu-content">
+                        <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+                      </div>
+                      <div class="menu-ingredients">
+                        {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+                      </div>
+                    </div>
+                  </div>
+                  </a>
+                </div>
+        {% endfor %}
+
+               <!------------------------------------------------ Extras Menue ------------------------------------------>
+
+               {% for item in extra %}
+               <div class="col-lg-6 menu-item filter-extra">
+                <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
+              <div class="menu-content-wrapper">
+                  <div class="menu-img-wrapper">
+                    {% if item.image %}
+                      <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
+                    {% else %}
+                      <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
+                    {% endif %}
+                  </div>
+                  <div class="menu-details">
+                    <div class="menu-content">
+                      <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+                    </div>
+                    <div class="menu-ingredients">
+                      {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+                    </div>
+                  </div>
+                </div>
+                </a>
+              </div>
+               {% endfor %}
+   
+                    <!------------------------------------------------Smoothie Bowls Menue ------------------------------------------>
+                    {% for item in smoothie %}
+                    <div class="col-lg-6 menu-item filter-bowls">
+                      <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
+                    <div class="menu-content-wrapper">
+                        <div class="menu-img-wrapper">
+                          {% if item.image %}
+                            <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
+                          {% else %}
+                            <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
+                          {% endif %}
+                        </div>
+                        <div class="menu-details">
+                          <div class="menu-content">
+                            <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+                          </div>
+                          <div class="menu-ingredients">
+                            {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+                          </div>
+                        </div>
+                      </div>
+                      </a>
+                    </div>
+            
+                    {% endfor %}
+
+               <!------------------------------------------------ Pancakes and crepes Menue ------------------------------------------>
+               {% for item in crepe %}
+               <div class="col-lg-6 menu-item filter-pancake">
+                <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
+              <div class="menu-content-wrapper">
+                  <div class="menu-img-wrapper">
+                    {% if item.image %}
+                      <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
+                    {% else %}
+                      <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
+                    {% endif %}
+                  </div>
+                  <div class="menu-details">
+                    <div class="menu-content">
+                      <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+                    </div>
+                    <div class="menu-ingredients">
+                      {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+                    </div>
+                  </div>
+                </div>
+                </a>
+              </div>
+               {% endfor %}
+
+               <!------------------------------------------------ Hot Drinks  Menue ------------------------------------------>
+               {% for item in hot %}
+               <div class="col-lg-6 menu-item filter-hotDrinks">
+                <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
+              <div class="menu-content-wrapper">
+                  <div class="menu-img-wrapper">
+                    {% if item.image %}
+                      <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
+                    {% else %}
+                      <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
+                    {% endif %}
+                  </div>
+                  <div class="menu-details">
+                    <div class="menu-content">
+                      <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+                    </div>
+                    <div class="menu-ingredients">
+                      {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+                    </div>
+                  </div>
+                </div>
+                </a>
+              </div>
+{% endfor %}
+
+         <!------------------------------------------------ Cold Drinks  Menue ------------------------------------------>
+
+         {% for item in cold %}
+         <div class="col-lg-6 menu-item filter-coldDrinks">
+          <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
+        <div class="menu-content-wrapper">
+            <div class="menu-img-wrapper">
+              {% if item.image %}
+                <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
+              {% else %}
+                <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
+              {% endif %}
+            </div>
+            <div class="menu-details">
+              <div class="menu-content">
+                <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+              </div>
+              <div class="menu-ingredients">
+                {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+              </div>
+            </div>
+          </div>
+          </a>
+        </div>
+{% endfor %}
+
+
+       <!------------------------------------------------ Soups  Menue ------------------------------------------>
+
+       {% for item in soup %}
+       <div class="col-lg-6 menu-item filter-soups">
+        <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
+      <div class="menu-content-wrapper">
+          <div class="menu-img-wrapper">
+            {% if item.image %}
+              <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
+            {% else %}
+              <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
+            {% endif %}
+          </div>
+          <div class="menu-details">
+            <div class="menu-content">
+              <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+            </div>
+            <div class="menu-ingredients">
+              {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+            </div>
+          </div>
+        </div>
+        </a>
+      </div>
+       {% endfor %}
+
+
+
+        
+  </section><!-- End Menu Section -->
+  
+          
+          
+      
+
+
+
+    <!-- ======= Specials Section ======= -->
+    <section id="specials" class="specials">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Check our <span>Specials</span></h2>
+          <p>Ut possimus qui ut temporibus culpa velit eveniet modi omnis est adipisci expedita at voluptas atque vitae autem.</p>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-3">
+            <ul class="nav nav-tabs flex-column">
+              <li class="nav-item">
+                <a class="nav-link active show" data-bs-toggle="tab" href="#tab-1">Shakshuka</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#tab-2">Lebnah</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#tab-3">Zurbian</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#tab-4">Sousi</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#tab-5">Falafel</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-9 mt-4 mt-lg-0">
+            <div class="tab-content">
+              <div class="tab-pane active show" id="tab-1">
+                <div class="row">
+                  <div class="col-lg-8 details order-2 order-lg-1">
+                    <h3>Shakshuka</h3>
+                    <p>Indulge in our savory Shakshuka, a vibrant dish featuring perfectly fried eggs nestled in a rich, spiced tomato and onions. Garnished with fresh herbs and served with pita bread, this Middle Eastern classic is a comforting and flavorful experience that's perfect for any time of the day.</p>
+                  </div>
+                  <div class="col-lg-4 text-center order-1 order-lg-2">
+                    <img src="{% static "img/specials-1.webp" %}" alt="" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane" id="tab-2">
+                <div class="row">
+                  <div class="col-lg-8 details order-2 order-lg-1">
+                    <h3>Lebnah</h3>
+                    <p>Experience the creamy delight of our traditional Lebnah, a rich and tangy strained yogurt. Drizzled with olive oil, this Middle Eastern delicacy is perfect as a spread, dip, or accompaniment. Enjoy it with warm pita bread or fresh vegetables for a refreshing and wholesome treat.</p>
+                  </div>
+                  <div class="col-lg-4 text-center order-1 order-lg-2">
+                    <img src="{% static "img/specials-2.webp" %}" alt="" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane" id="tab-3">
+                <div class="row">
+                  <div class="col-lg-8 details order-2 order-lg-1">
+                    <h3>Zurbian</h3>
+                    <p>Indulge in the rich and aromatic flavors of our traditional Zurbian. This Yemeni delicacy features tender pieces of marinated beef or chicken, perfectly cooked with fragrant basmati rice, potatoes, and a blend of exotic spices. Garnished with crispy fried onions, Zurbian offers a delightful and satisfying culinary experience that transports you to the heart of Yemen with every bite.</p>
+                  </div>
+                  <div class="col-lg-4 text-center order-1 order-lg-2">
+                    <img src="{% static "img/specials-3.webp" %}" alt="" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane" id="tab-4">
+                <div class="row">
+                  <div class="col-lg-8 details order-2 order-lg-1">
+                    <h3>Sousi</h3>
+                    <p class="fst-italic">Totam aperiam accusamus. Repellat consequuntur iure voluptas iure porro quis delectus</p>
+                    <p>Eaque consequuntur consequuntur libero expedita in voluptas. Nostrum ipsam necessitatibus aliquam fugiat debitis quis velit. Eum ex maxime error in consequatur corporis atque. Eligendi asperiores sed qui veritatis aperiam quia a laborum inventore</p>
+                  </div>
+                  <div class="col-lg-4 text-center order-1 order-lg-2">
+                    <img src="{% static "img/specials-4.webp" %}" alt="" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane" id="tab-5">
+                <div class="row">
+                  <div class="col-lg-8 details order-2 order-lg-1">
+                    <h3>Falafel</h3>
+                    <p>Enjoy our delicious Falafel, a Middle Eastern favorite made from a blend of ground chickpeas, fresh herbs, and aromatic spices. These crispy, golden-brown patties are perfect in a warm pita or flatbread, comes with tomto souce and creamy hummus. Each bite offers a delightful combination of textures and flavors, making Falafel a satisfying and wholesome meal or snack.</p>
+                  </div>
+                  <div class="col-lg-4 text-center order-1 order-lg-2">
+                    <img src="{% static "img/specials-5.webp" %}" alt="" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section><!-- End Specials Section -->
+
+    <!-- ======= Events Section ======= 
+    <section id="events" class="events">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Organize Your <span>Events</span> in our Restaurant</h2>
+        </div>
+
+        <div class="events-slider swiper">
+          <div class="swiper-wrapper">
+
+            <div class="swiper-slide">
+              <div class="row event-item">
+                <div class="col-lg-6">
+                  <img src="{% static "img/event-birthday.jpg" %}" class="img-fluid" alt="">
+                </div>
+                <div class="col-lg-6 pt-4 pt-lg-0 content">
+                  <h3>Birthday Parties</h3>
+                  <div class="price">
+                    <p><span>$189</span></p>
+                  </div>
+                  <p class="fst-italic">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+                    magna aliqua.
+                  </p>
+                  <ul>
+                    <li><i class="bi bi-check-circle"></i> Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
+                    <li><i class="bi bi-check-circle"></i> Duis aute irure dolor in reprehenderit in voluptate velit.</li>
+                    <li><i class="bi bi-check-circle"></i> Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
+                  </ul>
+                  <p>
+                    Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+                    velit esse cillum dolore eu fugiat nulla pariatur
+                  </p>
+                </div>
+              </div>
+            </div><!- End testimonial item >
+
+            <div class="swiper-slide">
+              <div class="row event-item">
+                <div class="col-lg-6">
+                  <img src="{% static "img/event-private.jpg" %}" class="img-fluid" alt="">
+                </div>
+                <div class="col-lg-6 pt-4 pt-lg-0 content">
+                  <h3>Private Parties</h3>
+                  <div class="price">
+                    <p><span>$290</span></p>
+                  </div>
+                  <p class="fst-italic">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+                    magna aliqua.
+                  </p>
+                  <ul>
+                    <li><i class="bi bi-check-circle"></i> Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
+                    <li><i class="bi bi-check-circle"></i> Duis aute irure dolor in reprehenderit in voluptate velit.</li>
+                    <li><i class="bi bi-check-circle"></i> Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
+                  </ul>
+                  <p>
+                    Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+                    velit esse cillum dolore eu fugiat nulla pariatur
+                  </p>
+                </div>
+              </div>
+            </div><!- End testimonial item ->
+
+            <div class="swiper-slide">
+              <div class="row event-item">
+                <div class="col-lg-6">
+                  <img src="{% static "img/event-custom.jpg" %}" class="img-fluid" alt="">
+                </div>
+                <div class="col-lg-6 pt-4 pt-lg-0 content">
+                  <h3>Custom Parties</h3>
+                  <div class="price">
+                    <p><span>$99</span></p>
+                  </div>
+                  <p class="fst-italic">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+                    magna aliqua.
+                  </p>
+                  <ul>
+                    <li><i class="bi bi-check-circle"></i> Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
+                    <li><i class="bi bi-check-circle"></i> Duis aute irure dolor in reprehenderit in voluptate velit.</li>
+                    <li><i class="bi bi-check-circle"></i> Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
+                  </ul>
+                  <p>
+                    Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+                    velit esse cillum dolore eu fugiat nulla pariatur
+                  </p>
+                </div>
+              </div>
+            </div><!- End testimonial item ->
+
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+
+      </div>
+    </section>End Events Section -->
+
+
+
+
+
+
+
+    <!-- ======= Book A Table Section =======this field to be activated after we add database and the dashboard  ->
+    <section id="book-a-table" class="book-a-table">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Book a <span>Table</span></h2>
+          <p>Ut possimus qui ut temporibus culpa velit eveniet modi omnis est adipisci expedita at voluptas atque vitae autem.</p>
+        </div>
+
+        <form action="forms/book-a-table.php" method="post" role="form" class="php-email-form">
+          <div class="row">
+            <div class="col-lg-4 col-md-6 form-group">
+              <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" data-rule="minlen:4" data-msg="Please enter at least 4 chars">
+              <div class="validate"></div>
+            </div>
+            <div class="col-lg-4 col-md-6 form-group mt-3 mt-md-0">
+              <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" data-rule="email" data-msg="Please enter a valid email">
+              <div class="validate"></div>
+            </div>
+            <div class="col-lg-4 col-md-6 form-group mt-3 mt-md-0">
+              <input type="text" class="form-control" name="phone" id="phone" placeholder="Your Phone" data-rule="minlen:4" data-msg="Please enter at least 4 chars">
+              <div class="validate"></div>
+            </div>
+            <div class="col-lg-4 col-md-6 form-group mt-3">
+              <input type="text" name="date" class="form-control" id="date" placeholder="Date" data-rule="minlen:4" data-msg="Please enter at least 4 chars">
+              <div class="validate"></div>
+            </div>
+            <div class="col-lg-4 col-md-6 form-group mt-3">
+              <input type="text" class="form-control" name="time" id="time" placeholder="Time" data-rule="minlen:4" data-msg="Please enter at least 4 chars">
+              <div class="validate"></div>
+            </div>
+            <div class="col-lg-4 col-md-6 form-group mt-3">
+              <input type="number" class="form-control" name="people" id="people" placeholder="# of people" data-rule="minlen:1" data-msg="Please enter at least 1 chars">
+              <div class="validate"></div>
+            </div>
+          </div>
+          <div class="form-group mt-3">
+            <textarea class="form-control" name="message" rows="5" placeholder="Message"></textarea>
+            <div class="validate"></div>
+          </div>
+          <div class="mb-3">
+            <div class="loading">Loading</div>
+            <div class="error-message"></div>
+            <div class="sent-message">Your booking request was sent. We will call back or send an Email to confirm your reservation. Thank you!</div>
+          </div>
+          <div class="text-center"><button type="submit">Send Message</button></div>
+        </form>
+
+      </div>
+    </section><!- End Book A Table Section -->
+
+    <!-- ======= Gallery Section ======= -->
+    <section id="gallery" class="gallery">
+      <div class="container-fluid">
+
+        <div class="section-title">
+          <h2>Some photos from <span>Our Restaurant</span></h2>
+          <p>Ut possimus qui ut temporibus culpa velit eveniet modi omnis est adipisci expedita at voluptas atque vitae autem.</p>
+        </div>
+
+        <div class="row g-0">
+
+          <div class="col-lg-3 col-md-4">
+            <div class="gallery-item">
+              <a href="{% static "img/gallery/gallery-1.webp" %}" class="gallery-lightbox">
+                <img src="{% static "img/gallery/gallery-1.webp" %}" alt="" class="img-fluid">
+              </a>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-4">
+            <div class="gallery-item">
+              <a href="{% static "img/gallery/gallery-2.webp" %}" class="gallery-lightbox">
+                <img src="{% static "img/gallery/gallery-2.webp" %}" alt="" class="img-fluid">
+              </a>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-4">
+            <div class="gallery-item">
+              <a href="{% static "img/gallery/gallery-3.webp" %}" class="gallery-lightbox">
+                <img src="{% static "img/gallery/gallery-3.webp" %}" alt="" class="img-fluid">
+              </a>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-4">
+            <div class="gallery-item">
+              <a href="{% static "img/gallery/gallery-4.webp" %}" class="gallery-lightbox">
+                <img src="{% static "img/gallery/gallery-4.webp" %}" alt="" class="img-fluid">
+              </a>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-4">
+            <div class="gallery-item">
+              <a href="{% static "img/gallery/gallery-5.webp" %}" class="gallery-lightbox">
+                <img src="{% static "img/gallery/gallery-5.webp" %}" alt="" class="img-fluid">
+              </a>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-4">
+            <div class="gallery-item">
+              <a href="{% static "img/gallery/gallery-6.webp" %}" class="gallery-lightbox">
+                <img src="{% static "img/gallery/gallery-6.webp" %}" alt="" class="img-fluid">
+              </a>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-4">
+            <div class="gallery-item">
+              <a href="{% static "img/gallery/gallery-7.webp" %}" class="gallery-lightbox">
+                <img src="{% static "img/gallery/gallery-7.webp" %}" alt="" class="img-fluid">
+              </a>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-4">
+            <div class="gallery-item">
+              <a href="{% static "img/gallery/gallery-8.webp" %}" class="gallery-lightbox">
+                <img src="{% static "img/gallery/gallery-8.webp" %}" alt="" class="img-fluid">
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section><!-- End Gallery Section -->
+
+    <!-- ======= Chefs Section ======= --
+    <section id="chefs" class="chefs">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Our Proffesional <span>Chefs</span></h2>
+          <p>Ut possimus qui ut temporibus culpa velit eveniet modi omnis est adipisci expedita at voluptas atque vitae autem.</p>
+        </div>
+
+        <div class="row">
+
+          <div class="col-lg-4 col-md-6">
+            <div class="member">
+              <div class="pic"><img src="{% static "img/chefs/chefs-1.jpg" %}" class="img-fluid" alt=""></div>
+              <div class="member-info">
+                <h4>Walter White</h4>
+                <span>Master Chef</span>
+                <div class="social">
+                  <a href=""><i class="bi bi-twitter"></i></a>
+                  <a href=""><i class="bi bi-facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-md-6">
+            <div class="member">
+              <div class="pic"><img src="{% static "img/chefs/chefs-2.jpg" %}" class="img-fluid" alt=""></div>
+              <div class="member-info">
+                <h4>Sarah Jhonson</h4>
+                <span>Patissier</span>
+                <div class="social">
+                  <a href=""><i class="bi bi-twitter"></i></a>
+                  <a href=""><i class="bi bi-facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-md-6">
+            <div class="member">
+              <div class="pic"><img src="{% static "img/chefs/chefs-3.jpg" %}" class="img-fluid" alt=""></div>
+              <div class="member-info">
+                <h4>William Anderson</h4>
+                <span>Cook</span>
+                <div class="social">
+                  <a href=""><i class="bi bi-twitter"></i></a>
+                  <a href=""><i class="bi bi-facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section><!- End Chefs Section -->
+
+    <!-- ======= Testimonials Section ======= ->
+    <section id="testimonials" class="testimonials">
+      <div class="container position-relative">
+
+        <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">
+          <div class="swiper-wrapper">
+
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <img src="{% static "img/testimonials/testimonials-1.jpg" %}" class="testimonial-img" alt="">
+                <h3>Saul Goodman</h3>
+                <h4>Ceo &amp; Founder</h4>
+                <div class="stars">
+                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                </div>
+                <p>
+                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
+                  Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.
+                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
+                </p>
+              </div>
+            </div><!- End testimonial item ->
+
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <img src="{% static "img/testimonials/testimonials-2.jpg" %}" class="testimonial-img" alt="">
+                <h3>Sara Wilsson</h3>
+                <h4>Designer</h4>
+                <div class="stars">
+                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                </div>
+                <p>
+                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
+                  Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.
+                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
+                </p>
+              </div>
+            </div><!- End testimonial item ->
+
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <img src="{% static "img/testimonials/testimonials-3.jpg" %}" class="testimonial-img" alt="">
+                <h3>Jena Karlis</h3>
+                <h4>Store Owner</h4>
+                <div class="stars">
+                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                </div>
+                <p>
+                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
+                  Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.
+                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
+                </p>
+              </div>
+            </div><!- End testimonial item ->
+
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <img src="{% static "img/testimonials/testimonials-4.jpg" %}" class="testimonial-img" alt="">
+                <h3>Matt Brandon</h3>
+                <h4>Freelancer</h4>
+                <div class="stars">
+                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                </div>
+                <p>
+                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
+                  Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.
+                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
+                </p>
+              </div>
+            </div><!- End testimonial item ->
+
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <img src="{% static "img/testimonials/testimonials-5.jpg" %}" class="testimonial-img" alt="">
+                <h3>John Larson</h3>
+                <h4>Entrepreneur</h4>
+                <div class="stars">
+                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                </div>
+                <p>
+                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
+                  Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.
+                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
+                </p>
+              </div>
+            </div><!- End testimonial item ->
+
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+
+      </div>
+    </section><!- End Testimonials Section -->
+
+    <!-- ======= Contact Section ======= -->
+    <section id="contact" class="contact">
+      <div class="container">
+
+        <div class="section-title">
+          <h2><span>Contact</span> Us</h2>
+          <p>Ut possimus qui ut temporibus culpa velit eveniet modi omnis est adipisci expedita at voluptas atque vitae autem.</p>
+        </div>
+      </div>
+
+      <div class="map">
+        <iframe style="border:0; width: 100%; height: 350px;" src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15950.25510017658!2d30.0914533!3d-1.9262427!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19dca7d404b516dd%3A0xb7a07384007ea010!2sMocha%20Caf%C3%A9%20Rwanda!5e0!3m2!1sen!2srw!4v1718979271549!5m2!1sen!2srw" frameborder="0" allowfullscreen></iframe>
+      </div>
+
+      <div class="container mt-5">
+
+        <div class="info-wrap">
+          <div class="row">
+            <div class="col-lg-3 col-md-6 info">
+              <i class="bi bi-geo-alt"></i>
+              <h4>Location:</h4>
+              <p>Gacuriro<br>Kigali,KN439</p>
+            </div>
+
+            <div class="col-lg-3 col-md-6 info mt-4 mt-lg-0">
+              <i class="bi bi-clock"></i>
+              <h4>Open Hours:</h4>
+              <p>Wednesday-Monday:<br>8:00 AM - 7:00 PM</p>
+            </div>
+
+            <div class="col-lg-3 col-md-6 info mt-4 mt-lg-0">
+              <i class="bi bi-envelope"></i>
+              <h4>Email:</h4>
+              <p>info@example.com<br>contact@example.com</p>
+            </div>
+
+            <div class="col-lg-3 col-md-6 info mt-4 mt-lg-0">
+              <i class="bi bi-phone"></i>
+              <h4>Call:</h4>
+              <p>+1 5589 55488 51<br>+1 5589 22475 14</p>
+            </div>
+          </div>
+        </div>
+<!--This field to be activated after when we add a data base and a dashboard ->
+        <form action="forms/contact.php" method="post" role="form" class="php-email-form">
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" required>
+            </div>
+            <div class="col-md-6 form-group mt-3 mt-md-0">
+              <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" required>
+            </div>
+          </div>
+          <div class="form-group mt-3">
+            <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject" required>
+          </div>
+          <div class="form-group mt-3">
+            <textarea class="form-control" name="message" rows="5" placeholder="Message" required></textarea>
+          </div>
+          <div class="my-3">
+            <div class="loading">Loading</div>
+            <div class="error-message"></div>
+            <div class="sent-message">Your message has been sent. Thank you!</div>
+          </div>
+          <div class="text-center"><button type="submit">Send Message</button></div>
+        </form>
+
+      </div>
+    </section><!- End Contact Section -->
+    
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer">
+    <div class="container">
+      <h3>Mocha Cafe</h3>
+      <p>Memories of joy and happiness.</p>
+      <div class="social-links">
+        <a href="https://www.instagram.com/p/CCh5q3SAd6B/?igshid=1bvk0v1yjttl6&img_index=1" class="facebook"><i class="bx bxl-facebook"></i></a>
+        <a href="https://www.instagram.com/p/CCh5q3SAd6B/?igshid=1bvk0v1yjttl6&img_index=1" class="instagram"><i class="bx bxl-instagram"></i></a>
+
+      </div>
+      <div class="copyright">
+        &copy; Copyright <strong><span>Delicious</span></strong>. All Rights Reserved
+      </div>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/delicious-free-restaurant-bootstrap-theme/ -->
+        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+      </div>
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+  <script src="{% static "vendor/glightbox/js/glightbox.min.js" %}"></script>
+  <script src="{% static "vendor/isotope-layout/isotope.pkgd.min.js" %}"></script>
+  <script src="{% static "vendor/swiper/swiper-bundle.min.js" %}"></script>
+  <script src="{% static "vendor/php-email-form/validate.js" %}"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{% static "js/main.js" %}"></script>
+  
+<!--Start of Tawk.to Script->
+<script type="text/javascript">
+  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+  (function(){
+  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+  s1.async=true;
+  s1.src='https://embed.tawk.to/667931db9d7f358570d2abfd/1i14mlgv3';
+  s1.charset='UTF-8';
+  s1.setAttribute('crossorigin','*');
+  s0.parentNode.insertBefore(s1,s0);
+  })();
+  </script>
+  <!-End of Tawk.to Script-->
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+<!-- orders.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order List</title>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+    <h1>Orders</h1>
+    
+    <ul>
+        {% for order in orders %}
+            <li>
+                <p>Order #{{ order.id }}</p><p>{{ order.customer.name }}</p>
+                <p>Ordered At: {{ order.ordered_at }}</p>
+                <p>Total Amount: ${{ order.total_amount }}</p>
+            
+        <ul>
+            {% for order_item in order.orderitem_set.all %}
+                <li>
+                    <p>{{ order_item.quantity }} x {{ order_item.item.name }} - ${{ order_item.price }}</p>
+
+                    <!-- Display Extras -->
+                    <ul>
+                        {% for extra_item in order_item.item.extraitem_set.all %}
+                            <li>{{ extra_item.Extra.name }} - ${{ extra_item.Extra.price }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+
+                <!-- Button to go to the order detail page -->
+                <a href="{% url 'orderView' order.id %}" class="btn btn-primary">View Details</a>
+            </li>
+        {% endfor %}
+    </ul>
+    
+</body>
+</html>

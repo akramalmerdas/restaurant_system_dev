@@ -1,0 +1,104 @@
+<html>
+    <head>
+      <title>Print Order</title>
+      <style>
+        @media print {
+          @page {
+            size: 88mm auto; /* Set custom page size */
+             margin: 5mm; 
+          }
+          body {
+            margin: 2px;
+            padding: 1px;
+            width: 88mm; /* Ensure body matches the page size */
+            max-width: 88mm;
+            font-family: Arial, sans-serif;
+          
+            overflow: hidden; /* Prevent content overflow */
+          }
+          ul {
+            list-style: none;
+            padding: 1px;
+            margin: 1px;
+          }
+          li {
+            margin: 5px 0;
+          }
+          h1, p {
+            margin-left:5px ;
+            margin-right:5px ;
+            padding: 5px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Mocha Cafe</h1>
+      <p>Date: {{ order.oerdered_at}}</p>
+      <p>Printed at: {{ order.printed_at}}</p>
+      <p><strong>Table: {{ order.table.name}}</strong></p>
+      <hr>
+      <ul>
+        {% for item in order.orderitem_set.all %}
+        <li>{{ item.quantity }} x {{ item.item.name }} - {{ item.price }} RWF</li>
+    {% endfor %}
+      </ul>
+    <hr>
+<p><strong>Total:</strong>{{ order.total_amount }} RWF</p>
+<hr>
+<div class="bottom-line">
+  Thank you for visiting Mocha Mocha Cafe!
+</div>
+<script>
+    // Automatically trigger the print dialog
+    // window.onload = function() {
+    //     window.print();
+    //     // Close the window after printing (optional)
+    //     window.onafterprint = function() {
+            
+    //         window.close();
+    //     };
+    // };
+ 
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Ensure orderId and CSRF token are correctly rendered
+        const orderId = "{{ order_id }}"; // Replace with actual order ID
+        const csrfToken = "{{ csrf_token }}"; // Replace with CSRF token
+
+        // Trigger the print dialog
+        window.print();
+
+        // Listen for the print dialog close event
+        window.onafterprint = function () {
+            console.log("Print dialog closed. Sending confirmation...");
+
+            // Send confirmation to the backend
+            fetch(`/print_order_view/${orderId}/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken // Include CSRF token for Django
+                },
+                body: JSON.stringify({ confirmed: true })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log("Print confirmation sent successfully.");
+                    } else {
+                        console.error("Failed to confirm print. Server error.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error sending print confirmation:", error);
+                });
+        };
+
+        // Fallback for unsupported browsers
+        window.onbeforeprint = function () {
+            console.log("Print dialog is about to open...");
+        };
+    });
+</script>
+    </body>
+    </html>
