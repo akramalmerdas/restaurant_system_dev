@@ -1,3 +1,4 @@
+from django.utils.timezone import now
 from django.shortcuts import redirect, render , get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
@@ -442,9 +443,9 @@ def adminDashboard(request):
 
     # Filter orders by the selected table, if provided
     if selected_table_id:
-        orders = Order.objects.filter(table__id=selected_table_id)
+        orders = Order.objects.filter(table__id=selected_table_id ,inHold=False)
     else:
-        orders = Order.objects.all()
+        orders = Order.objects.filter(inHold=False)
     return render(request, 'admin_dashboard.html',{   
          'tables': tables,
         'orders': orders,
@@ -586,7 +587,7 @@ def print_order_view(request, order_id):
         try:
             printed_status = OrderStatus.objects.get(name="printed")
             order.order_status = printed_status
-            order.printed_at = timezone.now() 
+            order.printed_at = now() 
             order.save()
             print('Print confirmed successfully')
             return JsonResponse({"success": True, "message": "Print confirmed."})
@@ -639,7 +640,7 @@ def generate_invoice(request, table_id):
     invoice = Invoice.objects.create(
         table=table, 
         total_amount=total_amount, 
-        created_at=timezone.now()  # Use timezone.now() for proper time zone handling
+        created_at=now()  # Use now() for proper time zone handling
     )
 
     # Associate the orders with the invoice
@@ -672,6 +673,7 @@ def invoice_dashboard(request):
 def view_invoice(request, invoice_id):
     invoice = get_object_or_404(Invoice, id=invoice_id)
     orders = Order.objects.filter(invoice__id=invoice_id)# Assuming an Invoice has related Orders
+    print('this is the order for the invoice '+str(orders))
     return render(request, 'invoice.html', {'invoice': invoice, 'orders': orders})
 from django.http import JsonResponse
 
