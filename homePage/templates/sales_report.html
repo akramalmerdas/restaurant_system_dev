@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Report</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .dashboard-header {
+            background-color: #222;
+            color: white;
+            padding: 15px 0;
+        }
+        .card-custom {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        .card-custom:hover {
+            transform: scale(1.02);
+        }
+        .table th {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-header text-center">
+    <h1>Sales Report</h1>
+</div>
+
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h4 class="text-muted">Filter by Date</h4>
+        </div>
+        <div class="col-md-6 text-right">
+            <button class="btn btn-primary">Download Report</button>
+        </div>
+    </div>
+    
+    <form method="GET" class="mb-4">
+        <div class="form-row">
+            <div class="col-md-4">
+                <input type="date" name="start_date" class="form-control" value="{{ start_date|date:'Y-m-d' }}">
+            </div>
+            <div class="col-md-4">
+                <input type="date" name="end_date" class="form-control" value="{{ end_date|date:'Y-m-d' }}">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-danger">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card card-custom p-3 text-center">
+                <h5>Total Sales</h5>
+                <h3 class="text-danger">${{ total_sales }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-custom p-3 text-center">
+                <h5>Number of Orders</h5>
+                <h3 class="text-primary">{{ num_orders }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-custom p-3 text-center">
+                <h5>Average Order Value</h5>
+                <h3 class="text-success">${{ avg_order_value }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mt-5">Sales Breakdown by Item</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Items Sold</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in item_sales %}
+            <tr>
+                <td>{{ item.item__name }}</td>
+                <td>{{ item.total_items_sold }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3 class="mt-5">Sales by Item (Chart)</h3>
+    <canvas id="salesChart"></canvas>
+</div>
+
+<script>
+    const salesData = {
+        labels: [{% for item in item_sales %}"{{ item.item__name }}",{% endfor %}],
+        datasets: [{
+            label: 'Items Sold',
+            data: [{% for item in item_sales %}{{ item.total_items_sold }},{% endfor %}],
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    const config = {
+        type: 'bar',
+        data: salesData,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    new Chart(document.getElementById('salesChart'), config);
+</script>
+
+</body>
+</html>

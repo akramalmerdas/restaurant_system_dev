@@ -85,9 +85,13 @@ body {
     background-color: #28a745;
     color: #fff;
 }
+.badge-completed {
+    background-color: #b52157;
+    color: #fff;
+}
 
 .badge-printed {
-    background-color: #6f42c1;  /* Purple color for printed status */
+    background-color: #6f42c1; 
     color: #fff;
 }
 

@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-m^bxmvnm8-o8-6kmpsu1_zchz-#_=m=!j6)*370$t40tqvdijk'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['192.168.1.149', '127.0.0.1', '192.168.1.146','localhost']
+ALLOWED_HOSTS = ['192.168.1.149', '127.0.0.1', '192.168.1.146','localhost','192.168.85.88']
 
 
 # Application definition
@@ -103,7 +103,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+# Authentication settings
+LOGIN_URL = '/login/'  
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 

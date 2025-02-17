@@ -27,38 +27,48 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-generateInvoiceButton=document.getElementById('generate-invoice-btn')
-
-
+document.addEventListener("DOMContentLoaded", function() {
+  
+    let generateInvoiceButton = document.getElementById('generate-invoice-btn');
+   
 if(generateInvoiceButton){
     
 
-generateInvoiceButton.addEventListener('click', function(event) {
-    event.preventDefault();  // Prevent the default link behavior
+    generateInvoiceButton.addEventListener('click', function(event) {
+        event.preventDefault();  // Prevent the default link behavior
+    
+        
+        
+        const tableId = generateInvoiceButton.getAttribute('data-table-id');
 
-    const tableId = 1;  // Replace with the actual table ID you want to close (you can dynamically get this from the page)
-
-    fetch(`/generate-invoice/${tableId}/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-        },
-        body: JSON.stringify({ table_id: tableId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Invoice created successfully! Invoice ID: ' + data.invoice_id);
-            // Optionally, update the UI to show the invoice details or redirect to the invoice page
-        } else {
-            alert('Error: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while processing your request.');
+        const selectedOrders = Array.from(document.querySelectorAll('input[name="order_select"]:checked'))
+        .map(input => input.value);  // Get values of checked checkboxes
+     
+          fetch(`/generate_invoice/${tableId}/`, {
+           method: 'POST',
+           headers: {
+          'Content-Type': 'application/json',
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+       },
+        body: JSON.stringify({ order_select: selectedOrders })  // Send selected orders as JSON
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Invoice created successfully! Invoice ID: ' + data.invoice_id);
+                // Optionally, update the UI to show the invoice details or redirect to the invoice page
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while processing your request.');
+        });
     });
+    
+    } 
+
 });
 
-} 
+

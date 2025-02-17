@@ -4,126 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-            margin: 20px;
+            margin: 0;
+            padding: 0;
+            width: 88mm;
+            font-size: 10px;
         }
         .invoice-container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 5mm;
         }
         .invoice-header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 5mm;
         }
         .invoice-header h1 {
-            font-family: 'Georgia', serif;
-            color: #dc3545;
+            font-size: 14px;
+            margin: 0;
+        }
+        .invoice-details {
+            margin-bottom: 5mm;
         }
         table {
             width: 100%;
-            margin-bottom: 20px;
-        }
-        table thead {
-            background-color: #dc3545;
-            color: #fff;
+            border-collapse: collapse;
         }
         table th, table td {
-            padding: 12px;
+            padding: 2mm 0;
             text-align: left;
-            border: 1px solid #ddd;
-        }
-        table tfoot {
-            font-weight: bold;
-        }
-        .btn-print {
-            background-color: #dc3545;
-            color: #fff;
-            border: none;
-        }
-        .btn-print:hover {
-            background-color: #b02a37;
+            border-bottom: 1px solid #ddd;
         }
         .status {
             font-weight: bold;
-            margin-top: 10px;
+            margin-top: 5mm;
+            text-align: center;
         }
-        .status-paid {
-            color: #28a745;
-        }
-        .status-unpaid {
-            color: #dc3545;
+        @media print {
+            .btn-print {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="invoice-container">
-            <div class="invoice-header">
-                <h1>Invoice</h1>
-                <p><strong>Table Number:</strong> {{ invoice.table.number }}</p>
-                <p><strong>Date:</strong> {{ invoice.created_at|date:"Y-m-d H:i:s" }}</p>
-            </div>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Items</th>
-                        <th>Total Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for order in orders %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>
-                            <ul class="list-unstyled mb-0">
-                                {% for item in order.orderitem_set.all %}
-                                <li>
-                                    {{ item.quantity }} x {{ item.item.name }} 
-                                    {% if item.selected_extras.exists %}
-                                    (Extras: 
-                                    {% for extra in item.selected_extras.all %}
-                                        {{ extra.name }}{% if not forloop.last %}, {% endif %}
-                                    {% endfor %}
-                                    )
-                                    {% endif %}
-                                </li>
-                                {% endfor %}
-                            </ul>
-                        </td>
-                        <td>
-                            <ul class="list-unstyled mb-0">
-                                {% for item in order.orderitem_set.all %}
-                                <li>${{ item.price }}</li>
-                                {% endfor %}
-                            </ul>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="2" class="text-end">Total:</td>
-                        <td>${{ invoice.total_amount }}</td>
-                    </tr>
-                </tfoot>
-            </table>
-            
-            <p class="status {{ invoice.is_paid|yesno:'status-paid,status-unpaid' }}">
-                <strong>Status:</strong> {{ invoice.is_paid|yesno:"Paid,Unpaid" }}
-            </p>
-            <button class="btn btn-print mt-3" onclick="window.print()">
-                <i class="bi bi-printer"></i> Print Invoice
-            </button>
+    <div class="invoice-container">
+        <div class="invoice-header">
+            <h1>Invoice</h1>
+            <p><strong>Table Number:</strong> {{ invoice.table.number }}</p>
+            <p><strong>Date:</strong> {{ invoice.created_at|date:"Y-m-d H:i:s" }}</p>
         </div>
+        <div class="invoice-details">
+            <p><strong>Invoice Number:</strong> {{ invoice.id }}</p>
+            <p><strong>Customer Name:</strong> {{ invoice.customer.name }}</p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        <ul style="padding-left: 0; list-style: none; margin: 0;">
+                            {% for item in order.orderitem_set.all %}
+                            <li>
+                                {{ item.quantity }} x {{ item.item.name }}
+                                {% if item.selected_extras.exists %}
+                                (Extras: 
+                                {% for extra in item.selected_extras.all %}
+                                    {{ extra.name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                                )
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        <ul style="padding-left: 0; list-style: none; margin: 0;">
+                            {% for item in order.orderitem_set.all %}
+                            <li>${{ item.price }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2" style="text-align: right;">Total:</td>
+                    <td>${{ invoice.total_amount }}</td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <p class="status {{ invoice.is_paid|yesno:'status-paid,status-unpaid' }}">
+            <strong>Status:</strong> {{ invoice.is_paid|yesno:"Paid,Unpaid" }}
+        </p>
+        <p class="mt-5 text-center">Thank you for your business!</p>
+        <button class="btn-print" onclick="window.print()">Print Invoice</button>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

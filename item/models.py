@@ -73,7 +73,7 @@ class Customer(models.Model):
 class OrderStatus(models.Model):
     statues=[    ('readytoprint', 'Ready to Print'),
         ('printed', 'Printed'),
-        ('completed','Completed'),('pending','Pending'),('delivered','Delivered')]
+        ('completed','Completed'),('pending','Pending'),('delivered','Delivered'),('served','Served')]
     name = models.CharField(max_length=100,choices=statues,default='readytoprint')
     description = models.TextField(null=True, blank=True)
     inHold = models.BooleanField(default=False)

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Dialogs</title>
+    <style>
+ .confirm-dialog {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);  /* This will center the dialog both vertically and horizontally */
+    width: 300px;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;  /* Ensure it's on top of other elements */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-buttons {
+    margin-top: 15px;
+}
+
+.confirm-buttons button {
+    margin: 5px;
+    padding: 8px 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#confirmYes {
+    background-color: green;
+    color: white;
+}
+
+#confirmNo {
+    background-color: red;
+    color: white;
+}
+        </style>
+</head>
+<body>
+   
+
+<!-- Confirmation Dialog -->
+<div id="customDialog" class="confirm-dialog">
+    <div class="confirm-content">
+        <p id="confirmMessage">Are you sure?</p>
+        <div class="confirm-buttons">
+            <button id="confirmYes">Yes</button>
+            <button id="confirmNo">Cancel</button>
+        </div>
+    </div>
+</div> 
+
+
+<script type="module" src="{% static 'js/custom_dialog.js' %}"></script>
+
+</body>
+</html>

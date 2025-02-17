@@ -66,15 +66,17 @@
                     <a href="/invoices/" class="btn btn-primary">
                         <i class="bi bi-receipt"></i> Manage Invoices
                     </a>
-                    <a href="/generate_invoice/{{selected_table_id}}/" class="btn btn-primary">
-                        <i class="bi bi-receipt"></i> Generate Invoice ({{selected_table_id}})
+                    <a id="generate-invoice-btn" class="btn btn-primary" data-table-id="{{ selected_table_id }}">
+                        <i class="bi bi-receipt"></i> Generate Invoice ({{ selected_table_id }})
                     </a>
 
                 </div>
             </div>
 
             <!-- Table Filter -->
+
             <form method="get" class="mb-4">
+                {% csrf_token %}
                 <div class="row">
                     <div class="col-md-6">
                         <select name="table_id" class="form-select">
@@ -102,17 +104,21 @@
                         <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
+                                    
                                     <th>#</th>
                                     <th>Customer</th>
                                     <th>Order Date</th>
                                     <th>Total Price</th>
                                     <th>Status</th>
                                     <th>Actions</th>
+                                    <th>Select</th>
                                 </tr>
                             </thead>
+
                             <tbody>
                                 {% for order in orders %}
                                 <tr>
+
                                     <td>{{ order.id }}</td>
                                     <td>{{ order.customer.name }}</td>
                                     <td>{{ order.ordered_at|date:"Y-m-d H:i" }}</td>
@@ -122,6 +128,7 @@
                                             {% elif order.order_status.name == 'readytoprint' %}badge-progress
                                             {% elif order.order_status.name == 'printed' %}badge-printed
                                             {% elif order.order_status.name == 'served' %}badge-served
+                                            {% elif order.order_status.name == 'completed' %}badge-completed
                                             {% elif order.order_status.name == 'delivered' %}badge-served
                                             {% else %}bg-secondary{% endif %}">{{ order.order_status.get_name_display }}</span>
                                     </td>
@@ -140,6 +147,7 @@
                                                     <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Printed">Printed</a></li>
                                                     <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Served">Served</a></li>
                                                     <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Delivered">Delivered</a></li>
+                                                    <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Completed">Completed</a></li>
                                                 </ul>
                                             </div>
                                             <button class="btn btn-action btn-delete btn-delete" data-order-id="{{ order.id }}">
@@ -148,10 +156,11 @@
                                         </div>
                                         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                                     </td>
+                                                                        <td><input type="checkbox" name="order_select" value="{{ order.id }}"></td>
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="6">
+                                    <td colspan="7">
                                         <div class="empty-state">
                                             <i class="bi bi-inbox fs-1 mb-3"></i>
                                             <p>No orders found</p>
@@ -187,7 +196,7 @@
                         </div>
                         <div class="card-body">
                             <p class="text-muted">View sales analytics, customer insights, and generate reports.</p>
-                            <a href="/reports/" class="btn btn-action btn-view w-100">
+                            <a href="/sales_report/" class="btn btn-action btn-view w-100">
                                 <i class="bi bi-file-earmark-text"></i> View Reports
                             </a>
                         </div>
@@ -218,7 +227,9 @@
     <script src="{% static 'vendor/php-email-form/validate.js' %}"></script>
 
     <!-- Template Main JS File -->
+    {% include 'confirmation_form.html' %}
     <script src="{% static 'js/main.js' %}"></script>
     <script type="module" src="{% static 'js/dashboard.js' %}"></script>
+    <script type="module" src="{% static 'js/invoice.js' %}"></script>
 </body>
 </html>

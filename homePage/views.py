@@ -8,9 +8,11 @@ import json
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.db.models import Q
+from django.db.models import Q,Sum ,F,Count, Avg
 from django.middleware.csrf import get_token
 from django.contrib.auth.decorators import login_required
+from datetime import datetime
+
  
 # Create your views here.
 from django.shortcuts import render, get_object_or_404
@@ -26,7 +28,7 @@ def index(request):
         try:
           
             request.session['table_number'] = table_number
-            print('here we print the table number'+table_number)
+
         except Table.DoesNotExist:
             table_number = None  # Handle invalid table_id gracefully
 
@@ -433,7 +435,7 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 ################################################ dashboard view 
-
+@login_required
 def adminDashboard(request):
        # Fetch all tables
     tables = Table.objects.all()
@@ -558,7 +560,9 @@ def update_order_status(request, order_id):
             elif statues == 'Served':
                 new_status_name = 'served'
             elif statues == 'Delivered':
-                new_status_name = 'delivered'    
+                new_status_name = 'delivered'  
+            elif statues == 'Completed':
+                new_status_name = 'completed'        
             
             # Get the order and the new status
             order = get_object_or_404(Order, id=order_id)
@@ -622,36 +626,55 @@ def print_order_view(request, order_id):
 #     return JsonResponse({"success": False, "message": "Invalid request method."}, status=400)
 
 
-
+@login_required
 def generate_invoice(request, table_id):
-    # Get the table
-    table = get_object_or_404(Table, id=table_id)
+  if request.method == "POST":
+    try:
 
-    # Fetch all completed orders for the table
-    orders = Order.objects.filter(table=table, order_status__name='served', invoice__isnull=True)
 
-    if not orders.exists():
-        return JsonResponse({"success": False, "message": "No completed orders for this table."}, status=404)
+      table = get_object_or_404(Table, id=table_id)
+  
+      data = json.loads(request.body)
+ 
 
-    # Calculate the total amount
-    total_amount = sum(order.total_amount for order in orders)
+      orders_id = data.get('order_select', [])  # Get the selected orders from the JSON data
 
-    # Create an invoice with the current time
-    invoice = Invoice.objects.create(
+
+      if orders_id:
+                # Filter the selected orders
+        orders = Order.objects.filter(id__in=orders_id, order_status__name='served', invoice__isnull=True)
+        if not orders.exists():
+          return JsonResponse({"success": False, "message": "No served orders for this table."}, status=404)
+
+      else:
+        orders = Order.objects.filter(table=table, order_status__name='served', invoice__isnull=True)
+
+        if not orders.exists():
+          return JsonResponse({"success": False, "message": "No served orders for this table."}, status=404)
+
+      total_amount = sum(order.total_amount for order in orders)
+      invoice = Invoice.objects.create(
         table=table, 
         total_amount=total_amount, 
-        created_at=now()  # Use now() for proper time zone handling
-    )
+        created_at=now()  
+      )
+      
+      completed_status = OrderStatus.objects.filter(name='completed').first()
+   
 
-    # Associate the orders with the invoice
-    orders.update(invoice=invoice)
+# Update orders with the completed status
+      orders.update(invoice=invoice, order_status=completed_status)
+    
+      print('here we are cahnging the orders statues ')
+      return JsonResponse({"success": True, "message": "Invoice generated successfully."})
+    except Exception as e:
+      return JsonResponse({"success": False, "message": str(e)}, status=500)
+  else: 
+    return JsonResponse({"success": False, "message": "Invalid request method."}, status=400)
 
-    # If you're rendering the invoice page, you can pass the invoice and orders to the template
-    return render(request, 'invoice.html', {'invoice': invoice, 'orders': orders})
 
 
-
-
+@login_required
 def invoice_dashboard(request):
     table_id = request.GET.get('table_id')  # Get the table ID from the query parameters
     tables = Table.objects.all()  # Fetch all tables for the filter dropdown
@@ -668,8 +691,7 @@ def invoice_dashboard(request):
     })  
 
 
-
-
+@login_required
 def view_invoice(request, invoice_id):
     invoice = get_object_or_404(Invoice, id=invoice_id)
     orders = Order.objects.filter(invoice__id=invoice_id)# Assuming an Invoice has related Orders
@@ -688,3 +710,46 @@ def change_invoice_status(request, invoice_id):
             return JsonResponse({"success": True, "message": "Status updated successfully"})
         return JsonResponse({"success": False, "message": "Invalid status value"}, status=400)
     return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+@login_required
+def sales_report(request):
+    # Default date range (e.g., last 30 days)
+    today = now().today()
+    start_date = today.replace(day=1)  # Start of the month
+    end_date = today
+
+    # Get the date range from the request if provided
+    if request.method == "GET":
+        start_date_str = request.GET.get("start_date")
+        end_date_str = request.GET.get("end_date")
+        if start_date_str:
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+        if end_date_str:
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+
+    # Fetch orders within the date range
+    orders = Order.objects.filter(ordered_at__range=[start_date, end_date])
+ 
+    # Calculate the sales summary
+    total_sales = orders.aggregate(total=Sum('total_amount'))['total'] or Decimal(0)
+    num_orders = orders.aggregate(num_orders=Count('id'))['num_orders'] or 0
+    avg_order_value = orders.aggregate(avg_value=Avg('total_amount'))['avg_value'] or 0
+ 
+    # Group sales by item/category (you can adjust this to your data model)
+    item_sales = (
+    OrderItem.objects.filter(order__in=orders)
+    .values('item__name')
+    .annotate(total_items_sold=Sum('quantity'))  # Summing quantity to get total items sold
+    .order_by('-total_items_sold')  # Sorting by most sold items
+     )
+ 
+
+    context = {
+        'start_date': start_date,
+        'end_date': end_date,
+        'total_sales': total_sales,
+        'num_orders': num_orders,
+        'avg_order_value': avg_order_value,
+        'item_sales': item_sales,
+    }
+
+    return render(request, 'sales_report.html', context)
