@@ -105,16 +105,21 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# SECURE_BROWSER_XSS_FILTER = False
-# SECURE_CONTENT_TYPE_NOSNIFF = False
-# SECURE_SSL_REDIRECT = False  # يعيد التوجيه تلقائيًا إلى HTTPS
-# SESSION_COOKIE_SECURE = False
-# CSRF_COOKIE_SECURE = False
-SECURE_SSL_REDIRECT = False
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
 
+# Check if we are running in production
+if not DEBUG:  # Production settings
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+else:  # Development settings
+    SECURE_SSL_REDIRECT = False  # Disable HTTPS redirect
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
 # Authentication settings
 LOGIN_URL = '/login/'  
 # Internationalization

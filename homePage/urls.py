@@ -28,7 +28,9 @@ urlpatterns =[
     path('invoice/<int:invoice_id>/', views.view_invoice, name='view_invoice'),
     path("invoice/<int:invoice_id>/change-status/", views.change_invoice_status, name="change_invoice_status"),
     path('sales_report/', views.sales_report, name='sales_report'),
-  
-
-
+    path('tables/', views.table_dashboard, name='table_dashboard'),
+    path('tables/<int:table_id>/update/', views.update_table_status, name='update_table_status'),
+    path('tables/<int:table_id>/delete/', views.delete_table, name='delete_table'),
+    path('tables/<int:table_id>/edit/', views.edit_table, name='edit_table'),
+    path('tables/<int:table_id>/history/', views.get_table_history, name='get_table_history'),
 ]

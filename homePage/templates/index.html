@@ -200,7 +200,7 @@
           <div class="col-lg-7 d-flex flex-column justify-content-center align-items-stretch">
 
             <div class="content">
-              <h3>About Mocha <strong>not only a cafe</strong></h3>
+              <h3><span style="color:#d54b27;">Mocha Cafe</span> <strong>not only a cafe</strong></h3>
               <p>
                 Welcome to Mocha Cafe, a charming eatery located in Gacuriro. Our cafe offers a unique fusion of Yemeni, Arabic, and International cuisine, providing a diverse and delightful dining experience. Enjoy our cozy indoor seating or relax in our beautiful garden area, perfect for families. Whether you're craving traditional Yemeni Food, a hearty American breakfast, or an authentic Italian espresso, Mocha Cafe is your go-to destination for delicious meals and a welcoming atmosphere. Join us for an unforgettable culinary journey!
               </p>
@@ -219,7 +219,7 @@
       <div class="container">
 
         <div class="section-title">
-          <h2>Why choose <span>Our Restaurant</span></h2>
+          <h2>Why choose <span>Mocha Cafe</span></h2>
           <p> Our welcoming atmosphere, complete with cozy indoor seating and a serene garden area, provides an ideal setting for relaxing, working and socializing.</p>
         </div>
 
@@ -255,23 +255,19 @@
     </section><!-- End Whu Us Section -->
 
     <!-- ======= Menu Section ======= -->
-    <section id="menu" class="menu">
+
       <div class="container">
 
         <div class="section-title">
           <h2>Check our tasty <span>Menu</span></h2>
         </div>
-     {% if table %}
-  <h2>
-      You are ordering from Table: {{ table.number }} ({{ table.section }})
-  </h2>
-{% else %}
-  <h2>
+        {% if request.session.table_number %}
+        <p>Table Number: {{ request.session.table_number }}</p>
+    {% else %}
+        <p>   No table information detected. Please scan the QR code to associate your order with a table.</p>
 
-      No table information detected. Please scan the QR code to associate your order with a table.
-  </h2>
 {% endif %}
-       
+<section id="menu" class="menu">
         <div class="row">
           <div class="col-lg-12 d-flex justify-content-center">
             <ul id="menu-flters">
@@ -306,7 +302,7 @@
         </div>
       
          -->
-
+       
       <div class="row menu-container">
         <!------------------------------------------------ Lunch Menue ------------------------------------------>
         {% for item in lunch %}
