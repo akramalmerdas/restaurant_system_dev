@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-m^bxmvnm8-o8-6kmpsu1_zchz-#_=m=!j6)*370$t40tqvdijk'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.149', '127.0.0.1', '192.168.1.146','localhost','192.168.85.88']
+ALLOWED_HOSTS = ['192.168.1.149', '127.0.0.1', '192.168.1.146','localhost','192.168.85.88','0.0.0.0']
 
 
 # Application definition
@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'homePage',
-    'item'
+    'item',
+     'django_extensions',
    
 ]
 
@@ -104,11 +105,15 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_SSL_REDIRECT = True  # يعيد التوجيه تلقائيًا إلى HTTPS
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+# SECURE_BROWSER_XSS_FILTER = False
+# SECURE_CONTENT_TYPE_NOSNIFF = False
+# SECURE_SSL_REDIRECT = False  # يعيد التوجيه تلقائيًا إلى HTTPS
+# SESSION_COOKIE_SECURE = False
+# CSRF_COOKIE_SECURE = False
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
 
 # Authentication settings
 LOGIN_URL = '/login/'  
