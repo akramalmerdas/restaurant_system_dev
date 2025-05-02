@@ -41,14 +41,7 @@
 <body>
 
 
-  <!-- ======= Top Bar ======= -->
-<!-- ======= Top Bar ======= -->
-<!-- <section id="topbar" class="d-flex align-items-center fixed-top topbar-transparent">
-  <div class="container-fluid container-xl d-flex align-items-center justify-content-center justify-content-lg-start">
-      <i class="bi bi-phone d-flex align-items-center me-2"><span>+250 782 987 011</span></i>
-      <i class="bi bi-clock ms-4 d-none d-lg-flex align-items-center"><span>Wed-Mon: 8:00 AM - 7:00 PM</span></i>
-  </div>
-</section> -->
+
 
   <!-- ======= Header ======= -->
   <header id="header" class="fixed-top d-flex align-items-center ">
@@ -75,18 +68,18 @@
           <li><a class="nav-link scrollto" href="#specials">Specials</a></li>
           <li><a class="nav-link scrollto" href="{% url 'orderDetails' %}">My Order</a></li>
           <li>
-        
             {% if user.is_authenticated %}
-              {% if user.staff %}
-                <a class="nav-link scrollto" href="{% url 'admin_dashboard' %}">dashboard</a>
-              {% elif user.customer %}
-                <a class="nav-link scrollto" href="{% url 'customer_profile' %}">profile</a>
-              {% else %}
-                <a class="nav-link scrollto" href="#">Default</a>
-              {% endif %}
-            {% else %}
-              <a class="nav-link scrollto" href="{% url 'login' %}">Login</a>
+            {% if user.staff %}
+              <a class="nav-link scrollto" href="{% url 'admin_dashboard' %}">dashboard</a>
+            {% elif user.customer %}
+              <a class="nav-link scrollto" href="{% url 'customer_profile' %}">profile</a>
+            {% elif user.username|lower == "mochacafe" %}
+              <a class="nav-link scrollto" href="{% url 'login' %}">login</a>
             {% endif %}
+          {% else %}
+          <a class="nav-link scrollto" href="{% url 'login' %}">login</a>
+          {% endif %}
+          
           </li>
           <li>
             {% if user.is_authenticated %}
@@ -94,11 +87,11 @@
               <a href="{% url 'logout' %}" class="nav-link" onclick="return confirm('Are you sure you want to log out?');">Logout</a>
               {% elif user.customer %}
               <a href="{% url 'logout' %}" class="nav-link" onclick="return confirm('Are you sure you want to log out?');">Logout</a>
-              {% else %}
-                <a class="nav-link scrollto" href="#">Default</a>
-              {% endif %}
+              {% elif user.username|lower == "mochacafe" %}
+              <a class="nav-link scrollto" href="{% url 'login' %}">login</a>
+            {% endif %}
             {% else %}
-         
+            <a class="nav-link scrollto" href="{% url 'login' %}">login</a>
             {% endif %}
           </li>
         

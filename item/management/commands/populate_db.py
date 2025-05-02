@@ -1,21 +1,15 @@
-# --- This section was commented out in the previous view, ---
-# --- but this fix addresses the UNIQUE constraint error ---
-from django.core.management.base import BaseCommand
-from faker import Faker
-# Make sure Table model is imported if this section is active
-from item.models import Table, Item, Category, Extra # Added Table here
-import qrcode
-from io import BytesIO
-from django.core.files.base import ContentFile
-from decimal import Decimal # Added Decimal import
-from django.contrib.auth.models import User # Added User import
+# from django.core.management.base import BaseCommand
+# from faker import Faker
+# from item.models import Table
+# import qrcode
+# from io import BytesIO
+# from django.core.files.base import ContentFile
 
-# class Command(BaseCommand): # Keep only one Command class definition
+# class Command(BaseCommand):
 #     help = 'Populates the Table model with dummy data and generates QR codes'
 
 #     def handle(self, *args, **kwargs):
 #         fake = Faker()
-#         self.stdout.write("Starting table population...") # Added status message
 
 #         for i in range(15):  # Adjust the range for the number of tables
 #             table_number = f"T-{i+1}"  # Unique table number
@@ -80,7 +74,6 @@ class Command(BaseCommand): # Make sure there's only ONE Command class definitio
         self.stdout.write("Starting item population with specified categories...")
 
         # --- 1. Get or Create Categories ---
-        # ... (category creation logic remains the same) ...
         categories_data = [
             {'name': 'Break Fast', 'description': 'Morning meals to start your day.'},
             {'name': 'Extras', 'description': 'Side items or add-ons.'}, # Note: Distinct from the 'Extra' model for item modifications
@@ -109,7 +102,6 @@ class Command(BaseCommand): # Make sure there's only ONE Command class definitio
 
 
         # --- 2. Get or Create Extras (Model for item add-ons) ---
-        # ... (extras creation logic remains the same) ...
         extras_data = [
             {'name': 'Extra Espresso Shot', 'price': Decimal('1.50')},
             {'name': 'Soy Milk', 'price': Decimal('0.75')},
@@ -255,9 +247,3 @@ class Command(BaseCommand): # Make sure there's only ONE Command class definitio
 
         self.stdout.write(self.style.SUCCESS("Finished populating items with specified categories."))
 
-    # --- Optional: Method for table population ---
-    # def populate_tables(self):
-    #     fake = Faker()
-    #     self.stdout.write("Starting table population...")
-    #     # ... (Paste the corrected table population loop here) ...
-    #     self.stdout.write(self.style.SUCCESS("Finished table population."))

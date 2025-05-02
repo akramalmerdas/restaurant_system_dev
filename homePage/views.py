@@ -257,19 +257,27 @@ def delete_order_item(request, item_id):
 @csrf_exempt
 def submitOrder(request):
     if request.method == "POST":
+     
         # Get the order data from the session
         order_data = request.session.get('order', [])
-        
+     
         # Ensure there are items in the session
         if not order_data:
             return JsonResponse({"status": "error", "message": "No items in the cart."}, status=400)
-        
+       
         # Fetch or create the "Pending" order status
         pending_status, created = OrderStatus.objects.get_or_create(name='readytoprint')
- 
-        table_number=request.session.get('table_number', None)
-        orderTable = Table.objects.get(number=table_number)
+        table_number = request.session.get('table_number', None)
       
+        if table_number:
+            orderTable = Table.objects.get(number=table_number)
+            # orderTable = Table.objects.get(number=table_number)
+        else:
+            orderTable = Table.objects.get(number='Take Away')
+  
+      
+        
+    
         
         if request.user.is_authenticated:
           try:
@@ -298,7 +306,7 @@ def submitOrder(request):
             
     
       
-     
+        print ('this is the before the amount  ');
         total_amount = 0  # Initialize the total amount for the order
         orderTable.status = 'occupied'
         orderTable.save()

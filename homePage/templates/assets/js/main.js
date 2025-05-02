@@ -471,6 +471,7 @@ if (confirmButton){
     // Send a POST request to submit the order
     try {
    //    await printOrder();  
+
         const response = await fetch('/submit_order/', {
             method: 'POST',
             headers: {
@@ -479,8 +480,8 @@ if (confirmButton){
             },
             body: JSON.stringify({ items: JSON.parse(sessionStorage.getItem('order')) })  // Fetch order from sessionStorage
         });
-  
-        if (response.ok) {
+     
+         if (response.ok) {
            
             alert('Order submitted successfully!');
             setTimeout(() => {
