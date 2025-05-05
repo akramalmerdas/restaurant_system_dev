@@ -58,11 +58,11 @@
 
 # --- Item Population Section (Starts Here) ---
 # Ensure necessary imports are at the top if combining logic
-# import random # Already likely imported if combining
-# from decimal import Decimal # Already imported above
-# from django.core.management.base import BaseCommand # Already imported above
-# from django.contrib.auth.models import User # Already imported above
-# from item.models import Item, Category, Extra, Table # Ensure all needed models are imported
+import random # Already likely imported if combining
+from decimal import Decimal # Already imported above
+from django.core.management.base import BaseCommand # Already imported above
+from django.contrib.auth.models import User # Already imported above
+from item.models import Item, Category, Extra, Table # Ensure all needed models are imported
 
 class Command(BaseCommand): # Make sure there's only ONE Command class definition in the file
     help = 'Populates Items, Categories, Extras (and optionally Tables) in the database'

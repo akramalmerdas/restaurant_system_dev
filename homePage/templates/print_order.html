@@ -41,8 +41,13 @@
       <ul>
         {% for item in order.orderitem_set.all %}
         <li>{{ item.quantity }} x {{ item.item.name }} - {{ item.price }} RWF</li>
-        <li>{{ item.selected_extras.name }} </li>
+        {% for extra in item.selected_extras.all %}
+            <li>+ {{ extra.name }}  {{ extra.price }}</li>
+        {% empty %}
+            <li>No extras</li>
+        {% endfor %}
     {% endfor %}
+    
       </ul>
     <hr>
 <p><strong>Total:</strong>{{ order.total_amount }} RWF</p>
