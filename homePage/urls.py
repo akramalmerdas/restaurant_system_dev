@@ -33,4 +33,5 @@ urlpatterns =[
     path('tables/<int:table_id>/delete/', views.delete_table, name='delete_table'),
     path('tables/<int:table_id>/edit/', views.edit_table, name='edit_table'),
     path('tables/<int:table_id>/history/', views.get_table_history, name='get_table_history'),
+    path('order/update-item/', views.updateOrderItem, name='update_order_item'),
 ]

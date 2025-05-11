@@ -124,7 +124,9 @@ def orderDetails(request):
             'name': item['name'],
             'quantity': item['quantity'],
             'unit_price': item['price'],
-            'extras': ', '.join(extra['name'] for extra in extras) if extras else 'None',
+            # Send extras as JSON string (id and name)
+            'extras': json.dumps([{'id': extra['id'], 'name': extra['name']} for extra in extras]) if extras else '[]',
+            'extras_names': ', '.join(extra['name'] for extra in extras) if extras else 'None',  # <-- add this line
             'extra_price': extra_price,
             'subtotal': subtotal,
             'table':item['table']
@@ -216,7 +218,7 @@ def addToOrder(request):
 
         # Add the new order item to the session order list
         order.append(order_item)
-
+        print (str(order_item))
         # Save the updated order to the session
         request.session['order'] = order
 
@@ -249,7 +251,49 @@ def delete_order_item(request, item_id):
     # Redirect back to the order review page
     return redirect('orderDetails')  
 
+######################### update order ######################################
 
+@csrf_exempt
+def updateOrderItem(request):
+    if request.method == "POST":
+        item_id = request.POST.get('item_id')
+        quantity = int(request.POST.get('quantity', 1))
+        extras_raw = request.POST.get('extras', '')
+
+        order = request.session.get('order', [])
+        for item in order:
+            if str(item['item_id']) == str(item_id):
+                item['quantity'] = quantity
+                # Only update extras if provided
+                if extras_raw:
+                    extras = []
+                    for extra_id in extras_raw.split(','):
+                        extra_id = extra_id.strip()
+                        # Skip empty or invalid IDs
+                        if not extra_id or not extra_id.isdigit():
+                            continue
+                        try:
+                            extra_obj = Extra.objects.get(id=int(extra_id))
+                            extras.append({
+                                'id': extra_obj.id,
+                                'name': extra_obj.name,
+                                'price': float(extra_obj.price),
+                                'quantity': 1  # Or get quantity from the form if needed
+                            })
+                        except Extra.DoesNotExist:
+                            continue
+                    item['extras'] = extras
+                # Always recalculate subtotal based on current extras
+                extras_for_calc = item.get('extras', [])
+                item['subtotal'] = item['price'] * quantity + sum(
+                    extra.get('price', 0) * extra.get('quantity', 1) for extra in extras_for_calc
+                )
+                break
+
+        request.session['order'] = order
+        return redirect('orderDetails')
+
+    return redirect('orderDetails')
 # ###################### submit order ########################################
 
    
@@ -327,16 +371,22 @@ def submitOrder(request):
             order_item.save()
         
             # Add the selected extras to the OrderItem
-            for extra_data in item_data['extras']:
-                extra = Extra.objects.get(id=extra_data['id'])  # Fetch extra from the database
-                order_item.selected_extras.add(extra, through_defaults={'quantity': extra_data['quantity']})
-                
-                # Create a corresponding OrderItemExtra instance
-                OrderItemExtra.objects.create(
-                    order_item=order_item,
-                    extra=extra,
-                    quantity=extra_data['quantity']  # Use the quantity from the session data
-                )
+            # Safeguard: Only process extras if they are dicts with 'id' and 'quantity'
+            extras_list = item_data.get('extras', [])
+            if isinstance(extras_list, list):
+                for extra_data in extras_list:
+                    if (
+                        isinstance(extra_data, dict)
+                        and 'id' in extra_data
+                        and 'quantity' in extra_data
+                    ):
+                        extra = Extra.objects.get(id=extra_data['id'])
+                        order_item.selected_extras.add(extra, through_defaults={'quantity': extra_data['quantity']})
+                        OrderItemExtra.objects.create(
+                            order_item=order_item,
+                            extra=extra,
+                            quantity=extra_data['quantity']
+                        )
             order_item.save()
             # Update the running total amount
             total_amount += order_item.price
@@ -384,7 +434,8 @@ def printOrder(request):
             'name': item['name'],
             'quantity': item['quantity'],
             'unit_price': item['price'],
-            'extras': ', '.join(extra['name'] for extra in extras) if extras else 'None',
+            'extras': extras if extras else 'None',
+            # 'extras': ', '.join(extra['name'] for extra in extras) if extras else 'None',
             'extra_price': extra_price,
             'subtotal': subtotal,
             'table':item['table']

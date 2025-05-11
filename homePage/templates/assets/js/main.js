@@ -727,3 +727,44 @@ function getStatusClass(status) {
             return 'bg-secondary';
     }
 }
+
+
+
+/////////////////////////////////// menu search bar ///////////////////////
+document.addEventListener('DOMContentLoaded', function () {
+  const searchInput = document.getElementById('menu-search');
+  if (searchInput) {
+    let menuIsotope = null;
+    const menuContainer = document.querySelector('.menu-container');
+    if (window.Isotope && menuContainer) {
+      // Always create or get the Isotope instance
+      menuIsotope = Isotope.data(menuContainer) || new Isotope(menuContainer, {
+        itemSelector: '.menu-item',
+        layoutMode: 'fitRows'
+      });
+    }
+
+    searchInput.addEventListener('input', function () {
+      const query = this.value.toLowerCase();
+      if (menuIsotope) {
+        menuIsotope.arrange({
+          filter: function(itemElem) {
+            const nameElem = itemElem.querySelector('.item-name');
+            const name = nameElem ? nameElem.textContent.toLowerCase() : '';
+            return name.includes(query);
+          }
+        });
+      } else {
+        // fallback if Isotope is not available
+        document.querySelectorAll('.menu-item').forEach(function (item) {
+          const name = item.querySelector('.item-name')?.textContent.toLowerCase() || '';
+          if (name.includes(query)) {
+            item.style.display = '';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      }
+    });
+  }
+});
