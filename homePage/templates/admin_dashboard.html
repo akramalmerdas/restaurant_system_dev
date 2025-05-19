@@ -136,6 +136,7 @@
                                             {% elif order.order_status.name == 'served' %}badge-served
                                             {% elif order.order_status.name == 'completed' %}badge-completed
                                             {% elif order.order_status.name == 'delivered' %}badge-served
+                                            {% elif order.order_status.name == 'printing' %}badge-pending
                                             {% else %}bg-secondary{% endif %}">{{ order.order_status.get_name_display }}</span>
                                     </td>
                                     <td>
@@ -154,6 +155,7 @@
                                                     <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Served">Served</a></li>
                                                     <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Delivered">Delivered</a></li>
                                                     <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Completed">Completed</a></li>
+                                                    <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Printing">Printing</a></li>
                                                 </ul>
                                             </div>
                                             <button class="btn btn-action btn-delete btn-delete" data-order-id="{{ order.id }}">

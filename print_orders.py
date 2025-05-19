@@ -1,16 +1,17 @@
 import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MochaCafe.settings')  
 
-from django.utils.timezone import now
 import django
 import webbrowser
 
 django.setup()
+
 from item.models import Order, OrderStatus
+
 
 class PrintOrders:
     def __init__(self):
-        self.base_url = "http://localhost:8000/print_order_view/"  # Replace with your actual server URL
+        self.base_url = "http://localhost:8000/print_order_view/"  # Adjust if needed
 
     def fetch_orders(self):
         """Fetch all orders with 'readytoprint' status."""
@@ -25,15 +26,15 @@ class PrintOrders:
         except Exception as e:
             print(f"Failed to open print page for Order ID {order.id}: {e}")
 
-    # def update_order_status(self, order):
-    #     """Update the order status to 'printed'."""
-    #     try:
-    #         printed_status = OrderStatus.objects.get(name="printed")
-    #         order.order_status = printed_status
-    #         order.save()
-    #         print(f"Updated status to 'printed' for Order ID: {order.id}")
-    #     except Exception as e:
-    #         print(f"Failed to update status for Order ID {order.id}: {e}")
+    def update_order_status_to_printing(self, order):
+        """Update the order status to 'printing'."""
+        try:
+            printing_status = OrderStatus.objects.get(name="printing")
+            order.order_status = printing_status
+            order.save()
+            print(f"Updated status to 'printing' for Order ID: {order.id}")
+        except Exception as e:
+            print(f"Failed to update status for Order ID {order.id}: {e}")
 
     def run(self):
         """Fetch, print, and update orders."""
@@ -43,10 +44,10 @@ class PrintOrders:
             return
 
         for order in orders:
-
             print(f"Processing Order ID: {order.id}")
             self.print_order(order)
-            # self.update_order_status(order)
+            self.update_order_status_to_printing(order)
+
 
 if __name__ == "__main__":
     try:

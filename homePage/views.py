@@ -623,7 +623,9 @@ def update_order_status(request, order_id):
             elif statues == 'Delivered':
                 new_status_name = 'delivered'  
             elif statues == 'Completed':
-                new_status_name = 'completed'        
+                new_status_name = 'completed'
+            elif statues == 'Printing':
+                new_status_name = 'printing'              
             
             # Get the order and the new status
             order = get_object_or_404(Order, id=order_id)

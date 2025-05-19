@@ -73,6 +73,7 @@ class Customer(models.Model):
 class OrderStatus(models.Model):
     statues=[    ('readytoprint', 'Ready to Print'),
         ('printed', 'Printed'),
+         ('printing', 'Printing'),
         ('completed','Completed'),('pending','Pending'),('delivered','Delivered'),('served','Served')]
     name = models.CharField(max_length=100,choices=statues,default='readytoprint')
     description = models.TextField(null=True, blank=True)
@@ -84,7 +85,7 @@ class OrderStatus(models.Model):
 
     class Meta:
 
-      verbose_name_plural = 'Order Status'     
+      verbose_name_plural = 'Order Status'      
 
 
 
