@@ -1,6 +1,49 @@
+# === Python compiled files ===
 __pycache__/
-*.pyc
-db.sqlite3
-.env
-venv/
+*.py[cod]
+*$py.class
 
+# === Virtual environment ===
+venv/
+env/
+ENV/
+.venv/
+
+# === Django stuff ===
+*.log
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+
+# === Secrets and environment variables ===
+.env
+.env.*
+
+# === VS Code & IDEs ===
+.vscode/
+.idea/
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+
+# === Migrations (optional: you may want to keep them) ===
+# Uncomment if you don’t want to track migrations
+# **/migrations/
+# !**/migrations/__init__.py
+
+# === Node (if using npm/yarn for frontend) ===
+node_modules/
+
+# === Test coverage ===
+htmlcov/
+.coverage
+.tox/
+.nox/
+.pytest_cache/
+.cache/
+
+# === Others ===
+*.bak
+*.swp
