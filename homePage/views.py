@@ -196,7 +196,23 @@ def addToOrder(request):
         # Convert item price (Decimal) to float for JSON serialization
         item_price = float(item.price)
 
-        # Create a new order item structure
+        # Check if the item has any extras associated with it in the database
+        has_extras_in_db = item.extras.exists()
+
+        # If the item doesn't have extras in the database and no extras were selected
+        if not has_extras_in_db and not extras_data:
+            # Check if the item is already in the order
+            for existing_item in order:
+                if existing_item['item_id'] == item.id and not existing_item.get('extras'):
+                    # Item already exists without extras, just update the quantity
+                    existing_item['quantity'] += quantity
+                    # Update the subtotal
+                    existing_item['subtotal'] = existing_item['price'] * existing_item['quantity']
+                    # Save the updated order to the session
+                    request.session['order'] = order
+                    return JsonResponse({"status": "success", "message": "Item quantity updated"})
+        
+        # Create a new order item structure (for items with extras or new items)
         order_item = {
             'item_id': item.id,
             'name': item.name,
@@ -221,8 +237,6 @@ def addToOrder(request):
         print (str(order_item))
         # Save the updated order to the session
         request.session['order'] = order
-
-        
 
         return JsonResponse({"status": "success", "message": "Item added to order"})
     
@@ -286,7 +300,7 @@ def updateOrderItem(request):
                 # Always recalculate subtotal based on current extras
                 extras_for_calc = item.get('extras', [])
                 item['subtotal'] = item['price'] * quantity + sum(
-                    extra.get('price', 0) * extra.get('quantity', 1) for extra in extras_for_calc
+                    extra.get('price', 0) * quantity for extra in extras_for_calc
                 )
                 break
 
@@ -321,7 +335,6 @@ def submitOrder(request):
   
       
         
-    
         
         if request.user.is_authenticated:
           try:

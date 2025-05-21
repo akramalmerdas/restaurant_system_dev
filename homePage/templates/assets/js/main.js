@@ -446,14 +446,17 @@ if (addButton){
         });
   
         if (response.ok) {
-        // First, show the alert
-        alert("Item added to order successfully!");
-    
-        // Then, redirect after a short delay to ensure the alert is shown
-        setTimeout(() => {
-            window.location.href = '/order_details/';
-        }, 500); // 500ms delay (you can adjust this time as needed)
-    } else {
+          // Replace alert with custom success dialog
+          showSuccessDialog({
+              title: 'Success!',
+              message: 'the Item was added to your order successfully!',
+              okButtonText: 'OK',
+              onOk: function() {
+                  window.location.href = '/order_details/';
+              },
+              // autoHideDelay: 10000 // Optional: auto-hide after 2 seconds
+          });
+      }else {
             alert("Error adding item to order.");
         }
     } catch (error) {

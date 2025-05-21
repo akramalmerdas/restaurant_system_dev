@@ -1,0 +1,106 @@
+<!-- Custom Success Dialog -->
+<style>
+  #customSuccessModal .modal-dialog {
+    /* You can adjust max-width for a smaller dialog if modal-sm isn't enough */
+    /* max-width: 350px; */
+  }
+  #customSuccessModal .modal-content {
+    background-color: #f8f9fa; /* Light background color */
+    border-radius: 20px; /* More pronounced rounding */
+    border: none;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15); /* A bit more distinct shadow */
+    text-align: center; /* Center all content within the modal */
+    padding: 2rem 1.5rem; /* Generous padding for content */
+    position: relative; /* For absolute positioning of a custom close button if needed */
+  }
+
+  /* Hide original header and footer */
+  #customSuccessModal .modal-header,
+  #customSuccessModal .modal-footer {
+    display: none;
+  }
+
+  #customSuccessModal .modal-body {
+    padding: 0; /* Remove default body padding as content padding is on modal-content */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Style for a custom close button (optional, if you want one without a header) */
+  #customSuccessModal .custom-close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: #6c757d; /* Muted color */
+    line-height: 1;
+    opacity: 0.7;
+  }
+  #customSuccessModal .custom-close-button:hover {
+    opacity: 1;
+    color: #000;
+  }
+
+  #customSuccessModal .success-icon {
+    font-size: 3.5rem; /* Large icon */
+    color: #28a745; /* Success green */
+    margin-bottom: 1.5rem;
+    display: block; /* Make it a block to take up space */
+    text-align: center;
+  }
+
+  #customSuccessModal #customSuccessModalMessage {
+    font-size: 1.15rem; /* Slightly larger message text */
+    color: #343a40; /* Darker text for readability */
+    margin-bottom: 1.5rem; /* Space before the OK button */
+    width: 100%;
+    text-align: center;
+  }
+
+  #customSuccessModal #customSuccessModalOkButton {
+    background-color: #28a745; /* Match icon color */
+    border-color: #28a745;
+    color: white;
+    padding: 0.6rem 2rem; /* Comfortable padding */
+    border-radius: 50px; /* Pill-shaped button */
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out;
+    margin-top: 0.5rem;
+  }
+  #customSuccessModal #customSuccessModalOkButton:hover {
+    background-color: #218838; /* Darker green on hover */
+    border-color: #1e7e34;
+  }
+
+  /* Icon container to ensure proper centering */
+  #customSuccessModal .icon-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+</style>
+
+<div class="modal fade" id="customSuccessModal" tabindex="-1" aria-labelledby="customSuccessModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <!-- <button type="button" class="custom-close-button" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+       -->
+      <div class="modal-body">
+        <div class="icon-container">
+          <svg class="success-icon" xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+          </svg>
+        </div>
+        
+        <p id="customSuccessModalMessage">Operation completed successfully!</p>
+        
+        <button type="button" class="btn" id="customSuccessModalOkButton" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
