@@ -72,7 +72,7 @@ body {
 }
 
 .badge-pending {
-    background-color: #ffc107;
+    background-color: #dc3545;
     color: #000;
 }
 
@@ -93,6 +93,11 @@ body {
 .badge-printed {
     background-color: #6f42c1; 
     color: #fff;
+}
+
+.badge-printing {
+    background-color: #ffc107;
+    color: #000;
 }
 
 .btn-action {

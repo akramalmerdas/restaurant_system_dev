@@ -136,7 +136,7 @@
                                             {% elif order.order_status.name == 'served' %}badge-served
                                             {% elif order.order_status.name == 'completed' %}badge-completed
                                             {% elif order.order_status.name == 'delivered' %}badge-served
-                                            {% elif order.order_status.name == 'printing' %}badge-pending
+                                            {% elif order.order_status.name == 'printing' %}badge-printing
                                             {% else %}bg-secondary{% endif %}">{{ order.order_status.get_name_display }}</span>
                                     </td>
                                     <td>

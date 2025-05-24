@@ -339,14 +339,19 @@ def submitOrder(request):
             return JsonResponse({"status": "error", "message": "No items in the cart."}, status=400)
        
         # Fetch or create the "Pending" order status
-        pending_status, created = OrderStatus.objects.get_or_create(name='readytoprint')
+        pending_status, created = OrderStatus.objects.get_or_create(name='pending')
+        
         table_number = request.session.get('table_number', None)
-      
+       
         if table_number:
+ 
             orderTable = Table.objects.get(number=table_number)
             # orderTable = Table.objects.get(number=table_number)
+         
         else:
+      
             orderTable = Table.objects.get(number='Take Away')
+            
   
       
         
