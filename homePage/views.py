@@ -308,6 +308,21 @@ def updateOrderItem(request):
         return redirect('orderDetails')
 
     return redirect('orderDetails')
+
+
+######################### empty order ######################################
+
+
+def emptyOrder(request):
+    print('this is the empty function ')
+    # Check if 'order' exists in session and remove it
+    if 'order' in request.session:
+        request.session.pop('order', None)
+        # Optionally mark the session as modified
+        request.session.modified = True
+
+    # Option 1: Redirect to another page after clearing
+    return JsonResponse({"status": "success", "message": "Cart was emptied successfully."}) # Replace 'home' with your actual URL name
 # ###################### submit order ########################################
 
    

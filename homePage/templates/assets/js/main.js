@@ -301,25 +301,7 @@ async function fetchExtras(menuItemId, price) {
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-// Helper function to get CSRF token from cookies
-// function getCookie(name) {
-//     let cookieValue = null;
-//     if (document.cookie && document.cookie !== '') {
-//         const cookies = document.cookie.split(';');
-//         for (let i = 0; i < cookies.length; i++) {
-//             const cookie = cookies[i].trim();
-//             if (cookie.substring(0, name.length + 1) === (name + '=')) {
-//                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-//                 break;
-//             }
-//         }
-//     }
-//     return cookieValue;
-// }
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -464,46 +446,6 @@ if (addButton){
     }
   });
 }
-
-///////////////////////////////////////////// confirm order button //////////////////////////////////////////////
-const confirmButton = document.getElementById('confirm-order-btn');
-if (confirmButton){
-  confirmButton.addEventListener('click', async function() {
-
-  
-    // Send a POST request to submit the order
-    try {
-   //    await printOrder();  
-
-        const response = await fetch('/submit_order/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token if required
-            },
-            body: JSON.stringify({ items: JSON.parse(sessionStorage.getItem('order')) })  // Fetch order from sessionStorage
-        });
-     
-         if (response.ok) {
-           
-            alert('Order submitted successfully!');
-            setTimeout(() => {
-              window.location.href = '/';
-          }, 500);
-         
-           
-
-        } else {
-            alert('Failed to submit the order. Please try again later.');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('There was an error submitting your order.');
-    }
-  });
-}
-
-
 
 
 
