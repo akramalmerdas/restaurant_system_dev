@@ -25,47 +25,351 @@
   <link href="{% static "vendor/glightbox/css/glightbox.min.css" %}" rel="stylesheet">
   <link href="{% static "vendor/swiper/swiper-bundle.min.css" %}" rel="stylesheet">
 
-  <!-- Template Main CSS File -->
+  <!-- Template Main CSS Files -->
   <link href="{% static "css/style.css" %}" rel="stylesheet">
   <link href="{% static "css/meal_page.css" %}" rel="stylesheet">
 
-  <!-- =======================================================
-  * Template Name: Delicious
-  * Template URL: https://bootstrapmade.com/delicious-free-restaurant-bootstrap-theme/
-  * Updated: May 16 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
+  <style>
+    /* Enhanced styling for meal page */
+    body {
+      background-color: #f8f9fa;
+    }
+    
+    .meal-container {
+      padding: 3rem 0;
+    }
+    
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      color: #5c5c5c;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    
+    .back-link:hover {
+      color: #ffb03b;
+    }
+    
+    .back-link i {
+      margin-right: 0.5rem;
+    }
+    
+    .meal-card {
+      background: #fff;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+    
+    .meal-image-container {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f5f5f5;
+      overflow: hidden;
+      border-radius: 15px 0 0 15px;
+    }
+    
+    .meal-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .placeholder-image {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #aaa;
+      padding: 2rem;
+      text-align: center;
+    }
+    
+    .placeholder-image i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    
+    .meal-details {
+      padding: 2rem !important;
+    }
+    
+    .breadcrumb {
+      background: transparent;
+      padding: 0;
+      margin-bottom: 1.5rem;
+    }
+    
+    .breadcrumb-item a {
+      color: #ffb03b;
+      text-decoration: none;
+    }
+    
+    .breadcrumb-item.active {
+      color: #6c757d;
+    }
+    
+    .meal-title {
+      font-family: 'Satisfy', cursive;
+      color: #444;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .meal-description {
+      color: #6c757d;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    
+   
+    
+    
+    .order-section {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 10px;
+    }
+    
+    .form-label {
+      color: #444;
+      margin-bottom: 0.5rem;
+    }
+    
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      background: white;
+      border-radius: 50px;
+      overflow: hidden;
+      width: fit-content;
+      border: 1px solid #ddd;
+    }
+    
+    .quantity-button {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8f9fa;
+      cursor: pointer;
+      font-size: 1.2rem;
+      font-weight: bold;
+      user-select: none;
+      transition: all 0.2s;
+    }
+    
+    .quantity-button:hover {
+      background: #e9ecef;
+    }
+    
+    .quantity-input {
+      width: 50px;
+      text-align: center;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 500;
+      padding: 0.5rem;
+    }
+    
+    .quantity-input:focus {
+      outline: none;
+    }
+    
+    .extras-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+    
+    .extra-item {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+    }
+    
+    .extra-item:hover {
+      border-color: #ffb03b;
+    }
+    
+    .extra-item.selected {
+      background: #ffb03b;
+      color: white;
+      border-color: #ffb03b;
+    }
+    
+    .extra-item-name {
+      margin-right: 0.5rem;
+    }
+    
+    .extra-item-price {
+      font-weight: 600;
+      color: #ffb03b;
+    }
+    
+    .extra-item.selected .extra-item-price {
+      color: white;
+    }
+    
+    .notes-section textarea {
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      resize: none;
+    }
+    
+    .notes-section textarea:focus {
+      border-color: #ffb03b;
+      box-shadow: 0 0 0 0.2rem rgba(255, 176, 59, 0.25);
+    }
+    
+    .order-summary {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #ddd;
+    }
+    
+    .total-section {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .total-label {
+      font-size: 1rem;
+      color: #6c757d;
+      margin-bottom: 0.25rem;
+    }
+    
+    #totalPrice {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #444;
+    }
+    
+    #addButton {
+      background-color: #ffb03b;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s;
+    }
+    
+    #addButton:hover {
+      background-color: #e69c2e;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    #addButton i {
+      margin-right: 0.5rem;
+      font-size: 1.1rem;
+    }
+    
+    /* Footer styling */
+    #footer {
+      background: #35322d;
+      color: #fff;
+      font-size: 14px;
+      text-align: center;
+      padding: 30px 0;
+    }
+    
+    #footer h3 {
+      font-family: 'Satisfy', cursive;
+      font-size: 36px;
+      font-weight: 700;
+      color: #ffb03b;
+      position: relative;
+      padding: 0;
+      margin: 0 0 15px 0;
+    }
+    
+    #footer .social-links a {
+      font-size: 18px;
+      display: inline-block;
+      background: #46423b;
+      color: #fff;
+      line-height: 1;
+      padding: 8px 0;
+      margin-right: 4px;
+      border-radius: 50%;
+      text-align: center;
+      width: 36px;
+      height: 36px;
+      transition: 0.3s;
+    }
+    
+    #footer .social-links a:hover {
+      background: #ffb03b;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .meal-card .row.g-0 {
+        flex-direction: column !important;
+      }
+      .meal-image-container {
+        height: 220px;
+        border-radius: 15px 15px 0 0;
+        margin-bottom: 1rem;
+      }
+      .meal-details {
+        padding: 1.2rem !important;
+      }
+      .meal-title {
+        font-size: 2rem;
+      }
+      .order-section {
+        padding: 1rem;
+      }
+      .quantity-control,
+      .extras-container,
+      .notes-section,
+      .order-summary {
+        margin-bottom: 1.2rem;
+      }
+      .meal-card {
+        border-radius: 15px;
+      }
+      .col-md-4,
+      .col-md-8 {
+        max-width: 100%;
+        flex: 0 0 100%;
+      }
+    }
+  </style>
 </head>
 
 <body>
-
-  <!-- ======= Top Bar ======= -->
-
-
-  <!-- ======= Header ======= -->
-
-
-
-  <!-- ======= Hero Section ======= -->
-
-
   <main id="main">
-
-    <!-- ======= About Section ======= -->
- 
-    <section id="about" class="about">
+    <section class="meal-container">
       <div class="container">
-        <div class="home-button-container mb-4">
-          <a href="{% url 'index' %}" class="home-button">
-            <i class="bi bi-house-fill"></i>
-            Back to Home
-          </a>
-        </div>
+        <a href="{% url 'index' %}" class="back-link">
+          <i class="bi bi-arrow-left"></i> Back to Menu
+        </a>
+        
         <div class="row justify-content-center">
           <div class="col-lg-10">
             <div class="meal-card">
-              <div class="row">
+              <div class="row g-0">
                 <div class="col-md-4">
                   <div class="meal-image-container">
                     {% if item.image %}
@@ -73,14 +377,14 @@
                     {% else %}
                       <div class="placeholder-image">
                         <i class="bi bi-image"></i>
-                        <p>no Image for this item yet</p>
+                        <p>No image available</p>
                       </div>
                     {% endif %}
                   </div>
                 </div>
                 <div class="col-md-8">
-                  <div class="meal-details p-4">
-                    <nav aria-label="breadcrumb" class="mb-3">
+                  <div class="meal-details">
+                    <nav aria-label="breadcrumb">
                       <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'index' %}">Menu</a></li>
                         <li class="breadcrumb-item active">{{ item.name }}</li>
@@ -89,23 +393,23 @@
                     
                     <h2 class="meal-title">{{ item.name }}</h2>
                     <p class="meal-description">{{ item.description }}</p>
-                    <div class="meal-price-tag mb-4">
-                      <span class="price">{{ item.price }} RWF</span>
+                    <div class="meal-price-label mb-3">
+                      <span class="fw-bold" style="font-size: 1.5rem; color: #222;">{{ item.price }} RWF</span>
                     </div>
 
                     <div class="order-section">
-                      <div class="quantity-container mb-4">
+                      <div class="mb-4">
                         <label class="form-label fw-bold">Quantity</label>
-                        <div class="quantity-control d-flex align-items-center">
+                        <div class="quantity-control">
                           <div class="quantity-button" id="decrement">-</div>
                           <input type="text" class="quantity-input" id="quantity" value="1" readonly>
                           <div class="quantity-button" id="increment">+</div>
                         </div>
                       </div>
 
-                      <div class="extras-section mb-4">
+                      <div class="mb-4">
                         <label class="form-label fw-bold">Extras</label>
-                        <div id="extras-container" class="mt-2"></div>
+                        <div id="extras-container" class="extras-container"></div>
                       </div>
 
                       <div class="notes-section mb-4">
@@ -118,7 +422,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                           <div class="total-section">
                             <span class="total-label">Total:</span>
-                            <h3 id="totalPrice" class="mb-0">{{ item.price }} RWF</h3>
+                            <h3 id="totalPrice">{{ item.price }} RWF</h3>
                           </div>
                           <button id="addButton" class="btn btn-primary" 
                             data-url="{% url 'add_to_order' %}" 
@@ -135,21 +439,8 @@
           </div>
         </div>
       </div>
-    </section><!-- End About Section -->
-
-
-
- 
-
-   
-
-
-
-
-  
-    
-
-  </main><!-- End #main -->
+    </section>
+  </main>
 
   <script>
     document.addEventListener('DOMContentLoaded', async function() {
@@ -168,68 +459,29 @@
       <div class="social-links">
         <a href="https://www.instagram.com/p/CCh5q3SAd6B/?igshid=1bvk0v1yjttl6&img_index=1" class="facebook"><i class="bx bxl-facebook"></i></a>
         <a href="https://www.instagram.com/p/CCh5q3SAd6B/?igshid=1bvk0v1yjttl6&img_index=1" class="instagram"><i class="bx bxl-instagram"></i></a>
-
       </div>
       <div class="copyright">
         &copy; Copyright <strong><span>Delicious</span></strong>. All Rights Reserved
       </div>
       <div class="credits">
-        <!-- All the links in the footer should remain intact. -->
-        <!-- You can delete the links only if you purchased the pro version. -->
-        <!-- Licensing information: https://bootstrapmade.com/license/ -->
-        <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/delicious-free-restaurant-bootstrap-theme/ -->
         Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
       </div>
     </div>
   </footer><!-- End Footer -->
 
-  
-
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Vendor JS Files (Mimicking base.html structure for consistency) -->
+  <!-- Vendor JS Files -->
   <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
   <script src="{% static 'vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
   <script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
-  <!-- <script src="{% static 'vendor/php-email-form/validate.js' %}"></script> --> {# Only if you use PHP email form features on this page #}
 
   <!-- Template Main JS File -->
   <script src="{% static "js/main.js" %}"></script>
   <script src="{% static 'js/custom_success_dialog.js' %}"></script>
 
-  <!-- You might have other page-specific JavaScript here -->
-  <script>
-  // Example: If your "Add to Order" button logic is here,
-  // it can now safely call showSuccessDialog()
-  // document.addEventListener('DOMContentLoaded', function() {
-  //   const addButton = document.getElementById('addButton');
-  //   if(addButton) {
-  //     addButton.addEventListener('click', function() {
-  //       // ... your logic for adding to order ...
-  //       // Then show the dialog:
-  //       // showSuccessDialog("Item added successfully!"); 
-  //     });
-  //   }
-  // });
-  </script>
-{% include "custom_success_dialog.html" %}
+  {% include "custom_success_dialog.html" %}
 </body>
-
 </html>
-<!--Start of Tawk.to Script->
-<script type="text/javascript">
-  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-  (function(){
-  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-  s1.async=true;
-  s1.src='https://embed.tawk.to/667931db9d7f358570d2abfd/1i14mlgv3';
-  s1.charset='UTF-8';
-  s1.setAttribute('crossorigin','*');
-  s0.parentNode.insertBefore(s1,s0);
-  })();
-  </script>
-  <!-End of Tawk.to Script-->
-</body>
 
-</html>

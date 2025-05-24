@@ -2221,6 +2221,69 @@ th:nth-child(1), td:nth-child(1) {
   text-decoration: underline; /* Add underline on hover */
 }
 
+/* Floating Cart Button Styles */
+.floating-cart-btn {
+  position: fixed;
+  bottom: 60px;
+  right: 30px;
+  z-index: 1050;
+  background: #20c997;
+  color: #fff;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  font-size: 2rem;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+  border: none;
+  outline: none;
+}
+
+.floating-cart-btn .cart-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #dc3545;
+  color: #fff;
+  border-radius: 50%;
+  padding: 2px 7px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  line-height: 1;
+  min-width: 22px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  pointer-events: none;
+}
+
+.floating-cart-btn:hover {
+  background: var(--color-orange-medium, #ffa012);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+  transform: translateY(-4px) scale(1.05);
+  text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .floating-cart-btn {
+    bottom: 30px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+  .floating-cart-btn .cart-badge {
+    top: 5px;
+    right: 5px;
+    font-size: 0.8rem;
+    min-width: 18px;
+    padding: 1px 5px;
+  }
+}
+
 /*************************************** Profile Page Styles **********************************/
 .profile-card-header {
   background-color: #f8f9fa;
