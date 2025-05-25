@@ -148,7 +148,7 @@
         padding: 10px;
     }
 
-    .btn-primary, .btn-secondary {
+    .btn-primary, .btn-secondary, .btn-custom-empty, .btn-custom-confirm {
         display: block;
         width: 100%;
         margin: 10px 0;
