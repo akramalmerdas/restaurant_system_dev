@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-m^bxmvnm8-o8-6kmpsu1_zchz-#_=m=!j6)*370$t40tqvdijk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.149', '127.0.0.1', '192.168.1.146','localhost','192.168.85.88','0.0.0.0']
+ALLOWED_HOSTS = ['192.168.1.149', '127.0.0.1', '192.168.1.146','localhost','192.168.8.123','0.0.0.0']
 
 
 # Application definition
@@ -43,15 +43,31 @@ INSTALLED_APPS = [
     # Your apps
     'homePage',
     'item',
-     'django_extensions',
+    'django_extensions',
+    'channels',
+    'notifications',  # Add this line
    
     # Third-party apps
     'crispy_forms',
     'crispy_bootstrap5',
 ]
 
+# Add Channels configuration
+ASGI_APPLICATION = 'MochaCafe.asgi.application'
+
+# Configure Channel Layers with Redis
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)],
+        },
+    },
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this line
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -150,6 +166,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'item', 'static'),
 ]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -160,3 +178,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Add these lines for Crispy Forms configuration
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+STORAGES = {
+      "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

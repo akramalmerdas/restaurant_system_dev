@@ -116,8 +116,6 @@ class Table(models.Model):
 
 # Order Model
 class Order(models.Model):
-
-
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE,null=True, blank=True)
     ordered_at = models.DateTimeField(default=timezone.now)
     printed_at = models.DateTimeField(default=timezone.now)
@@ -168,11 +166,14 @@ class Extra(models.Model):
 # OrderItem Model
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item,on_delete=models.SET_NULL, null=True, blank=True)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    item_name = models.CharField(max_length=255,null=True) 
+    item_price = models.DecimalField(max_digits=10, decimal_places=2,null=True)
     customizations = models.TextField(null=True, blank=True)  # Optional customizations for the item
     selected_extras = models.ManyToManyField(Extra, blank=True)
+  
     inHold = models.BooleanField(default=False)
 
     def calculate_total_price(self):
@@ -265,8 +266,10 @@ class DeliveryDetail(models.Model):
 
 class OrderItemExtra(models.Model):
     order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
-    extra = models.ForeignKey(Extra, on_delete=models.CASCADE)
+    extra = models.ForeignKey(Extra, on_delete=models.SET_NULL, null=True, blank=True)
     quantity = models.IntegerField(default=1)
+    extra_name = models.CharField(max_length=255,null=True)
+    extra_price = models.DecimalField(max_digits=10, decimal_places=2,null=True)
 
     def calculate_price(self):
         return self.extra.price * self.quantity    

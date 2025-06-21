@@ -35,4 +35,7 @@ urlpatterns =[
     path('tables/<int:table_id>/history/', views.get_table_history, name='get_table_history'),
     path('order/update-item/', views.updateOrderItem, name='update_order_item'),
     path('order_detail/empty_order/', views.emptyOrder, name='empty_order_item'),
+    path('set_table/', views.setTableNumber, name='set_table_number'),
+    path('table_landing/', views.tableLanding, name='table_landing_page'),
+    path('get_order_by_table/<int:table_id>/',views.getOrderByTable , name='get_order_by_table'),
 ]

@@ -172,7 +172,7 @@
                 <button type="button" id="edit-btn" class="btn btn-secondary">Edit</button>
             </div>
             <div class="card-body">
-                <form id="profile-form" method="POST" action="{% url 'customer_profile' %}"></form>>
+                <form id="profile-form" method="POST" action="{% url 'customer_profile' %}">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="name">Full Name</label>

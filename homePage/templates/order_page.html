@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% csrf_token %}
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,6 +22,14 @@
    
 </head>
 <body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const tableSelect = document.getElementById('tableSelect');
+          if (tableSelect) {
+            tableSelect.value = "null";  // This resets the dropdown in the DOM
+          }
+        });
+      </script>
     <header id="header" class="fixed-top d-flex align-items-center">
         <div class="container-fluid container-xl d-flex align-items-center justify-content-lg-between">
             <h1 class="logo me-auto me-lg-0"><a href="/">Mocha Cafe</a></h1>
@@ -100,6 +109,19 @@
                         <h5>Total Amount: <span>${{ total_amount }}</span></h5>
                     </div>
 
+                  
+                    <!-- <div class="table-selection-container mb-4">
+                        <label for="tableSelect" class="form-label visually-hidden">Select a Table</label>
+                        <select id="tableSelect" class="form-select custom-table-select">
+                            <option value="null" selected disabled>Select a Table</option>
+                            {% for table in tables %}
+                                <option value="{{ table.number }}">
+                                    Table {{ table.number }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div> -->
+
                     <div class="order-actions">
                         <a href="#" class="btn btn-custom-confirm" id="confirm-order-btn">
                             <i class="fas fa-check-circle"></i> Confirm Order
@@ -126,6 +148,7 @@
         </div>
     </section>
 
+
     <!-- Vendor JS Files -->
     <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
@@ -141,5 +164,6 @@
     {% include 'edit_order_item_modal.html' %}
 
     {% include "custom_success_dialog.html" %}
+ 
 </body>
 </html>

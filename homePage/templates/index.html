@@ -69,30 +69,36 @@
           <li><a class="nav-link scrollto" href="{% url 'orderDetails' %}">My Order</a></li>
           <li>
             {% if user.is_authenticated %}
-            {% if user.staff %}
-              <a class="nav-link scrollto" href="{% url 'admin_dashboard' %}">dashboard</a>
+            {% if user.is_superuser %}
+            <a class="nav-link scrollto" href="{% url 'login' %}">Login</a>
+            {% elif user.staff %}
+            {% if user.staff.role == 'waiter' %}
+            <a class="nav-link scrollto" href="{% url 'table_landing_page' %}">Tables</a>
+          {% else %}
+            <a class="nav-link scrollto" href="{% url 'admin_dashboard' %}">Dashboard</a>
+          {% endif %}
+               
             {% elif user.customer %}
-              <a class="nav-link scrollto" href="{% url 'customer_profile' %}">profile</a>
-            {% elif user.username|lower == "mochacafe" %}
-              <a class="nav-link scrollto" href="{% url 'login' %}">login</a>
+              <a class="nav-link scrollto" href="{% url 'customer_profile' %}">Profile</a>
+            {% else %}
+              <a class="nav-link scrollto" href="#">Default</a>
             {% endif %}
           {% else %}
-          <a class="nav-link scrollto" href="{% url 'login' %}">login</a>
+            <a class="nav-link scrollto" href="{% url 'login' %}">Login</a>
           {% endif %}
-          
-          </li>
-          <li>
-            {% if user.is_authenticated %}
-              {% if user.staff %}
-              <a href="{% url 'logout' %}" class="nav-link" onclick="return confirm('Are you sure you want to log out?');">Logout</a>
-              {% elif user.customer %}
-              <a href="{% url 'logout' %}" class="nav-link" onclick="return confirm('Are you sure you want to log out?');">Logout</a>
-              {% elif user.username|lower == "mochacafe" %}
-              <a class="nav-link scrollto" href="{% url 'login' %}">login</a>
-            {% endif %}
+        </li>
+        <li>
+          {% if user.is_authenticated %}
+            {% if user.staff %}
+            <a href="{% url 'logout' %}" class="nav-link" onclick="return confirm('Are you sure you want to log out?');">Logout</a>
+            {% elif user.customer %}
+            <a href="{% url 'logout' %}" class="nav-link" onclick="return confirm('Are you sure you want to log out?');">Logout</a>
             {% else %}
-            <a class="nav-link scrollto" href="{% url 'login' %}">login</a>
+            <a href="{% url 'logout' %}" class="nav-link" onclick="return confirm('Are you sure you want to log out?');">Logout</a>
             {% endif %}
+          {% else %}
+       
+          {% endif %}
           </li>
         
    
@@ -276,13 +282,16 @@
               <li data-filter=".filter-lunch">Lunch</li>
               <li data-filter=".filter-sandwiches">Sandwiches and wraps</li>
             <li data-filter=".filter-soups">Soups</li>
-            <li data-filter=".filter-pizza">Pizza</li> 
-            <li data-filter=".filter-burgers">Burgers</li> 
-            <li data-filter=".filter-bowls">Smoothie Bowls</li>   
-            <li data-filter=".filter-pancake">Pancakes and crepes</li>    
-              <li data-filter=".filter-hotDrinks">Coffee and Tea</li>
-              <li data-filter=".filter-coldDrinks">Cold Drinks</li>
+            <li data-filter=".filter-burgers">burger and pizza</li> 
+            <li data-filter=".filter-smoothies">Smoothie Bowls</li> 
+            <li data-filter=".filter-bowls">Bowls</li>   
+            <li data-filter=".filter-pots">Pot</li>    
+              <li data-filter=".filter-drinks">Drinks</li>
+              <li data-filter=".filter-sweets">Sweets</li>
               <li data-filter=".filter-extra">Extras</li>  
+              <li data-filter=".filter-breakfast">Breakfast</li>
+              <li data-filter=".filter-yemeni-sweets">Yemeni Sweets</li>
+              <li data-filter=".filter-dips">Lebnah And Hummus</li> 
           
             </ul>
           </div>
@@ -305,8 +314,6 @@
       <div class="row menu-container">
         <!------------------------------------------------ Lunch Menue ------------------------------------------>
         {% for item in lunch %}
-     
-
         <div class="col-lg-6 menu-item filter-lunch">
           <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
         <div class="menu-content-wrapper">
@@ -335,7 +342,7 @@
 
             <!------------------------------------------------ Sandwiches Menue ------------------------------------------>
 
-            {% for item in sandwich %}
+            {% for item in sandwiches %}
                   <div class="col-lg-6 menu-item filter-sandwiches">
           <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
         <div class="menu-content-wrapper">
@@ -386,8 +393,8 @@
 
 
              <!------------------------------------------------ Pizza Menue ------------------------------------------>
-             {% for item in pizza %}
-             <div class="col-lg-6 menu-item filter-pizza">
+             {% for item in burgers %}
+             <div class="col-lg-6 menu-item filter-burgers">
               <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
             <div class="menu-content-wrapper">
                 <div class="menu-img-wrapper">
@@ -412,8 +419,8 @@
              {% endfor %}
 
              <!------------------------------------------------ Burgers Menue ------------------------------------------>
-             {% for item in burger %}
-             <div class="col-lg-6 menu-item filter-burgers">
+             {% for item in smoothie_bowls %}
+             <div class="col-lg-6 menu-item filter-smoothies">
               <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
             <div class="menu-content-wrapper">
                 <div class="menu-img-wrapper">
@@ -492,7 +499,7 @@
                {% endfor %}
    
                     <!------------------------------------------------Smoothie Bowls Menue ------------------------------------------>
-                    {% for item in smoothie %}
+                    {% for item in bowls %}
                     <div class="col-lg-6 menu-item filter-bowls">
                       <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
                     <div class="menu-content-wrapper">
@@ -518,8 +525,8 @@
                     {% endfor %}
 
                <!------------------------------------------------ Pancakes and crepes Menue ------------------------------------------>
-               {% for item in crepe %}
-               <div class="col-lg-6 menu-item filter-pancake">
+               {% for item in yemeni_sweets %}
+               <div class="col-lg-6 menu-item filter-yemeni-sweets">
                 <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
               <div class="menu-content-wrapper">
                   <div class="menu-img-wrapper">
@@ -543,8 +550,8 @@
                {% endfor %}
 
                <!------------------------------------------------ Hot Drinks  Menue ------------------------------------------>
-               {% for item in hot %}
-               <div class="col-lg-6 menu-item filter-hotDrinks">
+               {% for item in sweets %}
+               <div class="col-lg-6 menu-item filter-sweets">
                 <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
               <div class="menu-content-wrapper">
                   <div class="menu-img-wrapper">
@@ -569,8 +576,8 @@
 
          <!------------------------------------------------ Cold Drinks  Menue ------------------------------------------>
 
-         {% for item in cold %}
-         <div class="col-lg-6 menu-item filter-coldDrinks">
+         {% for item in drinks %}
+         <div class="col-lg-6 menu-item filter-drinks">
           <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
         <div class="menu-content-wrapper">
             <div class="menu-img-wrapper">
@@ -596,7 +603,7 @@
 
        <!------------------------------------------------ Soups  Menue ------------------------------------------>
 
-       {% for item in soup %}
+       {% for item in soups %}
        <div class="col-lg-6 menu-item filter-soups">
         <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
       <div class="menu-content-wrapper">
@@ -620,8 +627,82 @@
       </div>
        {% endfor %}
 
+       <!------------------------------------------------ pots  Menue ------------------------------------------>
 
+       {% for item in pots %}
+       <div class="col-lg-6 menu-item filter-pots">
+        <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
+      <div class="menu-content-wrapper">
+          <div class="menu-img-wrapper">
+            {% if item.image %}
+              <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
+            {% else %}
+              <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
+            {% endif %}
+          </div>
+          <div class="menu-details">
+            <div class="menu-content">
+              <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+            </div>
+            <div class="menu-ingredients">
+              {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+            </div>
+          </div>
+        </div>
+        </a>
+      </div>
+       {% endfor %}
+       <!------------------------------------------------ bowls  Menue ------------------------------------------>
 
+       {% for item in bowls %}
+       <div class="col-lg-6 menu-item filter-bowls">
+        <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
+      <div class="menu-content-wrapper">
+          <div class="menu-img-wrapper">
+            {% if item.image %}
+              <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
+            {% else %}
+              <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
+            {% endif %}
+          </div>
+          <div class="menu-details">
+            <div class="menu-content">
+              <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+            </div>
+            <div class="menu-ingredients">
+              {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+            </div>
+          </div>
+        </div>
+        </a>
+      </div>
+       {% endfor %}
+
+       <!------------------------------------------------ bowls  Menue ------------------------------------------>
+
+       {% for item in dips %}
+       <div class="col-lg-6 menu-item filter-dips">
+        <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
+      <div class="menu-content-wrapper">
+          <div class="menu-img-wrapper">
+            {% if item.image %}
+              <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
+            {% else %}
+              <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
+            {% endif %}
+          </div>
+          <div class="menu-details">
+            <div class="menu-content">
+              <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+            </div>
+            <div class="menu-ingredients">
+              {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+            </div>
+          </div>
+        </div>
+        </a>
+      </div>
+       {% endfor %}
         
   </section><!-- End Menu Section -->
   
@@ -1234,7 +1315,7 @@
 
   <!-- Template Main JS File -->
   <script src="{% static "js/main.js" %}"></script>
-  
+  <script src="{% static "js/Notifications.js" %}"></script>
 <!--Start of Tawk.to Script->
 <script type="text/javascript">
   var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();

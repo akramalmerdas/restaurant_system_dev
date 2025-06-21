@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% csrf_token %}
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mocha Cafe- Table Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/tables_landing.css' %}" rel="stylesheet">
+  <style>
+       
+    </style>
+</head>
+<body>
+    <div class="main-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="brand">
+                <i class="fas fa-utensils"></i>
+                Mocha<span class="restro">Cafe</span>
+            </div>
+            <div class="time-display">
+                <i class="fas fa-clock me-2"></i>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+    
+    <button class="refresh-btn" onclick="refreshTables()" title="Refresh Tables">
+        <i class="fas fa-sync-alt"></i>
+    </button>
+    
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="dashboard-title">
+                    <i class="fas fa-table"></i>
+                    Table Dashboard
+                </h2>
+                <button class="btn btn-order" onclick="refreshTables()">
+                    <i class="fas fa-sync-alt me-2"></i>Refresh
+                </button>
+            </div>
+        </div>
+        
+        <div class="tables-grid">
+            <div id="tables-container">
+                <!-- Tables will be generated here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Management Modal -->
+    <div class="modal fade" id="tableModal" tabindex="-1" aria-labelledby="tableModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tableModalLabel">
+                        <i class="fas fa-cogs me-2"></i>Manage Table
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="info-row">
+                        <span class="info-label">Table Number:</span>
+                        <span class="info-value" id="modalTableNumber"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Status:</span>
+                        <span class="info-value" id="modalTableStatus"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Capacity:</span>
+                        <span class="info-value" id="modalTableCapacity"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Section:</span>
+                        <span class="info-value" id="modalTableSection"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Active:</span>
+                        <span class="info-value" id="modalTableActive"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">On Hold:</span>
+                        <span class="info-value" id="modalTableHold"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Created:</span>
+                        <span class="info-value" id="modalTableCreated"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Last Modified:</span>
+                        <span class="info-value" id="modalTableModified"></span>
+                    </div>
+             
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.tablesData = {{ tables_json|safe }};
+       </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/tables_landing.js' %}"></script>
+   
+</body>
+</html>

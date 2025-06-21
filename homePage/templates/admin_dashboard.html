@@ -47,6 +47,7 @@
                     {% else %}
                         <li><a class="nav-link" href="{% url 'login' %}">Login</a></li>
                     {% endif %}
+                  
                 </ul>
             </nav>
         </div>
@@ -72,11 +73,11 @@
                     <a href="/item_dashboard/" class="btn btn-primary">
                         <i class="bi bi-receipt"></i> Manage Items
                     </a>
+                 
                     <a id="generate-invoice-btn" class="btn btn-primary" data-table-id="{{ selected_table_id }}">
-                        <i class="bi bi-receipt"></i> Generate Invoice ({{ selected_table_id }})
+                        <i class="bi bi-receipt">Generate Invoice</i> ({{ selected_table_id }})
                     </a>
-
-                </div>
+                   </div>
             </div>
 
             <!-- Table Filter -->
@@ -237,7 +238,10 @@
     <!-- Template Main JS File -->
     {% include 'confirmation_form.html' %}
     <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/notifications.js' %}"></script>
     <script type="module" src="{% static 'js/dashboard.js' %}"></script>
     <script type="module" src="{% static 'js/invoice.js' %}"></script>
+  
+  
 </body>
 </html>

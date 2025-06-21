@@ -88,53 +88,94 @@ const checked = Array.from(document.querySelectorAll('#modal-extras-checkboxes i
 document.getElementById('modal-extras').value = checked.join(',');
 });
 
-
-const confirmButton = document.getElementById('confirm-order-btn');
-if (confirmButton){
-  confirmButton.addEventListener('click', async function() {
+//////////////////////////////// confirm order ///////////////////////
+// const confirmButton = document.getElementById('confirm-order-btn');
+// if (confirmButton){
+//   confirmButton.addEventListener('click', async function() {
 
   
-    // Send a POST request to submit the order
-    try {
-   //    await printOrder();  
+//     // Send a POST request to submit the order
+//     try {
+//    //    await printOrder();  
 
-        const response = await fetch('/submit_order/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token if required
-            },
-            body: JSON.stringify({ items: JSON.parse(sessionStorage.getItem('order')) })  // Fetch order from sessionStorage
-        });
+//         const response = await fetch('/submit_order/', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token if required
+//             },
+//             body: JSON.stringify({ items: JSON.parse(sessionStorage.getItem('order')) })  // Fetch order from sessionStorage
+//         });
      
-         if (response.ok) {
-          console.log('the response is ok');
-          showSuccessDialog({
-            title: 'Success!',
-            message: 'the order was submitted successfully!',
-            okButtonText: 'OK',
-            onOk: function() {
+//          if (response.ok) {
+//           console.log('the response is ok');
+//           showSuccessDialog({
+//             title: 'Success!',
+//             message: 'the order was submitted successfully!',
+//             okButtonText: 'OK',
+//             onOk: function() {
           
-            setTimeout(() => {
-              window.location.href = '/';
-          }, 500);
-            },
-            // autoHideDelay: 10000 // Optional: auto-hide after 2 seconds
-        });   
-        }
-         else {
-            alert('Failed to submit the order. Please try again later.');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('There was an error submitting your order.');
-    }
+//             setTimeout(() => {
+//               window.location.href = '/';
+//           }, 500);
+//             },
+//             // autoHideDelay: 10000 // Optional: auto-hide after 2 seconds
+//         });   
+//         }
+//          else {
+//             alert('Failed to submit the order. Please try again later.');
+//         }
+//     } catch (error) {
+//         console.error('Error:', error);
+//         alert('There was an error submitting your order.');
+//     }
+//   });
+// }
+//////////////////////////////////////// confirm order waiter edition /////////////
+const confirmButton = document.getElementById('confirm-order-btn');
+if (confirmButton){
+  
+  confirmButton.addEventListener('click', async function() {
+ 
+        try {
+          //    await printOrder();  
+       
+               const response = await fetch('/submit_order/', {
+                   method: 'POST',
+                   headers: {
+                       'Content-Type': 'application/json',
+                       'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token if required
+                   },
+                   body: JSON.stringify({ items: JSON.parse(sessionStorage.getItem('order')) })  // Fetch order from sessionStorage
+               });
+            
+                if (response.ok) {
+               
+                 showSuccessDialog({
+                   title: 'Success!',
+                   message: 'the order was submitted successfully!',
+                   okButtonText: 'OK',
+                   onOk: function() {
+              //      sessionStorage.removeItem('table_number');
+                   setTimeout(() => {
+                     window.location.href = '/table_landing/';
+                 }, 500);
+                   },
+                   // autoHideDelay: 10000 // Optional: auto-hide after 2 seconds
+               });   
+               }
+                else {
+                   alert('Failed to submit the order. Please try again later.');
+               }
+           } catch (error) {
+               console.error('Error:', error);
+               alert('There was an error submitting your order.');
+           }
+  
+    // Send a POST request to submit the order
+    
   });
 }
-
-
-
-
 
 const emptyOrderButton = document.getElementById('empty-order-btn');
 if (emptyOrderButton){
@@ -166,3 +207,59 @@ if (emptyOrderButton){
          window.location.reload();
     });
 }
+
+
+
+// function setTableNumber(tableId) {
+//   // Store locally (optional)
+//   sessionStorage.setItem('table_number', tableId);
+//   console.log('This is the table number ' + tableId);
+
+//   // Send to backend
+//   fetch("/set-table/", {
+//       method: 'POST',
+//       headers: {
+//           'Content-Type': 'application/x-www-form-urlencoded',
+//           'X-CSRFToken': getCookie('csrftoken') // CSRF token for Django
+//       },
+//       body: new URLSearchParams({
+//           'table_number': tableId
+//       })
+//   })
+//   .then(response => response.json())
+//   .then(data => {
+//       if (data.status === 'success') {
+//           console.log('Table number saved in Django session.');
+//       } else {
+//           console.error('Error saving table number:', data.message);
+//       }
+//   });
+// }
+
+// Helper function to get CSRF token
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let cookie of cookies) {
+          cookie = cookie.trim();
+          if (cookie.startsWith(name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
+}
+
+// window.onload = function () {
+//   const tableSelect = document.getElementById('tableSelect');
+//   const savedTable = sessionStorage.getItem('table_number');
+//   if (savedTable) {
+//       tableSelect.value = savedTable;
+//   }
+
+//   tableSelect.addEventListener('change', function () {
+//       setTableNumber(this.value);
+//   });
+// };

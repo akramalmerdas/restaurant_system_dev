@@ -1,9 +1,10 @@
 from decimal import Decimal
+from django.utils import timezone
 from django.utils.timezone import now
 from django.shortcuts import redirect, render , get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
-from item.models import Item ,Order,OrderItem,Extra,OrderItemExtra,OrderStatus,Customer,Table,Invoice
+from item.models import Item ,Order,OrderItem,Extra,OrderItemExtra,OrderStatus,Customer,Table,Invoice,Staff
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.contrib.auth import authenticate,login,logout
@@ -13,8 +14,9 @@ from django.db.models import Q,Sum ,F,Count, Avg
 from django.middleware.csrf import get_token
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
-
- 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from django.core import serializers
 # Create your views here.
 from django.shortcuts import render, get_object_or_404
 
@@ -34,34 +36,38 @@ def index(request):
             table_number = None  # Handle invalid table_id gracefully
 
     # Fetch menu items as usual
-    lunchItems = Item.objects.filter(category__id=2)
-    saladItems = Item.objects.filter(category__id=1)
-    hotDrinksItems = Item.objects.filter(category__id=9)
-    coldDrinksItems = Item.objects.filter(category__id=10)
-    breakFast = Item.objects.filter(category__id=12)
-    extras = Item.objects.filter(category__id=11)
-    crepes = Item.objects.filter(category__id=8)
-    smoothies = Item.objects.filter(category__id=7)
-    burgers = Item.objects.filter(category__id=6)
-    pizzas = Item.objects.filter(category__id=5)
-    soups = Item.objects.filter(category__id=4)
-    sandwiches = Item.objects.filter(category__id=3)
+    lunchItems = Item.objects.filter(category__id=3)
+    saladItems = Item.objects.filter(category__id=8)
+    drinks = Item.objects.filter(category__id=14)
+    sweets= Item.objects.filter(category__id=12)
+    breakFast = Item.objects.filter(category__id=1)
+    extras = Item.objects.filter(category__id=13)
+    yemeni_sweets = Item.objects.filter(category__id=6)
+    smoothie_bowls = Item.objects.filter(category__id=2)
+    burgers = Item.objects.filter(category__id=11)
+    dips = Item.objects.filter(category__id=9)
+    soups = Item.objects.filter(category__id=10)
+    sandwiches = Item.objects.filter(category__id=7)
+    pots = Item.objects.filter(category__id=4)
+    bowls = Item.objects.filter(category__id=5)
     user = request.user
 
     # Pass the table object to the template
     return render(request, 'index.html', {
         'lunch': lunchItems,
         'salad': saladItems,
-        'hot': hotDrinksItems,
-        'cold': coldDrinksItems,
+        'drinks': drinks,
+        'sweets': sweets,
         'breakFast': breakFast,
         'extra': extras,
-        'crepe': crepes,
-        'smoothie': smoothies,
-        'burger': burgers,
-        'pizza': pizzas,
-        'soup': soups,
-        'sandwich': sandwiches,
+        'yemeni_sweets': yemeni_sweets,
+        'smoothie_bowls': smoothie_bowls,
+        'burgers': burgers,
+        'dips': dips,
+        'soups': soups,
+        'sandwiches': sandwiches,
+        'pots': pots,
+        'bowls': bowls,
         'user': user
       #  'table': table,  # Include the table in the context
     })
@@ -69,16 +75,11 @@ def index(request):
 
 
 
-# def get_extras(request):
-#   extras = Extra.objects.all().values('name', 'price')
-#   return JsonResponse(list(extras), safe=False)
 
 
 def orderPage(request, menu_item_id):  
     item = get_object_or_404(Item, id=menu_item_id)
-    # extras = ExtraItem.objects.filter(item__id=menu_item_id).select_related('Extra').values('Extra__name', 'Extra__price') 
-    # extras_list = [{'name': extra['Extra__name'], 'price': float(extra['Extra__price'])} for extra in extras]
-   
+
     return render(request, 'meal_page.html', {'item': item})
 
 
@@ -99,7 +100,56 @@ def get_extras(request, menu_item_id):
       return JsonResponse({'error': 'Item not found'}, status=404)
 
 
+############################################ order details ####################
+# def orderDetails(request):
+#     # Fetch the order items from the session
+#     order_items = request.session.get('order', [])
+  
+    
+#     # If there are no items in the session, display a message
+#     if not order_items:
+#         return render(request, 'order_page.html', {'message': 'Your order is empty.'})
 
+#     # Prepare the data for rendering
+#     formatted_order_items = []
+#     total_amount = 0  # Initialize total amount
+
+#     for item in order_items:
+#         # Fetch extras and their prices for each item
+#         extras = item.get('extras', [])
+#         extra_price = sum(extra['price'] for extra in extras)  # Calculate total price of extras
+
+#         subtotal =item['subtotal'] # Calculate subtotal for each item
+#         formatted_order_items.append({
+#             'item_id':item['item_id'],
+#             'name': item['name'],
+#             'quantity': item['quantity'],
+#             'unit_price': item['price'],
+#             # Send extras as JSON string (id and name)
+#             'extras': json.dumps([{'id': extra['id'], 'name': extra['name']} for extra in extras]) if extras else '[]',
+#             'extras_names': ', '.join(extra['name'] for extra in extras) if extras else 'None',  # <-- add this line
+#             'extra_price': extra_price,
+#             'subtotal': subtotal,
+#             'table':item['table']
+             
+#         })
+
+#         # Add to the total amount
+#         total_amount += subtotal
+#         total_amount = round(total_amount, 2)
+
+#     # Render the page with order items and total amount
+#     return render(
+#         request, 
+#         'order_page.html', 
+#         {
+#             'order_items': formatted_order_items,
+#             'total_amount': total_amount,
+#        
+#         }
+#     )
+
+###############################################order details waiter edition ###################################
 def orderDetails(request):
     # Fetch the order items from the session
     order_items = request.session.get('order', [])
@@ -143,11 +193,10 @@ def orderDetails(request):
         'order_page.html', 
         {
             'order_items': formatted_order_items,
-            'total_amount': total_amount
+            'total_amount': total_amount,
+            'tables': Table.objects.all() 
         }
     )
-
-
 
 
 
@@ -324,9 +373,126 @@ def emptyOrder(request):
     # Option 1: Redirect to another page after clearing
     return JsonResponse({"status": "success", "message": "Cart was emptied successfully."}) # Replace 'home' with your actual URL name
 # ###################### submit order ########################################
+# @csrf_exempt
+# def submitOrder(request):
+#     if request.method == "POST":
+     
+#         # Get the order data from the session
+#         order_data = request.session.get('order', [])
+     
+#         # Ensure there are items in the session
+#         if not order_data:
+#             return JsonResponse({"status": "error", "message": "No items in the cart."}, status=400)
+       
+#         # Fetch or create the "Pending" order status
+#         pending_status, created = OrderStatus.objects.get_or_create(name='pending')
+        
+#         table_number = request.session.get('table_number', None)
+#         print ('this is the table number ' + str(table_number))
+       
+#         if table_number:
+ 
+#             orderTable = Table.objects.get(number=table_number)
+#             # orderTable = Table.objects.get(number=table_number)
+         
+#         else:
+      
+#             orderTable = Table.objects.get(number='Take Away')
+            
+  
+      
+        
+        
+#         if request.user.is_authenticated:
+#           try:
+#         # Assuming the logged-in user is linked to a Customer object
+#             customer = Customer.objects.get(user=request.user)
+#             order = Order.objects.create(
+#             customer=customer,  # Link the customer to the order
+#             order_status=pending_status,
+#             total_amount=0,
+#             table=orderTable
+#           )
+#           except Customer.DoesNotExist:
+#         # If the user is logged in but not a customer, leave the customer field null
+#             order = Order.objects.create(
+#             order_status=pending_status,
+#             total_amount=0,
+#             table=orderTable
+#           )
 
-   
+#         else:
+#           order = Order.objects.create(
+#             order_status=pending_status, 
+#             total_amount=0,  
+#             table=orderTable
+#           )
+            
+    
+     
+#         total_amount = 0  # Initialize the total amount for the order
+#         orderTable.status = 'occupied'
+#         orderTable.save()
+#         # Loop through the items from the session and create OrderItems
+#         for item_data in order_data:
+        
+#             item = Item.objects.get(id=item_data['item_id'])  # Fetch the item from the database
+           
+    
+#             # Create the OrderItem
+#             order_item = OrderItem.objects.create(
+#                 order=order,
+#                 item=item,
+#                 quantity=item_data['quantity'],
+#                 price=item_data['price'] * item_data['quantity'],  # Calculate price based on quantity
+#                 customizations=item_data['customizations']
+#             )
+#             order_item.save()
+        
+#             # Add the selected extras to the OrderItem
+#             # Safeguard: Only process extras if they are dicts with 'id' and 'quantity'
+#             extras_list = item_data.get('extras', [])
+#             if isinstance(extras_list, list):
+#                 for extra_data in extras_list:
+#                     if (
+#                         isinstance(extra_data, dict)
+#                         and 'id' in extra_data
+#                         and 'quantity' in extra_data
+#                     ):
+#                         extra = Extra.objects.get(id=extra_data['id'])
+#                         order_item.selected_extras.add(extra, through_defaults={'quantity': extra_data['quantity']})
+#                         OrderItemExtra.objects.create(
+#                             order_item=order_item,
+#                             extra=extra,
+#                             quantity=extra_data['quantity']
+#                         )
+#             order_item.save()
+#             # Update the running total amount
+#             total_amount += order_item.price
 
+#         # Update the total amount of the order
+#         order.total_amount = total_amount
+#         order.save(update_fields=["total_amount"])
+
+#         # Clear the session as the order is now confirmed and saved in the database
+#         request.session['order'] = []
+#         channel_layer = get_channel_layer()
+#         async_to_sync(channel_layer.group_send)(
+#         "admin_notifications",
+#         {
+#             "type": "order_notification",
+#             "order_id": order.id,
+#             "customer": order.customer.user.username if order.customer and order.customer.user else "Guest",
+#             "total": str(order.total_amount),
+#             "timestamp": timezone.now().isoformat()
+#         }
+#     )
+
+#         # Return a success response
+#         return JsonResponse({"status": "success", "message": "Order submitted successfully."})
+
+#     return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)
+#######################################submit order waiter edition #############################################
 @csrf_exempt
 def submitOrder(request):
     if request.method == "POST":
@@ -342,6 +508,7 @@ def submitOrder(request):
         pending_status, created = OrderStatus.objects.get_or_create(name='pending')
         
         table_number = request.session.get('table_number', None)
+        print ('this is the table number ' + str(table_number))
        
         if table_number:
  
@@ -364,26 +531,28 @@ def submitOrder(request):
             customer=customer,  # Link the customer to the order
             order_status=pending_status,
             total_amount=0,
-            table=orderTable
+            table=orderTable,
+            table_number=orderTable.number
           )
           except Customer.DoesNotExist:
         # If the user is logged in but not a customer, leave the customer field null
             order = Order.objects.create(
             order_status=pending_status,
             total_amount=0,
-            table=orderTable
+            table=orderTable,
+            table_number=orderTable.number
           )
 
         else:
           order = Order.objects.create(
             order_status=pending_status, 
             total_amount=0,  
-            table=orderTable
+            table=orderTable,
+            table_number=orderTable.number
           )
             
     
-      
-        print ('this is the before the amount  ');
+     
         total_amount = 0  # Initialize the total amount for the order
         orderTable.status = 'occupied'
         orderTable.save()
@@ -397,6 +566,8 @@ def submitOrder(request):
             order_item = OrderItem.objects.create(
                 order=order,
                 item=item,
+                item_name=item.name,
+                item_price=item.price,
                 quantity=item_data['quantity'],
                 price=item_data['price'] * item_data['quantity'],  # Calculate price based on quantity
                 customizations=item_data['customizations']
@@ -418,7 +589,9 @@ def submitOrder(request):
                         OrderItemExtra.objects.create(
                             order_item=order_item,
                             extra=extra,
-                            quantity=extra_data['quantity']
+                            quantity=extra_data['quantity'],
+                            extra_name=extra.name,       
+                            extra_price=extra.price 
                         )
             order_item.save()
             # Update the running total amount
@@ -430,12 +603,35 @@ def submitOrder(request):
 
         # Clear the session as the order is now confirmed and saved in the database
         request.session['order'] = []
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+        "admin_notifications",
+        {
+            "type": "order_notification",
+            "order_id": order.id,
+            "customer": order.customer.user.username if order.customer and order.customer.user else "Guest",
+            "total": str(order.total_amount),
+            "timestamp": timezone.now().isoformat()
+        }
+    )
 
         # Return a success response
         return JsonResponse({"status": "success", "message": "Order submitted successfully."})
 
     return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)
 
+####################################### set table number waiters Edition###############################################
+
+def setTableNumber(request):
+    print ('we enterd the set table number function')
+    if request.method == 'POST':
+        print ('we enterd the post method')
+        table_number = request.POST.get('table_number')
+        if table_number:
+            request.session['table_number'] = table_number
+            print('this is the table number '+ str(table_number))
+            return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
 
 ####################################### print Items view ############################################
@@ -488,6 +684,44 @@ def printOrder(request):
 
 # ################################### login view ####################################
 
+# def login_view(request):
+ 
+
+#     if request.method == "POST":
+     
+#         try:
+        
+#             username= request.POST.get('email') or json.loads(request.body).get('email')
+#             password = request.POST.get('password') or json.loads(request.body).get('password')
+        
+           
+                 
+#             if not username or not password:
+#                 messages.error(request, "Both email and password are required.")
+#                 return render(request, 'login.html')
+
+#             user = authenticate(request, username=username, password=password)
+            
+#             if user is not None:
+            
+#                 login(request, user)
+                
+#                 if hasattr(user, 'staff'):
+#                     return redirect('admin_dashboard')
+#                 else:
+#                     return redirect('index')
+#             else:
+#                 messages.error(request, "Invalid email or password.")
+#                 return render(request, 'login.html')
+#         except json.JSONDecodeError:
+#             messages.error(request, "Invalid request format.")
+#             return render(request, 'login.html')
+        
+#     return render(request, 'login.html')
+
+
+##################################### login view waiter edition ##########################
+
 def login_view(request):
  
 
@@ -511,7 +745,13 @@ def login_view(request):
                 login(request, user)
                 
                 if hasattr(user, 'staff'):
-                    return redirect('admin_dashboard')
+                    staff = Staff.objects.get(user=user)
+                    if staff.is_active and not staff.inHold:
+                    # Redirect based on staff role
+                      if staff.role == 'waiter':
+                        return redirect('table_landing_page')
+                      else:
+                        return redirect('admin_dashboard')
                 else:
                     return redirect('index')
             else:
@@ -522,8 +762,6 @@ def login_view(request):
             return render(request, 'login.html')
         
     return render(request, 'login.html')
-
-
 
 def logout_view(request):
     logout(request)
@@ -539,9 +777,9 @@ def adminDashboard(request):
 
     # Filter orders by the selected table, if provided
     if selected_table_id:
-        orders = Order.objects.filter(table__id=selected_table_id ,inHold=False)
+        orders = Order.objects.filter(table__id=selected_table_id, inHold=False).order_by('-ordered_at')
     else:
-        orders = Order.objects.filter(inHold=False)
+        orders = Order.objects.filter(inHold=False).order_by('-ordered_at')
     return render(request, 'admin_dashboard.html',{   
          'tables': tables,
         'orders': orders,
@@ -884,7 +1122,14 @@ def table_dashboard(request):
     }
     
     return render(request, 'table_dashboard.html', context)
+############################# table landing page waiter edition ###################################
+def tableLanding(request):
+    tables = Table.objects.filter(inHold=False).order_by('section', 'number')
+    tables_json = serializers.serialize('json', tables)
+    print('this is the tables count'+str(tables.count))
+    return render(request, 'tables_landing_page.html', {'tables_json': tables_json})
 
+ ################################change table ########################################################   
 @login_required
 def update_table_status(request, table_id):
     """Update table status via AJAX"""
@@ -962,3 +1207,65 @@ def get_table_history(request, table_id):
         return JsonResponse({'success': False, 'error': 'Table not found'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+############################## grt order by table waiter edition ########################
+def getOrderByTable(request,table_id):
+    try:
+        table = Table.objects.get(id=table_id)
+    except Table.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Table not found'}, status=404)
+
+    orders = Order.objects.filter(table=table).order_by('-ordered_at')
+
+    if not orders.exists():
+        return JsonResponse({'success': False, 'error': 'No orders found for this table'}, status=404)
+
+    # Collect all related order items
+    order_items = OrderItem.objects.filter(order__in=orders).prefetch_related('selected_extras')
+
+    # Calculate combined total
+    total_amount = sum(item.calculate_total_price() for item in order_items)
+    pending_status, created = OrderStatus.objects.get_or_create(name='pending')
+    # Create a fake combined order (not saved to DB)
+    fake_order = Order(
+        id=999,  # dummy ID just to satisfy the template
+        customer=None,
+        ordered_at=timezone.now(),
+        order_status=pending_status,
+        total_amount=total_amount,
+        table=table,
+        table_number=table.number,
+        inHold=False,
+    )
+
+    # Attach a dummy related manager for orderitem_set to mimic the real one
+ 
+
+    context = {
+        'order': fake_order,
+        'order_items': order_items,
+    }
+
+    return render(request, 'order_view.html', context)
+
+
+# def getOrderByTable(request, tableId):
+#     table = get_object_or_404(Table, id=tableId)
+
+#     # Fetch all orders for this table
+#     orders = Order.objects.filter(table=table).order_by('-created_at').prefetch_related('orderitem_set__selected_extras')
+
+#     # Prepare data for the template
+#     all_orders_data = []
+#     for order in orders:
+#         order_items = order.orderitem_set.all()
+#         all_orders_data.append({
+#             'order': order,
+#             'order_items': order_items,
+#         })
+
+#     context = {
+#         'table': table,
+#         'all_orders_data': all_orders_data,
+#     }
+
+#     return render(request, 'order_view.html', context)
