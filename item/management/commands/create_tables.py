@@ -15,7 +15,7 @@ class Command(BaseCommand):
         base_url = "http://192.168.1.149:8000/?table_id="
         
         # Define the QR code storage path
-        qr_code_storage_path = r"D:\windsurf\MochaCafe\table_qr_codes"
+        qr_code_storage_path = r"E:\Django\MochaSystem\MochaCafe\table_qr_codes"
         
         # Create the directory if it doesn't exist
         os.makedirs(qr_code_storage_path, exist_ok=True)

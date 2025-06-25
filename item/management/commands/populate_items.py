@@ -159,13 +159,13 @@ class Command(BaseCommand):
         {"name": "Cheese", "price": "1.5K", "description": "Extra cheese"},
         {"name": "Veggies", "price": "0.5K", "description": "Extra veggies with the omelette"},
         {"name": "Veggies and Spinach", "price": "1.5K", "description": "Extra veggies and spincah with the omelette"},
-        {"name": "French Fries", "price": "3.5K", "description": "Side of fries"},
-        {"name": "Cheesy French Fries", "price": "5.5K", "description": "Fries with cheese"},
-        {"name": "Extra Chicken/Meat", "price": "5K", "description": "Additional protein"},
-        {"name": "Extra Egg", "price": "1.5K", "description": "Additional egg"},
-        {"name": "Extra Kofta", "price": "4K", "description": "Additional kofta"},
-        {"name": "Plain Falafel Side", "price": "6K", "description": "Side of falafel"},
-        {"name": "Extra Honey", "price": "1.5K", "description": "Additional honey"}
+        # {"name": "French Fries", "price": "3.5K", "description": "Side of fries"},
+        # {"name": "Cheesy French Fries", "price": "5.5K", "description": "Fries with cheese"},
+        # {"name": "Extra Chicken/Meat", "price": "5K", "description": "Additional protein"},
+        # {"name": "Extra Egg", "price": "1.5K", "description": "Additional egg"},
+        # {"name": "Extra Kofta", "price": "4K", "description": "Additional kofta"},
+        # {"name": "Plain Falafel Side", "price": "6K", "description": "Side of falafel"},
+        # {"name": "Extra Honey", "price": "1.5K", "description": "Additional honey"}
     ],
     # "Drinks": [
     #     {"name": "Sparkling Hibiscus (Glass)", "price": "4.5K", "description": "Refreshing hibiscus drink"},

@@ -20,7 +20,7 @@ from django.core import serializers
 # Create your views here.
 from django.shortcuts import render, get_object_or_404
 
-
+@login_required
 def index(request):
     # Fetch table_id from the query parameter
     table_number = request.GET.get('table_id')
@@ -38,10 +38,10 @@ def index(request):
     # Fetch menu items as usual
     lunchItems = Item.objects.filter(category__id=3)
     saladItems = Item.objects.filter(category__id=8)
-    drinks = Item.objects.filter(category__id=14)
+    drinks = Item.objects.filter(category__id=13)
     sweets= Item.objects.filter(category__id=12)
     breakFast = Item.objects.filter(category__id=1)
-    extras = Item.objects.filter(category__id=13)
+    extras = Item.objects.filter(category__id=14)
     yemeni_sweets = Item.objects.filter(category__id=6)
     smoothie_bowls = Item.objects.filter(category__id=2)
     burgers = Item.objects.filter(category__id=11)

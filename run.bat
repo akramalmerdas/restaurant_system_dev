@@ -1,10 +1,9 @@
 @echo off
+:: Navigate to your Django project directory
 cd /d E:\Django\MochaSystem\MochaCafe
 
-:: Activate virtual environment (adjust if needed)
-call venv\Scripts\activate
+:: Run Django server using the venv Python executable
+venv\Scripts\python.exe manage.py runserver 0.0.0.0:8000
 
-:: Run Django development server
-py manage.py runserver 0.0.0.0:8000
-
+:: Keep the window open after it stops (e.g., error or exit)
 pause
