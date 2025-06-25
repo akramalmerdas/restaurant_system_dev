@@ -34,9 +34,9 @@
     </head>
     <body>
       <h1>Mocha Cafe</h1>
-      <p>Date: {{ order.oerdered_at}}</p>
+      <p>Date: {{ order.ordered_at}}</p>
       <p>Printed at: {{ order.printed_at}}</p>
-      <p><strong>Table: {{ order.table.name}}</strong></p>
+      <p><strong>Table: {{ order.table.number}}</strong></p>
       <hr>
       <ul>
         {% for item in order.orderitem_set.all %}
@@ -46,6 +46,7 @@
         {% empty %}
             <li>No extras</li>
         {% endfor %}
+        <li>Customization:for the item  {{ item.customizations}}</li>
     {% endfor %}
     
       </ul>
