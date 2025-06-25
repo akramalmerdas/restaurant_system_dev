@@ -6,8 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
   
     buttons.forEach(button => {
       button.addEventListener("click", function (event) {
-        console.log("Button clicked!"); // Debugging
-    
+           
         event.preventDefault(); // Prevent default behavior of the link/button
   
         const orderId = this.getAttribute("data-order-id"); // Get the order ID
