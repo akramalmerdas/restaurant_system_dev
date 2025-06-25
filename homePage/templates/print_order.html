@@ -1,111 +1,137 @@
+<!DOCTYPE html>
 <html>
-    <head>
-      <title>Print Order</title>
-      <style>
-        @media print {
-          @page {
-            size: 88mm auto; /* Set custom page size */
-             margin: 5mm; 
-          }
-          body {
-            margin: 2px;
-            padding: 1px;
-            width: 88mm; /* Ensure body matches the page size */
-            max-width: 88mm;
-            font-family: Arial, sans-serif;
-          
-            overflow: hidden; /* Prevent content overflow */
-          }
-          ul {
-            list-style: none;
-            padding: 1px;
-            margin: 1px;
-          }
-          li {
-            margin: 5px 0;
-          }
-          h1, p {
-            margin-left:5px ;
-            margin-right:5px ;
-            padding: 5px;
-          }
-        }
-      </style>
-    </head>
-    <body>
-      <h1>Mocha Cafe</h1>
-      <p>Date: {{ order.ordered_at}}</p>
-      <p>Printed at: {{ order.printed_at}}</p>
-      <p><strong>Table: {{ order.table.number}}</strong></p>
-      <hr>
-      <ul>
-        {% for item in order.orderitem_set.all %}
-        <li>{{ item.quantity }} x {{ item.item.name }} - {{ item.price }} RWF</li>
-        {% for extra in item.selected_extras.all %}
-            <li>+ {{ extra.name }}  {{ extra.price }} RWF</li>
-        {% empty %}
-            <li>No extras</li>
-        {% endfor %}
-        <li>Customization:for the item  {{ item.customizations}}</li>
-    {% endfor %}
-    
-      </ul>
-    <hr>
-<p><strong>Total: {{ order.total_amount }} RWF</strong></p>
-<hr>
-<div class="bottom-line">
-  Thank you for visiting Mocha Mocha Cafe!
-</div>
-<script>
-    // Automatically trigger the print dialog
-    // window.onload = function() {
-    //     window.print();
-    //     // Close the window after printing (optional)
-    //     window.onafterprint = function() {
-            
-    //         window.close();
-    //     };
-    // };
- 
+<head>
+  <title>Print Order</title>
+  <style>
+    @media print {
+      @page {
+        size: 88mm auto;
+        margin: 4mm;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        width: 88mm;
+        font-size: 11px;
+        color: #000;
+      }
 
+      h1 {
+        text-align: center;
+        font-size: 18px;
+        margin: 5px 0;
+        border-bottom: 1px dashed #000;
+        padding-bottom: 5px;
+      }
+
+      .info {
+        margin-bottom: 8px;
+        line-height: 1.4em;
+        padding: 0 5px;
+      }
+
+      .info p {
+        margin: 3px 0;
+      }
+
+      .line {
+        border-top: 1px dashed #000;
+        margin: 5px 0;
+      }
+
+      .item {
+        padding: 3px 5px;
+        margin-bottom: 5px;
+        border-bottom: 1px dotted #ccc;
+      }
+
+      .item-name {
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .extras, .customization {
+        margin-left: 10px;
+        font-style: italic;
+        font-size: 10px;
+      }
+
+      .total {
+        font-weight: bold;
+        font-size: 13px;
+        text-align: right;
+        margin-top: 10px;
+        padding: 0 5px;
+      }
+
+      .thank-you {
+        text-align: center;
+        font-size: 10px;
+        margin-top: 15px;
+        border-top: 1px dashed #000;
+        padding-top: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Mocha Café</h1>
+
+  <div class="info">
+    <p><strong>Date:</strong> {{ order.oerdered_at }}</p>
+    <p><strong>Printed At:</strong> {{ order.printed_at }}</p>
+    <p><strong>Table:</strong> {{ order.table.name }}</p>
+  </div>
+
+  <div class="line"></div>
+
+  {% for item in order.orderitem_set.all %}
+    <div class="item">
+      <div class="item-name">
+        <span>{{ item.quantity }} x {{ item.item.name }}</span>
+        <span>{{ item.price }} RWF</span>
+      </div>
+      
+      {% for extra in item.selected_extras.all %}
+        <div class="extras">+ {{ extra.name }} ({{ extra.price }} RWF)</div>
+      {% empty %}
+        <div class="extras">No extras</div>
+      {% endfor %}
+
+      {% if item.customizations %}
+        <div class="customization">Note: {{ item.customizations }}</div>
+      {% endif %}
+    </div>
+  {% endfor %}
+
+  <div class="line"></div>
+
+  <div class="total">Total: {{ order.total_amount }} RWF</div>
+
+  <div class="thank-you">Thank you for visiting Mocha Café!</div>
+
+  <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Ensure orderId and CSRF token are correctly rendered
-        const orderId = "{{ order_id }}"; // Replace with actual order ID
-        const csrfToken = "{{ csrf_token }}"; // Replace with CSRF token
+      const orderId = "{{ order_id }}";
+      const csrfToken = "{{ csrf_token }}";
 
-        // Trigger the print dialog
-        window.print();
+      window.print();
 
-        // Listen for the print dialog close event
-        window.onafterprint = function () {
-            console.log("Print dialog closed. Sending confirmation...");
-
-            // Send confirmation to the backend
-            fetch(`/print_order_view/${orderId}/`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": csrfToken // Include CSRF token for Django
-                },
-                body: JSON.stringify({ confirmed: true })
-            })
-                .then(response => {
-                    if (response.ok) {
-                        console.log("Print confirmation sent successfully.");
-                    } else {
-                        console.error("Failed to confirm print. Server error.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error sending print confirmation:", error);
-                });
-        };
-
-        // Fallback for unsupported browsers
-        window.onbeforeprint = function () {
-            console.log("Print dialog is about to open...");
-        };
+      window.onafterprint = function () {
+        fetch(`/print_order_view/${orderId}/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken
+          },
+          body: JSON.stringify({ confirmed: true })
+        }).then(response => {
+          if (!response.ok) {
+            console.error("Print confirmation failed.");
+          }
+        }).catch(error => console.error("Error:", error));
+      };
     });
-</script>
-    </body>
-    </html>
+  </script>
+</body>
+</html>
