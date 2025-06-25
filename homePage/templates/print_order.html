@@ -42,7 +42,7 @@
         {% for item in order.orderitem_set.all %}
         <li>{{ item.quantity }} x {{ item.item.name }} - {{ item.price }} RWF</li>
         {% for extra in item.selected_extras.all %}
-            <li>+ {{ extra.name }}  {{ extra.price }}</li>
+            <li>+ {{ extra.name }}  {{ extra.price }} RWF</li>
         {% empty %}
             <li>No extras</li>
         {% endfor %}
@@ -50,7 +50,7 @@
     
       </ul>
     <hr>
-<p><strong>Total:</strong>{{ order.total_amount }} RWF</p>
+<p><strong>Total: {{ order.total_amount }} RWF</strong></p>
 <hr>
 <div class="bottom-line">
   Thank you for visiting Mocha Mocha Cafe!

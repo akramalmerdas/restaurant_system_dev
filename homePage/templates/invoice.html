@@ -89,7 +89,7 @@
                     <td>
                         <ul style="padding-left: 0; list-style: none; margin: 0;">
                             {% for item in order.orderitem_set.all %}
-                            <li>${{ item.price }}</li>
+                            <li>{{ item.price }} RWF</li>
                             {% endfor %}
                         </ul>
                     </td>
@@ -99,7 +99,7 @@
             <tfoot>
                 <tr>
                     <td colspan="2" style="text-align: right;">Total:</td>
-                    <td>${{ invoice.total_amount }}</td>
+                    <td>{{ invoice.total_amount }} RWF</td>
                 </tr>
             </tfoot>
         </table>

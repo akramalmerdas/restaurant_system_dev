@@ -117,7 +117,7 @@
                                 <tr>
                                     <td>{{ invoice.id }}</td>
                                     <td>Table {{ invoice.table.number }}</td>
-                                    <td>${{ invoice.total_amount }}</td>
+                                    <td>{{ invoice.total_amount }} RWF</td>
                                     <td>{{ invoice.created_at|date:"Y-m-d H:i" }}</td>
                                     <td>
                                         <select 

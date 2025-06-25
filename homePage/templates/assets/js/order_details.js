@@ -70,7 +70,7 @@ fetch(`/get-extras/${orderItem.item_id}/`)
       <div class="form-check">
         <input class="form-check-input" type="checkbox" value="${extra.id}" id="extra-${extra.id}" ${checked}>
         <label class="form-check-label" for="extra-${extra.id}">
-          ${extra.name} (+${extra.price})
+          ${extra.name} (${extra.price} RWF)
         </label>
       </div>
     `;

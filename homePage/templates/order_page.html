@@ -94,10 +94,10 @@
                                     </td>
                                     <td>{{ item.name }}</td>
                                     <td>{{ item.quantity }}</td>
-                                    <td>${{ item.unit_price }}</td>
+                                    <td>{{ item.unit_price }} RWF</td>
                                     <td>{{ item.extras_names }}</td>
-                                    <td>${{ item.extra_price }}</td>
-                                    <td>${{ item.subtotal }}</td>
+                                    <td>{{ item.extra_price }} RWF</td>
+                                    <td>{{ item.subtotal }} RWF</td>
                                
                                 </tr>
                                 {% endfor %}
@@ -106,7 +106,7 @@
                     </div>
 
                     <div class="total-amount">
-                        <h5>Total Amount: <span>${{ total_amount }}</span></h5>
+                        <h5>Total Amount: <span>{{ total_amount }} RWF</span></h5>
                     </div>
 
                   

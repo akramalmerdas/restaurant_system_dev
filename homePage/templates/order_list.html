@@ -16,17 +16,17 @@
             <li>
                 <p>Order #{{ order.id }}</p><p>{{ order.customer.name }}</p>
                 <p>Ordered At: {{ order.ordered_at }}</p>
-                <p>Total Amount: ${{ order.total_amount }}</p>
+                <p>Total Amount: {{ order.total_amount }} RWF</p>
             
         <ul>
             {% for order_item in order.orderitem_set.all %}
                 <li>
-                    <p>{{ order_item.quantity }} x {{ order_item.item.name }} - ${{ order_item.price }}</p>
+                    <p>{{ order_item.quantity }} x {{ order_item.item.name }} - {{ order_item.price }} RWF</p>
 
                     <!-- Display Extras -->
                     <ul>
                         {% for extra_item in order_item.item.extraitem_set.all %}
-                            <li>{{ extra_item.Extra.name }} - ${{ extra_item.Extra.price }}</li>
+                            <li>{{ extra_item.Extra.name }} - {{ extra_item.Extra.price }} RWF</li>
                         {% endfor %}
                     </ul>
                 </li>

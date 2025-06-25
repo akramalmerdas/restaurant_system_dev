@@ -129,7 +129,7 @@
                                     <td>{{ order.id }}</td>
                                     <td>{{ order.customer.name }}</td>
                                     <td>{{ order.ordered_at|date:"Y-m-d H:i" }}</td>
-                                    <td>${{ order.total_amount|floatformat:2 }}</td>
+                                    <td>{{ order.total_amount|floatformat:2 }} RWF</td>
                                     <td>
                                         <span class="badge {% if order.order_status.name == 'pending' %}badge-pending
                                             {% elif order.order_status.name == 'readytoprint' %}badge-progress

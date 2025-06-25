@@ -84,14 +84,14 @@
                                                         {{ item_order.quantity }}x {{ item_order.item.name }}
                                                     </div>
                                                     <div class="item-details">
-                                                        <p class="mb-1">Unit Price: ${{ item_order.item.price }}</p>
+                                                        <p class="mb-1">Unit Price: {{ item_order.item.price }} RWF</p>
                                                         {% if item_order.customizations %}
                                                             <p class="mb-1">Customizations: {{ item_order.customizations }}</p>
                                                         {% endif %}
                                                         {% if item_order.selected_extras.exists %}
                                                             <ul class="extras-list">
                                                                 {% for extra in item_order.selected_extras.all %}
-                                                                    <li>{{ extra.name }} (+${{ extra.price }})</li>
+                                                                    <li>{{ extra.name }} ({{ extra.price }} RWF)</li>
                                                                 {% endfor %}
                                                             </ul>
                                                         {% endif %}
@@ -99,7 +99,7 @@
                                                 </div>
                                                 <div class="col-md-4 text-md-end">
                                                     <div class="item-price">
-                                                        ${{ item_order.price }}
+                                                        {{ item_order.price }} RWF
                                                     </div>
                                                 </div>
                                             </div>
@@ -110,7 +110,7 @@
                                 {% endif %}
 
                                 <div class="total-amount">
-                                    <h3>Total Amount: <span>${{ order.total_amount|floatformat:2 }}</span></h3>
+                                    <h3>Total Amount: <span>{{ order.total_amount|floatformat:2 }} RWF</span></h3>
                                 </div>
                             </div>
                         </div>
