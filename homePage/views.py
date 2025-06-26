@@ -1030,7 +1030,7 @@ def invoice_dashboard(request):
 def view_invoice(request, invoice_id):
     invoice = get_object_or_404(Invoice, id=invoice_id)
     orders = Order.objects.filter(invoice__id=invoice_id)# Assuming an Invoice has related Orders
-    print('this is the order for the invoice '+str(orders))
+   
     return render(request, 'invoice.html', {'invoice': invoice, 'orders': orders})
 from django.http import JsonResponse
 
@@ -1045,6 +1045,20 @@ def change_invoice_status(request, invoice_id):
             return JsonResponse({"success": True, "message": "Status updated successfully"})
         return JsonResponse({"success": False, "message": "Invalid status value"}, status=400)
     return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+
+
+def print_invoice_view(request, invoice_id):
+    invoice = get_object_or_404(Invoice, id=invoice_id)
+    orders = Order.objects.filter(invoice=invoice)
+    
+    context = {
+        'invoice': invoice,
+        'orders': orders,
+    }
+    
+    return render(request, 'print_invoice.html', context)
+
+
 @login_required
 def sales_report(request):
     # Default date range (e.g., last 30 days)

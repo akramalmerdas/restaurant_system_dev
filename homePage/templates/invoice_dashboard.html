@@ -137,7 +137,7 @@
                                             <a href="{% url 'view_invoice' invoice.id %}" class="btn btn-action btn-view">
                                                 <i class="bi bi-eye"></i> View
                                             </a>
-                                            <a href="#" class="btn btn-action btn-print" onclick="printInvoice({{ invoice.id }})">
+                                            <a href="#" class="btn btn-action btn-print" data-invoice-id="{{ invoice.id }}">
                                                 <i class="bi bi-printer"></i> Print
                                             </a>
                                         </div>

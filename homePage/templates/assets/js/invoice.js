@@ -72,3 +72,25 @@ if(generateInvoiceButton){
 });
 
 
+function printInvoice(invoiceId) {
+    // Open the invoice in a new window for printing
+    const printWindow = window.open(`/print_invoice/${invoiceId}/`, '_blank');
+    
+    // This is a fallback in case the popup is blocked
+    if (!printWindow || printWindow.closed || typeof printWindow.closed == 'undefined') {
+        // If popup is blocked, redirect to the print page in the same window
+        window.location.href = `/print_invoice/${invoiceId}/`;
+    }
+}
+
+// Add click handler for print buttons (in case the inline onclick doesn't work)
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-print').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const invoiceId = this.getAttribute('data-invoice-id') || 
+                             this.closest('tr').querySelector('td:first-child').textContent.trim();
+            printInvoice(invoiceId);
+        });
+    });
+});

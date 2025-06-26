@@ -27,6 +27,7 @@ urlpatterns =[
     path('invoices/', views.invoice_dashboard, name='invoice_dashboard'),
     path('invoice/<int:invoice_id>/', views.view_invoice, name='view_invoice'),
     path("invoice/<int:invoice_id>/change-status/", views.change_invoice_status, name="change_invoice_status"),
+    path('print_invoice/<int:invoice_id>/', views.print_invoice_view, name='print_invoice'),  
     path('sales_report/', views.sales_report, name='sales_report'),
     path('tables/', views.table_dashboard, name='table_dashboard'),
     path('tables/<int:table_id>/update/', views.update_table_status, name='update_table_status'),

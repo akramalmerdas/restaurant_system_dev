@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice #{{ invoice.id }}</title>
+    <style>
+        @page {
+            size: 80mm auto;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Courier New', monospace; /* Better for thermal printers */
+            margin: 0;
+            padding: 2mm 5mm;
+            width: 70mm;
+            font-size: 9px; /* Smaller font for more content */
+            color: #000;
+            -webkit-print-color-adjust: exact; /* Ensure colors print correctly */
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 5mm;
+            border-bottom: 1px dashed #000;
+            padding-bottom: 3mm;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .info {
+            margin-bottom: 5mm;
+        }
+        .info p {
+            margin: 2px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 5mm;
+        }
+        th, td {
+            padding: 3px 0;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        th {
+            border-bottom: 2px solid #000;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 14px;
+            text-align: right;
+            margin-top: 3mm;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 5mm;
+            padding-top: 3mm;
+            border-top: 1px dashed #000;
+            font-size: 10px;
+        }
+        @media print {
+            body {
+                margin: 2mm;
+                width: 76mm;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Mocha Cafe</h1>
+        <p>Invoice #{{ invoice.id }}</p>
+    </div>
+
+    <div class="info">
+        <p><strong>Date:</strong> {{ invoice.created_at|date:"Y-m-d H:i" }}</p>
+        <p><strong>Table:</strong> {{ invoice.table.number }}</p>
+        <p><strong>Status:</strong> {{ invoice.is_paid|yesno:"Paid,Unpaid" }}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                {% for item in order.orderitem_set.all %}
+                <tr>
+                    <td>
+                        {{ item.item.name }}
+                        {% if item.selected_extras.exists %}
+                            <div style="font-size: 10px; color: #555; margin-top: 2px;">
+                                Extras: 
+                                {% for extra in item.selected_extras.all %}
+                                    {{ extra.name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if item.customizations %}
+                            <div style="font-size: 10px; color: #555; font-style: italic;">
+                                Note: {{ item.customizations }}
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.price }} RWF</td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="total">
+        Total: {{ invoice.total_amount }} RWF
+    </div>
+
+    <div class="footer">
+        <p>Thank you for visiting Mocha Cafe!</p>
+        <p>Printed on {{ now|date:"Y-m-d H:i" }}</p>
+    </div>
+
+    <div class="no-print" style="text-align: center; margin-top: 10px;">
+        <button onclick="window.print()" style="padding: 5px 15px; background: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">
+            Print Invoice
+        </button>
+    </div>
+
+    <script>
+        // Auto-print when the page loads
+        window.onload = function() {
+            // Small delay to ensure all content is loaded
+            setTimeout(function() {
+                window.print();
+                // Close the window after a delay (adjust as needed)
+                setTimeout(function() { window.close(); }, 500);
+            }, 200);
+        };
+        
+        // Also handle the case where user clicks the print button
+        function printInvoice() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
