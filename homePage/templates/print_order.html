@@ -78,9 +78,10 @@
   <h1>Mocha Café</h1>
 
   <div class="info">
-    <p><strong>Date:</strong> {{ order.oerdered_at }}</p>
+    <p><strong>Date:</strong> {{ order.ordered_at }}</p>
     <p><strong>Printed At:</strong> {{ order.printed_at }}</p>
-    <p><strong>Table:</strong> {{ order.table.name }}</p>
+    <p><strong>Table:</strong> {{ order.table.number }}</p>
+  
   </div>
 
   <div class="line"></div>
@@ -89,11 +90,11 @@
     <div class="item">
       <div class="item-name">
         <span>{{ item.quantity }} x {{ item.item.name }}</span>
-        <span>{{ item.price }} RWF</span>
+      
       </div>
       
       {% for extra in item.selected_extras.all %}
-        <div class="extras">+ {{ extra.name }} ({{ extra.price }} RWF)</div>
+        <div class="extras">+ {{ extra.name }} </div>
       {% empty %}
         <div class="extras">No extras</div>
       {% endfor %}
@@ -106,9 +107,9 @@
 
   <div class="line"></div>
 
-  <div class="total">Total: {{ order.total_amount }} RWF</div>
+ 
 
-  <div class="thank-you">Thank you for visiting Mocha Café!</div>
+  <div class="thank-you">Thank you!!!</div>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
