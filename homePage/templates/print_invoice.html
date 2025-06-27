@@ -11,13 +11,19 @@
             padding: 0;
         }
         body {
-            font-family: 'Courier New', monospace; /* Better for thermal printers */
+            font-family: 'Courier New', monospace, sans-serif;
             margin: 0;
             padding: 2mm 5mm;
             width: 70mm;
-            font-size: 9px; /* Smaller font for more content */
-            color: #000;
-            -webkit-print-color-adjust: exact; /* Ensure colors print correctly */
+            font-size: 15px;
+            color: #000 !important;
+            font-weight: bold; /* Make all text bolder */
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        /* Make sure all text is bold */
+        * {
+            font-weight: bold !important;
         }
         .header {
             text-align: center;
@@ -97,23 +103,40 @@
                 {% for item in order.orderitem_set.all %}
                 <tr>
                     <td>
-                        {{ item.item.name }}
+                        <div style="font-weight: bold;">{{ item.quantity }}x {{ item.item.name }}</div>
                         {% if item.selected_extras.exists %}
-                            <div style="font-size: 10px; color: #555; margin-top: 2px;">
-                                Extras: 
+                            <div style="font-size: 9px; margin: 2px 0 4px 0;">
                                 {% for extra in item.selected_extras.all %}
-                                    {{ extra.name }}{% if not forloop.last %}, {% endif %}
+                                    + {{ extra.name }} ({{ extra.price }} RWF){% if not forloop.last %}<br>{% endif %}
                                 {% endfor %}
                             </div>
+                            {% comment %} Calculate and show extras total {% endcomment %}
+                            {% with "" as extras_total %}
+                                {% for extra in item.selected_extras.all %}
+                                    {% if forloop.first %}
+                                        {% with extra.price as extras_total %}
+                                        {% endwith %}
+                                    {% else %}
+                                        {% with extras_total|add:extra.price as extras_total %}
+                                        {% endwith %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if extras_total %}
+                                    <div style="font-size: 9px; margin-bottom: 3px;">
+                                        Extras Total: {{ extras_total }} RWF
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
                         {% endif %}
                         {% if item.customizations %}
-                            <div style="font-size: 10px; color: #555; font-style: italic;">
+                            <div style="font-size: 9px; font-style: italic; margin-top: 2px;">
                                 Note: {{ item.customizations }}
                             </div>
                         {% endif %}
                     </td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.price }} RWF</td>
+                    <td style="text-align: right; vertical-align: top;">
+                        {{ item.price }} RWF
+                    </td>
                 </tr>
                 {% endfor %}
             {% endfor %}
@@ -138,12 +161,22 @@
     <script>
         // Auto-print when the page loads
         window.onload = function() {
-            // Small delay to ensure all content is loaded
+            // Increase delay to ensure all content is loaded and rendered
             setTimeout(function() {
-                window.print();
-                // Close the window after a delay (adjust as needed)
-                setTimeout(function() { window.close(); }, 500);
-            }, 200);
+                // Force a redraw to ensure all content is visible
+                document.body.style.display = 'none';
+                document.body.offsetHeight; // Trigger reflow
+                document.body.style.display = 'block';
+                
+                // Print with a slight delay
+                setTimeout(function() {
+                    window.print();
+                    // Close the window after printing
+                    setTimeout(function() { 
+                        window.close(); 
+                    }, 1000);
+                }, 100);
+            }, 300);
         };
         
         // Also handle the case where user clicks the print button
