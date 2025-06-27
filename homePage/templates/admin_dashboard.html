@@ -159,9 +159,13 @@
                                                     <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Printing">Printing</a></li>
                                                 </ul>
                                             </div>
-                                            <button class="btn btn-action btn-delete btn-delete" data-order-id="{{ order.id }}">
+                                            <!-- <button class="btn btn-action btn-delete btn-delete" data-order-id="{{ order.id }}">
                                                 <i class="bi bi-trash"></i> Delete
-                                            </button>
+                                            </button> -->
+                                            <a href="#" class="btn btn-action btn-print-order" data-order-id="{{ order.id }}">
+                                                <i class="bi bi-printer"></i> Print
+                                            </a>
+                                          
                                         </div>
                                         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                                     </td>

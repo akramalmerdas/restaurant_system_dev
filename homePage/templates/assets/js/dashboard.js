@@ -82,3 +82,26 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.btn-print-order').forEach(button => {
+      button.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          const orderId = this.getAttribute('data-order-id');
+          if (!orderId) {
+              console.error('No order ID found');
+              return;
+          }
+          
+          // Open the print view for the order in a new tab
+          const printWindow = window.open(`/print_order_view/${orderId}/`, '_blank');
+          
+          // Focus the new window (required for some browsers)
+          if (printWindow) {
+              printWindow.focus();
+          }
+      });
+  });
+});
