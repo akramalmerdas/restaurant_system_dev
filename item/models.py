@@ -119,6 +119,7 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE,null=True, blank=True)
     ordered_at = models.DateTimeField(default=timezone.now)
     printed_at = models.DateTimeField(default=timezone.now)
+    deleted_at = models.DateTimeField(null=True, blank=True)
     order_status = models.ForeignKey(OrderStatus, on_delete=models.SET_NULL, null=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     served_at = models.DateTimeField(null=True, blank=True)
@@ -129,6 +130,8 @@ class Order(models.Model):
     table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True)
     table_number = models.CharField(default='Take Away', max_length=50)
     invoice = models.ForeignKey('Invoice', on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
+    deleted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    deleted_reason = models.TextField(null=True, blank=True)
     def calculate_total_amount(self):
         if not self.pk:
             return 0

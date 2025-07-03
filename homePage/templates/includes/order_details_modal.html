@@ -1,0 +1,209 @@
+<!-- Order Details Modal -->
+<div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Order Details #<span id="modalOrderId"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="text-muted small mb-1">Table</h6>
+                        <p id="tableNumber" class="mb-0">Loading...</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted small mb-1">Order Type</h6>
+                        <p id="orderType" class="mb-0">Loading...</p>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="text-muted small mb-1">Order Date</h6>
+                        <p id="orderDate" class="mb-0">Loading...</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted small mb-1">Cancellation Date</h6>
+                        <p id="cancellationDate" class="mb-0">Loading...</p>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="text-muted small mb-1">Cancelled By</h6>
+                        <p id="cancelledBy" class="mb-0">Loading...</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted small mb-1">Total Amount</h6>
+                        <p id="orderTotal" class="mb-0 fw-bold">Loading...</p>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <h6 class="text-muted small mb-2">Cancellation Reason</h6>
+                    <div class="p-3 bg-light rounded">
+                        <p id="cancellationReason" class="mb-0">Loading...</p>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <h6 class="text-muted small mb-2">Order Items</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm" id="orderItemsTable">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="fw-bold">
+                                    <td colspan="3" class="text-end">Total:</td>
+                                    <td id="orderTotalFooter">Loading...</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="printOrderBtn">
+                    <i class="bi bi-printer me-1"></i> Print Receipt
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #orderDetailsModal .modal-content {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    #orderDetailsModal .modal-header {
+        border-radius: 8px 8px 0 0;
+        padding: 1rem 1.5rem;
+    }
+    
+    #orderDetailsModal .modal-body {
+        padding: 1.5rem;
+    }
+    
+    #orderDetailsModal .modal-footer {
+        border-top: 1px solid #eee;
+        padding: 1rem 1.5rem;
+    }
+    
+    #orderDetailsModal .table {
+        margin-bottom: 0;
+    }
+    
+    #orderDetailsModal .customization-row td {
+        border-top: none;
+        padding-top: 0;
+    }
+    #orderDetailsModal .modal-body h6.text-muted.small {
+    font-family: inherit;
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: bold;
+}
+
+#orderDetailsModal .modal-body p {
+    font-family: inherit;
+    margin-bottom: 0.5rem;
+}
+</style>
+
+<script>
+// Initialize modal instance once
+const orderDetailsModal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
+
+// Function to reset modal content
+function resetModal() {
+    document.getElementById('modalOrderId').textContent = '';
+    document.getElementById('tableNumber').textContent = '';
+    document.getElementById('orderType').textContent = '';
+    document.getElementById('orderDate').textContent = '';
+    document.getElementById('cancellationDate').textContent = '';
+    document.getElementById('cancelledBy').textContent = '';
+    document.getElementById('orderTotal').textContent = '';
+    document.getElementById('orderTotalFooter').textContent = '';
+    document.getElementById('cancellationReason').textContent = '';
+    document.querySelector('#orderItemsTable tbody').innerHTML = '';
+    document.body.classList.remove('modal-open');
+    
+    // Remove any existing backdrops
+    const backdrops = document.getElementsByClassName('modal-backdrop');
+    while (backdrops.length > 0) {
+        backdrops[0].remove();
+    }
+}
+
+// Handle modal close events
+document.getElementById('orderDetailsModal').addEventListener('hidden.bs.modal', resetModal);
+
+// Make sure close buttons work
+document.querySelectorAll('[data-bs-dismiss="modal"]').forEach(button => {
+    button.addEventListener('click', resetModal);
+});
+
+// This function will be called from the main page to load order details
+function loadOrderDetails(orderId) {
+    resetModal();  // Reset before loading new data
+    
+    // Show loading indicator
+    document.getElementById('modalOrderId').textContent = 'Loading...';
+    
+    fetch(`/order_details_api/${orderId}/`)
+        .then(response => response.json())
+        .then(order => {
+            // Populate modal with real data
+            document.getElementById('modalOrderId').textContent = order.id;
+            document.getElementById('tableNumber').textContent = order.table_number || 'Take Away';
+            document.getElementById('orderType').textContent = order.table_number ? 'Dine-in' : 'Take Away';
+            document.getElementById('orderDate').textContent = new Date(order.ordered_at).toLocaleString();
+            document.getElementById('cancellationDate').textContent = order.deleted_at ? 
+                new Date(order.deleted_at).toLocaleString() : 'N/A';
+            document.getElementById('cancelledBy').textContent = order.deleted_by || 'System';
+            document.getElementById('orderTotal').textContent = `${order.total_amount} RWF`;
+            document.getElementById('orderTotalFooter').textContent = `${order.total_amount} RWF`;
+            document.getElementById('cancellationReason').textContent = 
+                order.deleted_reason || 'No reason provided';
+
+            // Populate order items
+            const itemsTable = document.querySelector('#orderItemsTable tbody');
+            itemsTable.innerHTML = order.order_items.map(item => {
+                let row = `<tr>
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.price} RWF</td>
+                    <td>${item.total} RWF</td>
+                </tr>`;
+                
+                if (item.customizations) {
+                    row += `<tr class="customization-row">
+                        <td colspan="4" class="small text-muted">
+                            <i class="bi bi-pencil-fill me-1"></i> 
+                            ${item.customizations}
+                        </td>
+                    </tr>`;
+                }
+                return row;
+            }).join('');
+            
+            // Show the modal
+            orderDetailsModal.show();
+        })
+        .catch(error => {
+            console.error('Error loading order details:', error);
+            alert('Failed to load order details');
+            resetModal();
+        });
+}
+</script>

@@ -2,132 +2,174 @@
 <html lang="en">
 <head>
     {% load static %}
+    {% include 'includes/delete_order_modal.html' %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Detail - Mocha Cafe</title>
     
-    <!-- Vendor CSS Files -->
-    <link href="{% static 'vendor/animate.css/animate.min.css' %}" rel="stylesheet">
-    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
-    <link href="{% static 'vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
-    <link href="{% static 'vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
-    <link href="{% static 'vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
-
-    <!-- Template Main CSS File -->
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
-    <link href="{% static 'css/order_view.css' %}" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="{% static 'css/order_view.css' %}" rel="stylesheet">  
 </head>
 <body>
-    <!-- ======= Header ======= -->
-    <header id="header" class="fixed-top d-flex align-items-center">
-        <div class="container-fluid container-xl d-flex align-items-center justify-content-lg-between">
-            <h1 class="logo me-auto me-lg-0"><a href="/">Mocha Cafe</a></h1>
-            <nav id="navbar" class="navbar order-last order-lg-0">
-                <ul>
-                    <li><a class="nav-link scrollto" href="/">Home</a></li>
-                    <li><a class="nav-link scrollto" href="/#menu">Menu</a></li>
-                    {% if user.is_authenticated %}
-                        {% if user.staff %}
-                            <li><a class="nav-link scrollto" href="{% url 'admin_dashboard' %}">Dashboard</a></li>
-                        {% elif user.customer %}
-                            <li><a class="nav-link scrollto" href="{% url 'customer_profile' %}">Profile</a></li>
-                        {% endif %}
-                        <li><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
-                    {% else %}
-                        <li><a class="nav-link scrollto" href="{% url 'login' %}">Login</a></li>
-                    {% endif %}
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="container">
+            <a href="/" class="logo">Mocha Cafe</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/#menu">Menu</a></li>
+                    <li><a href="/profile">Profile</a></li>
+                    <li><a href="/logout">Logout</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <main id="main">
-        <section class="order-section">
-            <div class="container">
-                <div class="order-header">
-                    <h2>Order Details</h2>
-                    <p>Order #{{ order.id }}</p>
-                </div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header loading">
+                <h1>Order Details</h1>
+                <p class="subtitle">Order #{{ order.id }}</p>
+            </div>
 
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="order-card">
-                            <div class="order-info">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <p><strong>Customer Name:</strong> {{ order.customer.name }}</p>
-                                        <p><strong>Order Date:</strong> {{ order.ordered_at|date:"F d, Y H:i" }}</p>
-                                        {% if order.table.number %}
-                                            <p><strong>Table:</strong> {{ order.table.number }}</p>
-                                        {% endif %}
-                                    </div>
-                                    <div class="col-md-6 text-md-end">
-                                        <p><strong>Status: </strong>
-                                            <span class="status-badge {% if order.order_status.name == 'pending' %}status-pending
-                                                  {% elif order.order_status.name == 'completed' %}status-completed
-                                                  {% elif order.order_status.name == 'delivered' %}status-delivered{% endif %}">
-                                                {{ order.order_status }}
-                                            </span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="order-items">
-                                {% if order_items %}
-                                    {% for item_order in order_items %}
-                                        <div class="item-card">
-                                            <div class="row align-items-center">
-                                                <div class="col-md-8">
-                                                    <div class="item-name">
-                                                        {{ item_order.quantity }}x {{ item_order.item.name }}
-                                                    </div>
-                                                    <div class="item-details">
-                                                        <p class="mb-1">Unit Price: {{ item_order.item.price }} RWF</p>
-                                                        {% if item_order.customizations %}
-                                                            <p class="mb-1">Customizations: {{ item_order.customizations }}</p>
-                                                        {% endif %}
-                                                        {% if item_order.selected_extras.exists %}
-                                                            <ul class="extras-list">
-                                                                {% for extra in item_order.selected_extras.all %}
-                                                                    <li>{{ extra.name }} ({{ extra.price }} RWF)</li>
-                                                                {% endfor %}
-                                                            </ul>
-                                                        {% endif %}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4 text-md-end">
-                                                    <div class="item-price">
-                                                        {{ item_order.price }} RWF
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                {% else %}
-                                    <p class="text-center">No items in this order.</p>
-                                {% endif %}
-
-                                <div class="total-amount">
-                                    <h3>Total Amount: <span>{{ order.total_amount|floatformat:2 }} RWF</span></h3>
-                                </div>
+            <!-- Order Card -->
+            <div class="order-card loading">
+                <!-- Order Information -->
+                <div class="order-info">
+                    <h3><i class="bi bi-info-circle"></i>Order Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Customer Name</strong>
+                            <div class="value">{{ order.customer.name }}</div>
+                        </div>
+                        <div class="info-item">
+                            <strong>Order Date</strong>
+                            <div class="value">{{ order.ordered_at }}</div>
+                        </div>
+                        <div class="info-item">
+                            <strong>Table Number</strong>
+                            <div class="value">{{ order.table_number }}</div>
+                        </div>
+                        <div class="info-item">
+                            <strong>Current Status</strong>
+                            <div class="value">
+                                <span class="status-badge status-pending">
+                                    <i class="bi bi-clock"></i> Pending
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Action Buttons -->
+                <div class="action-section">
+                    <div class="action-buttons">
+                        <div class="dropdown">
+                            <button class="btn-modern btn-status dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-arrow-repeat"></i> Change Status
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="statusDropdown{{ order.id }}">
+                                <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Pending">
+                                    <i class="bi bi-clock me-2"></i>Pending
+                                </a></li>
+                                <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Ready to Print">
+                                    <i class="bi bi-printer me-2"></i>Ready to Print
+                                </a></li>
+                                <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Printed">
+                                    <i class="bi bi-check-circle me-2"></i>Printed
+                                </a></li>
+                                <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Served">
+                                    <i class="bi bi-cup-hot me-2"></i>Served
+                                </a></li>
+                                <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Delivered">
+                                    <i class="bi bi-truck me-2"></i>Delivered
+                                </a></li>
+                                <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Completed">
+                                    <i class="bi bi-check-all me-2"></i>Completed
+                                </a></li>
+                                <li><a class="dropdown-item status-option" href="#" data-order-id="{{ order.id }}" data-status="Printing">
+                                    <i class="bi bi-printer me-2"></i>Printing
+                                </a></li>
+                            </ul>
+                        </div>
+                        <button class="btn-modern btn-print" data-order-id="{{ order.id }}">
+                            <i class="bi bi-printer"></i> Print Order
+                        </button>
+                        <button class="btn-modern btn-cancel" data-order-id="{{ order.id }}">
+                            <i class="bi bi-x-circle"></i> Cancel Order
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="order-items-section">
+                    {% if order_items %}
+                
+                    <h3><i class="bi bi-cart3"></i>Order Items</h3>
+                    {% for item in order_items %}
+                    <div class="item-card">
+                        <div class="item-header">
+                            <div class="item-name">{{ item.quantity }}x {{ item.item.name }}</div>
+                            <div class="item-price">{{ item.price|floatformat:2 }} RWF</div>
+                        </div>
+                        <div class="item-details">
+                            <p><strong>Unit Price:</strong> {{ item.item.price|floatformat:2 }} RWF</p>
+                            {% if item.customizations %}
+                                <p><strong>Customizations:</strong> {{ item.customizations }}</p>
+                            {% endif %}
+                            {% if item.selected_extras.all|length > 0 %}
+                            <ul class="extras-list">
+                                {% for extra in item.selected_extras.all %}
+                                <li>
+                                    <i class="bi bi-plus-circle me-2"></i>{{ extra.name }} (+{{ extra.price|floatformat:2 }} RWF)
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-center">No items in this order.</p>
+                {% endif %}
+
+                <!-- Total Section -->
+                <div class="total-section">
+                    <div class="total-label">Total Amount</div>
+                    <div class="total-amount">{{ order.total_amount|floatformat:2 }} RWF</div>
+                </div>
             </div>
-        </section>
+        </div>
     </main>
 
-    <!-- Vendor JS Files -->
-    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
-    <script src="{% static 'vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
-    <script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
-    <script src="{% static 'vendor/php-email-form/validate.js' %}"></script>
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/order_view.js' %}"></script>
+   <script>
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
 
-    <!-- Template Main JS File -->
-    <script src="{% static 'js/main.js' %}"></script>
+        // Add loading animation delay
+        setTimeout(() => {
+            document.querySelectorAll('.loading').forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.animationDelay = `${index * 0.2}s`;
+                }, index * 100);
+            });
+        }, 100);
+    </script>
 </body>
 </html>

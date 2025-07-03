@@ -1,5 +1,8 @@
 import { showConfirmation } from "./custom_dialog.js";
 
+
+
+
 /////////////////////////////////delete order //////////////////////////////////////////
 document.addEventListener("DOMContentLoaded", function () {
     const buttons = document.querySelectorAll(".btn-delete");
@@ -105,3 +108,5 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   });
 });
+
+// dashboard.js

@@ -7,6 +7,7 @@ urlpatterns =[
     path('meal/<int:menu_item_id>/',views.orderPage,name='orderPage'),
     path('get-extras/<int:menu_item_id>/', views.get_extras, name='get_extras'),
     path('order_details/', views.orderDetails, name='orderDetails'),
+    path('order_details_api/<int:order_id>/', views.orderDetailApi, name='orderDetailsApi'),
     path('order_view/<int:order_id>/',views.orderView , name='orderView'),
     path('orders/', views.orderList, name='orderList'),
     path('add_to_order/', views.addToOrder, name='add_to_order'),
@@ -39,4 +40,5 @@ urlpatterns =[
     path('set_table/', views.setTableNumber, name='set_table_number'),
     path('table_landing/', views.tableLanding, name='table_landing_page'),
     path('get_order_by_table/<int:table_id>/',views.getOrderByTable , name='get_order_by_table'),
+    path('cancelled_orders/', views.cancelled_orders, name='cancelled_orders'),
 ]

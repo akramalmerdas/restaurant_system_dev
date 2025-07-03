@@ -1,0 +1,85 @@
+<!-- Delete Order Modal -->
+<div class="modal fade" id="deleteOrderModal" tabindex="-1" aria-labelledby="deleteOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteOrderModalLabel">Cancel Order</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-4">Please provide a reason for cancelling this order:</p>
+                <form id="deleteOrderForm">
+                    <input type="hidden" id="orderIdToDelete" name="order_id">
+                    <div class="mb-3">
+                        <label for="deletionReason" class="form-label">Reason for cancellation:</label>
+                        <textarea class="form-control" id="deletionReason" name="deletion_reason" rows="3" required
+                                  placeholder="Enter the reason for cancelling this order..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Confirm Cancellation</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #deleteOrderModal .modal-content {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    #deleteOrderModal .modal-header {
+        border-radius: 8px 8px 0 0;
+        padding: 1rem 1.5rem;
+    }
+    
+    #deleteOrderModal .modal-body {
+        padding: 1.5rem;
+    }
+    
+    #deleteOrderModal .modal-footer {
+        border-top: 1px solid #eee;
+        padding: 1rem 1.5rem;
+    }
+    
+    #deleteOrderModal .form-control {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 10px 15px;
+        transition: border-color 0.3s;
+    }
+    
+    #deleteOrderModal .form-control:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+    }
+    
+    #deleteOrderModal .btn {
+        border-radius: 6px;
+        padding: 8px 20px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    
+    #deleteOrderModal .btn-danger {
+        background-color: #dc3545;
+        border: none;
+    }
+    
+    #deleteOrderModal .btn-danger:hover {
+        background-color: #bb2d3b;
+    }
+    
+    #deleteOrderModal .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+    }
+    
+    #deleteOrderModal .btn-secondary:hover {
+        background-color: #5c636a;
+    }
+</style>
