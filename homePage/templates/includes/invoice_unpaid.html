@@ -1,0 +1,185 @@
+<!-- File: homePage/templates/includes/mark_unpaid_modal.html -->
+<div class="modal fade" id="markUnpaidModal" tabindex="-1" aria-labelledby="markUnpaidModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <!-- Modal Header -->
+            <div class="modal-header bg-light">
+                <h5 class="modal-title text-dark" id="markUnpaidModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                    Mark Invoice as Unpaid
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <div class="alert alert-warning" role="alert">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    Please provide a reason for marking this invoice as unpaid.
+                </div>
+                
+                <form id="markUnpaidForm">
+                    <input type="hidden" id="unpaidInvoiceId" name="invoice_id">
+                    
+                    <div class="mb-3">
+                        <label for="unpaidReason" class="form-label">
+                            Reason <span class="text-danger">*</span>
+                        </label>
+                        <textarea 
+                            class="form-control" 
+                            id="unpaidReason" 
+                            name="reason" 
+                            rows="4" 
+                            maxlength="500"
+                            required
+                            placeholder="Enter the reason for marking this invoice as unpaid..."
+                        ></textarea>
+                        <div class="form-text text-end">
+                            <span id="unpaidReasonCount">0</span>/500 characters
+                        </div>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="confirmUnpaid" required>
+                        <label class="form-check-label" for="confirmUnpaid">
+                            I confirm that I want to mark this invoice as unpaid
+                        </label>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i> Cancel
+                </button>
+                <button type="submit" form="markUnpaidForm" class="btn btn-warning text-white" id="submitUnpaidBtn">
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Mark as Unpaid
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Custom styling to match your website's theme */
+#markUnpaidModal .modal-content {
+    border: none;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+#markUnpaidModal .modal-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1rem 1.5rem;
+}
+
+#markUnpaidModal .modal-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+#markUnpaidModal .modal-body {
+    padding: 1.5rem;
+}
+
+#markUnpaidModal .modal-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1rem 1.5rem;
+}
+
+#markUnpaidModal .btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+#markUnpaidModal .btn-warning:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+
+#markUnpaidModal .form-control:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+}
+
+#markUnpaidModal .form-check-input:checked {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+#unpaidReason {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    #markUnpaidModal .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    #markUnpaidModal .modal-body {
+        padding: 1.25rem;
+    }
+}
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('markUnpaidForm');
+        const modal = new bootstrap.Modal(document.getElementById('markUnpaidModal'));
+        const submitBtn = document.getElementById('submitUnpaidBtn');
+    
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+    
+            const invoiceId = document.getElementById('unpaidInvoiceId').value;
+            const reason = document.getElementById('unpaidReason').value;
+            const confirm = document.getElementById('confirmUnpaid').checked;
+    
+            if (!confirm || !reason.trim()) {
+                alert("You must confirm and provide a reason.");
+                return;
+            }
+    
+            // Show spinner
+            submitBtn.querySelector('.spinner-border').classList.remove('d-none');
+            submitBtn.setAttribute('disabled', 'true');
+    
+            fetch('/mark-unpaid/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken(),
+                },
+                body: JSON.stringify({
+                    invoice_id: invoiceId,
+                    reason: reason,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Invoice marked as unpaid successfully!');
+                    location.reload();
+                } else {
+                    alert(data.message || 'Failed to mark unpaid.');
+                }
+            })
+            .catch(() => {
+                alert('Server error. Please try again.');
+            })
+            .finally(() => {
+                submitBtn.querySelector('.spinner-border').classList.add('d-none');
+                submitBtn.removeAttribute('disabled');
+            });
+        });
+    
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value;
+        }
+    });
+    </script>
+    

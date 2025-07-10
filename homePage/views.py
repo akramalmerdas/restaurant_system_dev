@@ -4,7 +4,7 @@ from django.utils.timezone import now
 from django.shortcuts import redirect, render , get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
-from item.models import Item ,Order,OrderItem,Extra,OrderItemExtra,OrderStatus,Customer,Table,Invoice,Staff
+from item.models import Item ,Order,OrderItem,Extra,OrderItemExtra,OrderStatus,Customer,Table,Invoice,Staff,Payment,UnpaidReasonLog
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.contrib.auth import authenticate,login,logout
@@ -17,8 +17,10 @@ from datetime import datetime
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.core import serializers
+from django.views.decorators.http import require_http_methods
 # Create your views here.
 from django.shortcuts import render, get_object_or_404
+from django.db import transaction
 
 @login_required
 def index(request):
@@ -1092,21 +1094,6 @@ def cancelled_orders(request):
     # Return HTML for regular requests
     return render(request, 'deleted_orders.html', context)
 
-# @csrf_exempt
-# def confirm_print(request, order_id):
-#     if request.method == "POST":
-#         try:
-#             order = Order.objects.get(id=order_id)
-#             printed_status = OrderStatus.objects.get(name="printed")
-#             order.order_status = printed_status
-#             order.save()
-#             print('confirmed successfully')
-#             return JsonResponse({"success": True, "message": "Print confirmed."})
-#         except Order.DoesNotExist:  
-#             return JsonResponse({"success": False, "message": "Order not found."}, status=404)
-#         except OrderStatus.DoesNotExist:
-#             return JsonResponse({"success": False, "message": "Printed status not found."}, status=500)
-#     return JsonResponse({"success": False, "message": "Invalid request method."}, status=400)
 
 
 @login_required
@@ -1156,7 +1143,59 @@ def generate_invoice(request, table_id):
   else: 
     return JsonResponse({"success": False, "message": "Invalid request method."}, status=400)
 
-
+@login_required
+def generate_invoice_for_order(request, order_id):
+    if request.method == 'POST':
+        try:
+            # Get the order
+            order = get_object_or_404(Order, id=order_id)
+            
+            # Check if the order already has an invoice
+            if order.invoice:
+                return JsonResponse({
+                    "success": False, 
+                    "message": "This order already has an invoice."
+                }, status=400)
+            
+            # Create a new invoice
+            invoice = Invoice.objects.create(
+                table=order.table,  # Add this line
+                total_amount=order.total_amount,
+                created_at=timezone.now()
+            )
+            
+            # Get the completed status
+            completed_status = OrderStatus.objects.filter(name='completed').first()
+            if not completed_status:
+                return JsonResponse({
+                    "success": False,
+                    "message": "Completed status not found."
+                }, status=500)
+            
+            # Update the order with the invoice and status
+            order.invoice = invoice
+            order.order_status = completed_status
+            order.save()
+            
+            # If the order is associated with a table, update table status if no other active orders
+      
+            
+            return JsonResponse({
+                "success": True, 
+                "message": "Invoice generated successfully for the order.",
+                "invoice_id": invoice.id
+            })
+            
+        except Exception as e:
+            return JsonResponse({
+                "success": False, 
+                "message": str(e)
+            }, status=500)
+    
+    return JsonResponse({
+        "success": False, 
+        "message": "Invalid request method. Use POST."
+    }, status=400)
 
 @login_required
 def invoice_dashboard(request):
@@ -1181,20 +1220,180 @@ def view_invoice(request, invoice_id):
     orders = Order.objects.filter(invoice__id=invoice_id)# Assuming an Invoice has related Orders
    
     return render(request, 'invoice.html', {'invoice': invoice, 'orders': orders})
-from django.http import JsonResponse
 
-def change_invoice_status(request, invoice_id):
-    if request.method == "POST":
-        invoice = get_object_or_404(Invoice, id=invoice_id)
-        data = json.loads(request.body)  # Parse JSON data
-        is_paid = data.get("is_paid")
-        if is_paid in ["0", "1"]:
-            invoice.is_paid = bool(int(is_paid))
+@login_required
+def view_invoiceA4(request, invoice_id):
+    invoice = get_object_or_404(Invoice, id=invoice_id)
+    orders = Order.objects.filter(invoice__id=invoice_id)# Assuming an Invoice has related Orders
+   
+    return render(request, 'invoiceA4.html', {'invoice': invoice, 'orders': orders})
+
+    
+@require_http_methods(["POST"])
+@login_required
+def process_payment(request, invoice_id):
+    """
+    API endpoint to process a payment for a given invoice.
+    Expects a JSON payload with 'amount', 'method', 'transaction_id' (optional), and 'notes' (optional).
+    """
+    try:
+        # 1. Parse and validate incoming JSON data
+        try:
+            data = json.loads(request.body)
+            amount = Decimal(str(data.get("amount")))
+            method = data.get("method")
+            transaction_id = data.get("transaction_id")
+            notes = data.get("notes", "")
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "error": "Invalid JSON data"}, status=400)
+
+        # Validate required fields
+        if not all([amount, method]):
+            return JsonResponse({"success": False, "error": "Amount and payment method are required"}, status=400)
+
+        # Ensure amount is positive
+        if amount <= 0:
+            return JsonResponse({"success": False, "error": "Payment amount must be positive"}, status=400)
+
+        with transaction.atomic():
+            # 2. Retrieve and lock the invoice to prevent race conditions
+            try:
+                invoice = Invoice.objects.select_for_update().get(id=invoice_id)
+            except Invoice.DoesNotExist:
+                return JsonResponse({"success": False, "error": "Invoice not found"}, status=404)
+
+            # 3. Validate payment against current balance
+            # Refresh invoice to get the absolute latest balance_due before validation
+            invoice.refresh_from_db()
+            current_balance_due = invoice.balance_due
+            if amount > current_balance_due:
+                return JsonResponse({
+                    "success": False,
+                    "error": f"Payment amount ({amount}) exceeds remaining balance ({current_balance_due:.2f})"
+                }, status=400)
+
+            # 4. Create the payment record
+            try:
+                payment = Payment.objects.create(
+                    invoice=invoice,
+                    amount=amount,
+                    method=method,
+                    transaction_id=transaction_id,
+                    notes=notes,
+                    processed_by=request.user
+                )
+            except Exception as e:
+                # Log the exception for debugging purposes
+                print(f"Error creating payment: {e}")
+                return JsonResponse({"success": False, "error": f"Error creating payment: {str(e)}"}, status=500)
+
+            # 5. Update invoice status (handled by Payment model's save method)
+            # The Payment model's save method calls invoice.update_payment_status()
+            # which then saves the invoice's is_paid and status fields.
+            
+            # Refresh the invoice instance AGAIN to get the latest calculated properties after payment and status update
+            invoice.refresh_from_db()
+
+            # 6. Prepare response data
+            message = f"Partial payment received. Remaining balance: {invoice.balance_due:.2f} RWF"
+            if invoice.is_fully_paid:
+                message = "Payment processed successfully! Invoice is now fully paid."
+
+            return JsonResponse({
+                "success": True,
+                "payment_id": payment.id,
+                "amount_paid": float(invoice.amount_paid), # Total amount paid for this invoice
+                "balance_due": float(invoice.balance_due),
+                "is_fully_paid": invoice.is_fully_paid,
+                "status": invoice.status,
+                "message": message
+            })
+
+    except Exception as e:
+        # Catch any unexpected errors and return a generic error response
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({"success": False, "error": f"An unexpected error occurred: {str(e)}"}, status=500)
+
+
+@csrf_exempt
+@login_required
+def mark_unpaid(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            invoice_id = data.get('invoice_id')
+            reason = data.get('reason')
+
+            if not reason:
+                return JsonResponse({'success': False, 'message': 'Reason is required.'})
+
+            invoice = Invoice.objects.get(id=invoice_id)
+
+            # Store the reason and user
+            UnpaidReasonLog.objects.create(
+                invoice=invoice,
+                user=request.user,
+                reason=reason
+            )
+
+            # Soft-delete the last payment
+            last_payment = Payment.objects.filter(invoice=invoice, inHold=False).last()
+            if last_payment:
+                last_payment.inHold = True
+                last_payment.save()
+
+            # Optionally update invoice status
+            invoice.status = "Unpaid"
             invoice.save()
-            return JsonResponse({"success": True, "message": "Status updated successfully"})
-        return JsonResponse({"success": False, "message": "Invalid status value"}, status=400)
-    return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
 
+            return JsonResponse({'success': True})
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+@require_http_methods(["POST"])
+@login_required
+def update_invoice_status(request, invoice_id):
+    try:
+        data = json.loads(request.body)
+        is_paid = data.get('is_paid')
+        
+        with transaction.atomic():
+            invoice = Invoice.objects.select_for_update().get(id=invoice_id)
+            
+            if is_paid and not invoice.is_paid:
+                # If marking as paid, create a payment for the remaining balance
+                if invoice.balance_due > 0:
+                    Payment.objects.create(
+                        invoice=invoice,
+                        amount=invoice.balance_due,
+                        method='CASH',  # Default method
+                        processed_by=request.user,
+                        notes='Marked as paid via status change'
+                    )
+                invoice.is_paid = True
+                invoice.status = 'paid'
+            elif not is_paid and invoice.is_paid:
+                # If marking as unpaid, you might want to void the last payment
+                # or handle this differently based on your business logic
+                invoice.is_paid = False
+                invoice.status = 'pending'
+                
+            invoice.save()
+            
+            return JsonResponse({
+                'success': True,
+                'is_paid': invoice.is_paid,
+                'status': invoice.status
+            })
+            
+    except Invoice.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Invoice not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 def print_invoice_view(request, invoice_id):
     invoice = get_object_or_404(Invoice, id=invoice_id)

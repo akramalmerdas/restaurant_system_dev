@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!orderId) {
                 console.error('No order ID found');
                 return;
-            }
+            }``
             
             // Open the print view for the order in a new tab
             const printWindow = window.open(`/print_order_view/${orderId}/`, '_blank');
@@ -206,3 +206,30 @@ if (!document.getElementById('statusToast')) {
     `;
     document.body.appendChild(toastContainer);
 }
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Print order functionality
+    document.querySelectorAll('.btn-invoice').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const orderId = this.getAttribute('data-order-id');
+            fetch(`/generate-invoice/${orderId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Invoice generated successfully!');
+                    // Optionally redirect to invoice or refresh
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            });
+        });
+    });
+});

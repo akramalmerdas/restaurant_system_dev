@@ -248,3 +248,25 @@ body {
     50% { background-color: rgba(255, 193, 7, 0.3); }
     100% { background-color: transparent; }
 }
+
+.toast {
+    min-width: 300px;
+}
+
+.toast-body {
+    color: white;
+    border-radius: 0.25rem;
+}
+
+.bg-success {
+    background-color: #198754 !important;
+}
+
+.bg-error {
+    background-color: #dc3545 !important;
+}
+
+.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}

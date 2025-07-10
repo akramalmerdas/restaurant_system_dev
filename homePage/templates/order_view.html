@@ -58,8 +58,8 @@
                         <div class="info-item">
                             <strong>Current Status</strong>
                             <div class="value">
-                                <span class="status-badge status-pending">
-                                    <i class="bi bi-clock"></i> Pending
+                                <span class="status-badge status-{{ order.order_status.name.lower }}">
+                                    <i class="bi bi-clock"></i> {{ order.order_status.name }}
                                 </span>
                             </div>
                         </div>
@@ -102,6 +102,9 @@
                         </button>
                         <button class="btn-modern btn-cancel" data-order-id="{{ order.id }}">
                             <i class="bi bi-x-circle"></i> Cancel Order
+                        </button>
+                        <button class="btn-modern btn-invoice" data-order-id="{{ order.id }}">
+                            <i class="bi bi-file-text"></i> Generate Invoice
                         </button>
                     </div>
                 </div>

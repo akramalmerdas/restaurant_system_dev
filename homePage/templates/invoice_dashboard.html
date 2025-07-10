@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     {% load static %}
+    {% include 'includes/invoice_payment_modal.html' %}
+    {% include 'includes/invoice_unpaid.html' %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice Dashboard - Mocha Cafe</title>
@@ -120,21 +122,17 @@
                                     <td>{{ invoice.total_amount }} RWF</td>
                                     <td>{{ invoice.created_at|date:"Y-m-d H:i" }}</td>
                                     <td>
-                                        <select 
-                                            name="is_paid" 
-                                            class="form-select form-select-sm status-select"
-                                            onchange="updateInvoiceStatus({{ invoice.id }}, this.value)">
-                                            <option value="1" {% if invoice.is_paid %}selected{% endif %}>
-                                                <span class="badge badge-success">Paid</span>
-                                            </option>
-                                            <option value="0" {% if not invoice.is_paid %}selected{% endif %}>
-                                                <span class="badge badge-pending">Unpaid</span>
-                                            </option>
-                                        </select>
+                                        <select class="form-select form-select-sm status-select" 
+                                        data-invoice-id="{{ invoice.id }}"
+                                        data-total-amount="{{ invoice.total_amount }}"
+                                        data-balance-due="{{ invoice.balance_due }}">
+                                    <option value="0" {% if not invoice.is_fully_paid %}selected{% endif %}>Unpaid</option>
+                                    <option value="1" {% if invoice.is_fully_paid %}selected{% endif %}>Paid</option>
+                                </select>
                                     </td>
                                     <td>
                                         <div class="action-buttons">
-                                            <a href="{% url 'view_invoice' invoice.id %}" class="btn btn-action btn-view">
+                                            <a href="{% url 'view_invoice_A4' invoice.id %}" class="btn btn-action btn-view">
                                                 <i class="bi bi-eye"></i> View
                                             </a>
                                             <a href="#" class="btn btn-action btn-print" data-invoice-id="{{ invoice.id }}">
@@ -160,7 +158,29 @@
             </div>
         </div>
     </section>
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body"></div>
+        </div>
+    </div>
 
+
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer">
+        <div id="customToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body" id="toastMessage">
+              Success message goes here.
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      </div>
     <!-- Vendor JS Files -->
     <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
