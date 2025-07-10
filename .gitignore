@@ -47,3 +47,5 @@ htmlcov/
 # === Others ===
 *.bak
 *.swp
+__pycache__/
+*.pyc
