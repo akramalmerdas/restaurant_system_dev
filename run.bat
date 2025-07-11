@@ -2,8 +2,11 @@
 :: Navigate to your Django project directory
 cd /d E:\Django\MochaSystem\MochaCafe
 
-:: Run Django server using the venv Python executable
-venv\Scripts\python.exe manage.py runserver 0.0.0.0:8000
+:: Activate the virtual environment
+call venv\Scripts\activate
 
-:: Keep the window open after it stops (e.g., error or exit)
+:: Run Daphne server on all interfaces, port 8000
+daphne -b 0.0.0.0 -p 8000 MochaCafe.asgi:application
+
+:: Keep the window open after execution
 pause
