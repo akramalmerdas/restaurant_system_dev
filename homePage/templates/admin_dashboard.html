@@ -3,7 +3,7 @@
 <head>
     {% load static %}
     <!-- Include Delete Order Modal -->
- {% include 'includes/delete_order_modal.html' %}
+    {% include 'includes/delete_order_modal.html' %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Mocha Cafe</title>
@@ -24,6 +24,37 @@
     <!-- Template Main CSS File -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <link href="{% static 'css/admin_dashboard.css' %}" rel="stylesheet">
+    <style>
+        /* Additional styles for sidebar integration */
+        .dashboard-section {
+            padding-top: 20px;
+        }
+        .sidebar {
+            background: #343a40;
+            color: white;
+            min-height: calc(100vh - 140px);
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 10px 15px;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar .nav-link i {
+            margin-right: 10px;
+        }
+        .main-content-area {
+            padding-left: 20px;
+        }
+        .form-select {
+            margin-bottom: 10px;
+        }
+        .btn-secondary {
+            margin-left: 5px;
+        }
+    </style>
 </head>
 <body>
     <!-- ======= Top Bar ======= -->
@@ -35,7 +66,7 @@
     </section>
 
     <!-- ======= Header ======= -->
-    <header id="header" class="fixed-top d-flex align-items-center header-dark">
+    <!-- <header id="header" class="fixed-top d-flex align-items-center header-dark">
         <div class="container-fluid container-xl d-flex align-items-center justify-content-lg-between">
             <h1 class="logo me-auto me-lg-0">
                 <a href="/" class="logo-light">Mocha Cafe</a>
@@ -55,173 +86,239 @@
                 </ul>
             </nav>
         </div>
-    </header>
+    </header> -->
 
     <section class="dashboard-section">
-        <div class="container">
-            <div class="dashboard-header animate__animated animate__fadeIn">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h2 class="dashboard-title">Admin Dashboard</h2>
-                        <p class="text-muted">Manage orders, staff, and settings</p>
-                    </div>
-                    <a href="/" class="btn btn-home">
-                        <i class="bi bi-house-door"></i> Back to Home
-                    </a>
-                    <a href="/invoices/" class="btn btn-primary">
-                        <i class="bi bi-receipt"></i> Manage Invoices
-                    </a>
-                    <a href="/tables/" class="btn btn-primary">
-                        <i class="bi bi-receipt"></i> Manage Tables
-                    </a>
-                    <a href="/item_dashboard/" class="btn btn-primary">
-                        <i class="bi bi-receipt"></i> Manage Items
-                    </a>
-                 
-                    <a id="generate-invoice-btn" class="btn btn-primary" data-table-id="{{ selected_table_id }}">
-                        <i class="bi bi-receipt">Generate Invoice</i> ({{ selected_table_id }})
-                    </a>
-                 
-                   </div>
-            </div>
-
-            <!-- Table Filter -->
-
-            <form method="get" class="mb-4">
-                {% csrf_token %}
-                <div class="row">
-                    <div class="col-md-6">
-                        <select name="table_id" class="form-select">
-                            <option value="">All Tables</option>
-                            {% for table in tables %}
-                            <option value="{{ table.id }}" {% if table.id|stringformat:"s" == selected_table_id %}selected{% endif %}>
-                                Table {{ table.number }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary">Filter</button>
-                    </div>
-                </div>
-            </form>
-
-            <!-- Orders Section -->
-            <div class="dashboard-card animate__animated animate__fadeInUp">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4><i class="bi bi-cart3"></i> Orders</h4>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    
-                                    <th>#</th>
-                                    <th>Customer</th>
-                                    <th>Order Date</th>
-                                    <th>Total Price</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                    <th>Select</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                {% for order in orders %}
-                                <tr>
-
-                                    <td>{{ order.id }}</td>
-                                    <td>{{ order.customer.name }}</td>
-                                    <td>{{ order.ordered_at|date:"Y-m-d H:i" }}</td>
-                                    <td>{{ order.total_amount|floatformat:2 }} RWF</td>
-                                    <td>
-                                        <span class="badge {% if order.order_status.name == 'pending' %}badge-pending
-                                            {% elif order.order_status.name == 'readytoprint' %}badge-progress
-                                            {% elif order.order_status.name == 'printed' %}badge-printed
-                                            {% elif order.order_status.name == 'served' %}badge-served
-                                            {% elif order.order_status.name == 'completed' %}badge-completed
-                                            {% elif order.order_status.name == 'delivered' %}badge-served
-                                            {% elif order.order_status.name == 'printing' %}badge-printing
-                                            {% else %}bg-secondary{% endif %}">{{ order.order_status.get_name_display }}</span>
-                                    </td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <a href="/order_view/{{ order.id }}/" class="btn btn-action btn-view">
-                                                <i class="bi bi-eye"></i> View
-                                            </a>
-
-                                            <!-- <button class="btn btn-action btn-delete btn-delete" data-order-id="{{ order.id }}">
-                                                <i class="bi bi-trash"></i> Delete
-                                            </button> -->
-                                           
-
-                                            <a href="#" class="btn btn-action btn-print-order" data-order-id="{{ order.id }}">
-                                                <i class="bi bi-printer"></i> Print
-                                            </a>
-                                          
-                                        </div>
-                                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                                    </td>
-                                                                        <td><input type="checkbox" name="order_select" value="{{ order.id }}"></td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="7">
-                                        <div class="empty-state">
-                                            <i class="bi bi-inbox fs-1 mb-3"></i>
-                                            <p>No orders found</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Additional Features -->
+        <div class="container-fluid">
             <div class="row">
-                <div class="col-md-4">
-                    <div class="dashboard-card feature-card animate__animated animate__fadeInUp">
-                        <div class="card-header">
-                            <h5><i class="bi bi-people"></i> Staff Management</h5>
+                <!-- Sidebar Column -->
+                <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar">
+                    <div class="position-sticky pt-3">
+                        <div class="text-center py-4">
+                            <h3>Mocha Cafe</h3>
+                            <p class="text-white-50">Admin Dashboard</p>
+                            <hr class="mt-2 mb-4" style="border-color: rgba(255,255,255,0.1);">
                         </div>
-                        <div class="card-body">
-                            <p class="text-muted">Manage staff roles, permissions, and account details.</p>
-                            <a href="/manage_staff/" class="btn btn-action btn-view w-100">
-                                <i class="bi bi-person-gear"></i> Manage Staff
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="/admin_dashboard/">
+                                    <i class="bi bi-speedometer2"></i>
+                                    Dashboard
+                                </a>
+                            </li>
+                                <li class="nav-item">
+                               <a href="/invoices/" class="nav-link text-white">
+                                <i class="bi bi-box-arrow-right"></i> Manage Invoices
+                            </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{% url 'cancelled_orders' %}">
+                                    <i class="bi bi-trash"></i>
+                                    Cancelled Orders
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="/tables/">
+                                    <i class="bi bi-table"></i>
+                                    Tables
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="/sales_report/">
+                                    <i class="bi bi-graph-up"></i>
+                                    Reports
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="/#menu">
+                                    <i class="bi bi-box"></i>
+                                    Menu Items
+                                </a>
+                            </li>
+                              <li class="nav-item">
+                               <a href="/" class="nav-link text-white">
+                                <i class="bi bi-box-arrow-right"></i>  Back to Home
+                            </a>
+                            </li>
+                            <li class="nav-item mt-4">
+                                <a class="nav-link text-white" href="{% url 'logout' %}">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    Logout
+                                </a>
+                            </li>
+                          
+                        </ul>
+                    </div>
+                </nav>
+
+                <!-- Main Content Column -->
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content-area">
+                    <div class="dashboard-header animate__animated animate__fadeIn">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h2 class="dashboard-title">Admin Dashboard</h2>
+                                <p class="text-muted">Manage orders, staff, and settings</p>
+                            </div>
+                            <!-- <a href="/" class="btn btn-home">
+                                <i class="bi bi-house-door"></i> Back to Home
+                            </a>
+                            <a href="/invoices/" class="btn btn-primary">
+                                <i class="bi bi-receipt"></i> Manage Invoices
+                            </a>
+                            <a href="/tables/" class="btn btn-primary">
+                                <i class="bi bi-receipt"></i> Manage Tables
+                            </a>
+                            <a href="/item_dashboard/" class="btn btn-primary">
+                                <i class="bi bi-receipt"></i> Manage Items
+                            </a> -->
+                            <a id="generate-invoice-btn" class="btn btn-primary" data-table-id="{{ selected_table_id }}">
+                                <i class="bi bi-receipt">Generate Invoice</i> ({{ selected_table_id }})
                             </a>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="dashboard-card feature-card animate__animated animate__fadeInUp">
-                        <div class="card-header">
-                            <h5><i class="bi bi-graph-up"></i> Reports</h5>
+
+                    <!-- Table Filter -->
+                    <form method="get" class="mb-4">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <select name="table_id" class="form-select">
+                                    <option value="">All Tables</option>
+                                    {% for table in tables %}
+                                    <option value="{{ table.id }}" {% if table.id|stringformat:"s" == selected_table_id %}selected{% endif %}>
+                                        Table {{ table.number }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">  <!-- New status filter -->
+                                <select name="status" class="form-select">
+                                    <option value="">All Statuses</option>
+                                    <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>Pending</option>
+                                    <option value="printed" {% if selected_status == 'printed' %}selected{% endif %}>Printed</option>
+                                    <option value="served" {% if selected_status == 'served' %}selected{% endif %}>Served</option>
+                                    <option value="completed" {% if selected_status == 'completed' %}selected{% endif %}>Completed</option>
+                                    <!-- Add other statuses as needed -->
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary">Filter</button>
+                                <a href="?" class="btn btn-secondary ms-2">Reset</a>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <p class="text-muted">View sales analytics, customer insights, and generate reports.</p>
-                            <a href="/sales_report/" class="btn btn-action btn-view w-100">
-                                <i class="bi bi-file-earmark-text"></i> View Reports
-                            </a>
+                    </form>
+                    <!-- Table Filter -->
+              
+
+                    <!-- Orders Section -->
+                    <div class="dashboard-card animate__animated animate__fadeInUp">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4><i class="bi bi-cart3"></i> Orders</h4>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Customer</th>
+                                            <th>Order Date</th>
+                                            <th>Total Price</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                            <th>Select</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {% for order in orders %}
+                                        <tr>
+                                            <td>{{ order.id }}</td>
+                                            <td>{{ order.customer.name }}</td>
+                                            <td>{{ order.ordered_at|date:"Y-m-d H:i" }}</td>
+                                            <td>{{ order.total_amount|floatformat:2 }} RWF</td>
+                                            <td>
+                                                <span class="badge {% if order.order_status.name == 'pending' %}badge-pending
+                                                    {% elif order.order_status.name == 'readytoprint' %}badge-progress
+                                                    {% elif order.order_status.name == 'printed' %}badge-printed
+                                                    {% elif order.order_status.name == 'served' %}badge-served
+                                                    {% elif order.order_status.name == 'completed' %}badge-completed
+                                                    {% elif order.order_status.name == 'delivered' %}badge-served
+                                                    {% elif order.order_status.name == 'printing' %}badge-printing
+                                                    {% else %}bg-secondary{% endif %}">{{ order.order_status.get_name_display }}</span>
+                                            </td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <a href="/order_view/{{ order.id }}/" class="btn btn-action btn-view">
+                                                        <i class="bi bi-eye"></i> View
+                                                    </a>
+                                                    <a href="#" class="btn btn-action btn-print-order" data-order-id="{{ order.id }}">
+                                                        <i class="bi bi-printer"></i> Print
+                                                    </a>
+                                                </div>
+                                                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                            </td>
+                                            <td><input type="checkbox" name="order_select" value="{{ order.id }}"></td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="7">
+                                                <div class="empty-state">
+                                                    <i class="bi bi-inbox fs-1 mb-3"></i>
+                                                    <p>No orders found</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="dashboard-card feature-card animate__animated animate__fadeInUp">
-                        <div class="card-header">
-                            <h5><i class="bi bi-gear"></i> Settings</h5>
+
+                    <!-- Additional Features -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="dashboard-card feature-card animate__animated animate__fadeInUp">
+                                <div class="card-header">
+                                    <h5><i class="bi bi-people"></i> Staff Management</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted">Manage staff roles, permissions, and account details.</p>
+                                    <a href="/manage_staff/" class="btn btn-action btn-view w-100">
+                                        <i class="bi bi-person-gear"></i> Manage Staff
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <p class="text-muted">Configure system settings, notifications, and preferences.</p>
-                            <a href="/settings/" class="btn btn-action btn-view w-100">
-                                <i class="bi bi-sliders"></i> Settings
-                            </a>
+                        <div class="col-md-4">
+                            <div class="dashboard-card feature-card animate__animated animate__fadeInUp">
+                                <div class="card-header">
+                                    <h5><i class="bi bi-graph-up"></i> Reports</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted">View sales analytics, customer insights, and generate reports.</p>
+                                    <a href="/sales_report/" class="btn btn-action btn-view w-100">
+                                        <i class="bi bi-file-earmark-text"></i> View Reports
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="dashboard-card feature-card animate__animated animate__fadeInUp">
+                                <div class="card-header">
+                                    <h5><i class="bi bi-gear"></i> Settings</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted">Configure system settings, notifications, and preferences.</p>
+                                    <a href="/settings/" class="btn btn-action btn-view w-100">
+                                        <i class="bi bi-sliders"></i> Settings
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </main>
             </div>
         </div>
     </section>
@@ -239,7 +336,5 @@
     <script src="{% static 'js/notifications.js' %}"></script>
     <script type="module" src="{% static 'js/dashboard.js' %}"></script>
     <script type="module" src="{% static 'js/invoice.js' %}"></script>
-  
-  
 </body>
 </html>

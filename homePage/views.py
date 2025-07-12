@@ -803,21 +803,45 @@ def logout_view(request):
 ################################################ dashboard view 
 @login_required
 def adminDashboard(request):
-       # Fetch all tables
+    # Fetch all tables
     tables = Table.objects.all()
-
-    # Get the selected table ID from the request
+    
+    # Get filter parameters
     selected_table_id = request.GET.get('table_id')
-
-    # Filter orders by the selected table, if provided
+    status_filter = request.GET.get('status')
+    
+    # Base queryset
+    orders = Order.objects.filter(inHold=False).order_by('-ordered_at')
+    
+    # Apply table filter if provided
     if selected_table_id:
-        orders = Order.objects.filter(table__id=selected_table_id, inHold=False).order_by('-ordered_at')
-    else:
-        orders = Order.objects.filter(inHold=False).order_by('-ordered_at')
-    return render(request, 'admin_dashboard.html',{   
-         'tables': tables,
+        orders = orders.filter(table__id=selected_table_id)
+    
+    # Apply status filter if provided
+    if status_filter:
+        if status_filter == 'cancelled':
+            orders = orders.filter(order_status__name='cancelled')
+        elif status_filter == 'non_cancelled':
+            orders = orders.exclude(order_status__name='cancelled')
+        else:
+            orders = orders.filter(order_status__name=status_filter)
+    
+    # Get status counts for filter display
+    status_counts = {
+        'all': orders.count(),
+        'pending': orders.filter(order_status__name='pending').count(),
+        'completed': orders.filter(order_status__name='completed').count(),
+        'served': orders.filter(order_status__name='served').count(),
+        'cancelled': orders.filter(order_status__name='cancelled').count(),        
+    }
+
+    return render(request, 'admin_dashboard.html', {
+        'tables': tables,
         'orders': orders,
-        'selected_table_id': selected_table_id,})     
+        'selected_table_id': selected_table_id,
+        'selected_status': status_filter,
+        'status_counts': status_counts,
+    })
 
 def customer_home(request):
     return render(request, 'customer_home.html') 
@@ -1432,7 +1456,7 @@ def sales_report(request):
             end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
 
     # Fetch orders within the date range
-    orders = Order.objects.filter(ordered_at__range=[start_date, end_date])
+    orders = Order.objects.filter(ordered_at__range=[start_date, end_date]).exclude(order_status__name='cancelled',inHold=True)
  
     # Calculate the sales summary
     total_sales = orders.aggregate(total=Sum('total_amount'))['total'] or Decimal(0)

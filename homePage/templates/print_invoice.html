@@ -95,7 +95,7 @@
             <tr>
                 <th>Item</th>
                 <th>Qty</th>
-                <th>Price</th>
+                <th style="text-align: right; vertical-align: top;">Price</th>
             </tr>
         </thead>
         <tbody>
@@ -103,7 +103,7 @@
                 {% for item in order.orderitem_set.all %}
                 <tr>
                     <td>
-                        <div style="font-weight: bold;">{{ item.quantity }}x {{ item.item.name }}</div>
+                        <div style="font-weight: bold;">{{ item.item.name }}</div>
                         {% if item.selected_extras.exists %}
                             <div style="font-size: 9px; margin: 2px 0 4px 0;">
                                 {% for extra in item.selected_extras.all %}
@@ -133,6 +133,9 @@
                                 Note: {{ item.customizations }}
                             </div>
                         {% endif %}
+                    </td>
+                    <td style="text-align: right; vertical-align: top;">
+                        {{ item.quantity }}
                     </td>
                     <td style="text-align: right; vertical-align: top;">
                         {{ item.price }} RWF

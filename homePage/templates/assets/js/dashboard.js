@@ -109,4 +109,14 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+
+// //////////////// filter orders //////////////////////////
+document.addEventListener('DOMContentLoaded', function() {
+  // Auto-submit form when filters change (optional)
+  document.querySelectorAll('.form-select').forEach(select => {
+      select.addEventListener('change', function() {
+          this.form.submit();
+      });
+  });
+});
 // dashboard.js
