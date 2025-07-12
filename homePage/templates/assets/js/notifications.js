@@ -277,7 +277,7 @@ function enableNotificationSound() {
     console.log('Enabling notification sound');
     
     const audio = new Audio('/static/sounds/ringtone.mp3');
-    audio.volume = 0.1;
+    audio.volume = 0.0;
     
     audio.play().then(() => {
         soundEnabled = true;
