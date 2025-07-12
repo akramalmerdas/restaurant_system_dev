@@ -550,32 +550,40 @@ def submitOrder(request):
         
         
         if request.user.is_authenticated:
+          staff_waiter = None
           try:
-        # Assuming the logged-in user is linked to a Customer object
+            # Check if the user is a waiter
+            staff_member = Staff.objects.get(user=request.user)
+            staff_waiter = staff_member
+          except Staff.DoesNotExist:
+            staff_waiter = None  # Not a waiter, don't assign
+
+          try:
             customer = Customer.objects.get(user=request.user)
             order = Order.objects.create(
-            customer=customer,  # Link the customer to the order
+            customer=customer,
+            waiter=staff_waiter,
             order_status=pending_status,
             total_amount=0,
             table=orderTable,
             table_number=orderTable.number
-          )
+        )
           except Customer.DoesNotExist:
-        # If the user is logged in but not a customer, leave the customer field null
+            order = Order.objects.create(
+            waiter=staff_waiter,
+            order_status=pending_status,
+            total_amount=0,
+            table=orderTable,
+            table_number=orderTable.number
+        )
+        else:
             order = Order.objects.create(
             order_status=pending_status,
             total_amount=0,
             table=orderTable,
             table_number=orderTable.number
-          )
+        )
 
-        else:
-          order = Order.objects.create(
-            order_status=pending_status, 
-            total_amount=0,  
-            table=orderTable,
-            table_number=orderTable.number
-          )
             
     
      

@@ -54,9 +54,10 @@ class Staff(models.Model):
     loan = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     is_active = models.BooleanField(default=True)  # Track employment status
     inHold = models.BooleanField(default=False)
-
+    
     def __str__(self):
-        return f"{self.user.get_full_name()} - {self.role}"
+        full_name = self.user.get_full_name()
+        return f"{full_name or self.user.username} - {self.role.capitalize()}"
 
 
 # Customer Model
@@ -134,6 +135,7 @@ class Order(models.Model):
     invoice = models.ForeignKey('Invoice', on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
     deleted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     deleted_reason = models.TextField(null=True, blank=True)
+    waiter = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders_taken')
     def calculate_total_amount(self):
         if not self.pk:
             return 0
@@ -156,6 +158,7 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order {self.id}"
+        
         # return f"Order {self.id} - {self.customer.name}"
     
 

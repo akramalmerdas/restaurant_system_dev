@@ -23,6 +23,7 @@
                     <li><a href="/#menu">Menu</a></li>
                     <li><a href="/profile">Profile</a></li>
                     <li><a href="/logout">Logout</a></li>
+                    <li><a href="/admin_dashboard/">Dashboard</a></li>
                 </ul>
             </nav>
         </div>
@@ -43,9 +44,10 @@
                 <div class="order-info">
                     <h3><i class="bi bi-info-circle"></i>Order Information</h3>
                     <div class="info-grid">
+                    
                         <div class="info-item">
-                            <strong>Customer Name</strong>
-                            <div class="value">{{ order.customer.name }}</div>
+                            <strong>Waiter Name</strong>
+                            <div class="value">{{ order.waiter.user.username }}</div>
                         </div>
                         <div class="info-item">
                             <strong>Order Date</strong>
