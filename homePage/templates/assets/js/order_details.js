@@ -158,7 +158,12 @@ if (confirmButton){
                    onOk: function() {
               //      sessionStorage.removeItem('table_number');
                    setTimeout(() => {
-                     window.location.href = '/table_landing/';
+                    if (response.redirect_url) {
+                      window.location.href = response.redirect_url;
+                  } else {
+                      // Fallback if no URL provided
+                      window.location.href = '/table_landing/';
+                  }
                  }, 500);
                    },
                    // autoHideDelay: 10000 // Optional: auto-hide after 2 seconds

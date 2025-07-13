@@ -189,3 +189,9 @@ STORAGES = {
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+
+######## time zone ########
+USE_TZ = True
+TIME_ZONE = 'Africa/Kigali'

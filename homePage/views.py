@@ -545,7 +545,7 @@ def submitOrder(request):
       
             orderTable = Table.objects.get(number='Take Away')
             
-  
+        
       
         
         
@@ -636,8 +636,20 @@ def submitOrder(request):
         order.save(update_fields=["total_amount"])
 
         # Clear the session as the order is now confirmed and saved in the database
+        if request.user.is_authenticated:
+            try:
+                staff_member = Staff.objects.get(user=request.user)
+                if staff_member.role.lower() == 'manager':
+                    redirect_url = reverse('admin_dashboard')  # URL name from urls.py
+                else:
+                    redirect_url = reverse('table_landing')  # URL name from urls.py
+            except Staff.DoesNotExist:
+                redirect_url = reverse('table_landing')  # Default for non-staff
+        else:
+            redirect_url = reverse('table_landing')
         request.session['order'] = []
         channel_layer = get_channel_layer()
+        
         async_to_sync(channel_layer.group_send)(
         "admin_notifications",
         {
@@ -645,7 +657,8 @@ def submitOrder(request):
             "order_id": order.id,
             "customer": order.customer.user.username if order.customer and order.customer.user else "Guest",
             "total": str(order.total_amount),
-            "timestamp": timezone.now().isoformat()
+            "timestamp": timezone.now().isoformat(),
+            "redirect_url": redirect_url
         }
     )
 
@@ -1056,7 +1069,7 @@ def print_order_view(request, order_id):
         try:
             printed_status = OrderStatus.objects.get(name="printed")
             order.order_status = printed_status
-            order.printed_at = now() 
+            order.printed_at = timezone.now() 
             order.save()
             print('Print confirmed successfully')
             return JsonResponse({"success": True, "message": "Print confirmed."})
@@ -1159,7 +1172,7 @@ def generate_invoice(request, table_id):
       invoice = Invoice.objects.create(
         table=table, 
         total_amount=total_amount, 
-        created_at=now()  
+        created_at=timezone.now()  
       )
       
       completed_status = OrderStatus.objects.filter(name='completed').first()
@@ -1443,7 +1456,7 @@ def print_invoice_view(request, invoice_id):
 @login_required
 def sales_report(request):
     # Default date range (e.g., last 30 days)
-    today = now().today()
+    today = timezone.now().today()
     start_date = today.replace(day=1)  # Start of the month
     end_date = today
 
