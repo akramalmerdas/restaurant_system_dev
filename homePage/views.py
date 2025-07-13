@@ -765,7 +765,8 @@ def login_view(request):
         
             username= request.POST.get('email') or json.loads(request.body).get('email')
             password = request.POST.get('password') or json.loads(request.body).get('password')
-        
+            username = username.strip()
+           
            
                  
             if not username or not password:
@@ -834,7 +835,7 @@ def adminDashboard(request):
         'served': orders.filter(order_status__name='served').count(),
         'cancelled': orders.filter(order_status__name='cancelled').count(),        
     }
-
+    print('this is the orders count' + str(orders.count()))
     return render(request, 'admin_dashboard.html', {
         'tables': tables,
         'orders': orders,
@@ -1144,15 +1145,15 @@ def generate_invoice(request, table_id):
 
       if orders_id:
                 # Filter the selected orders
-        orders = Order.objects.filter(id__in=orders_id, order_status__name='served', invoice__isnull=True)
+        orders = Order.objects.filter(id__in=orders_id, order_status__name__in=['served', 'printed'], invoice__isnull=True, inHold=False)
         if not orders.exists():
           return JsonResponse({"success": False, "message": "No served orders for this table."}, status=404)
 
       else:
-        orders = Order.objects.filter(table=table, order_status__name='served', invoice__isnull=True)
+        orders = Order.objects.filter(table=table, order_status__name__in=['served', 'printed'], invoice__isnull=True, inHold=False)
 
         if not orders.exists():
-          return JsonResponse({"success": False, "message": "No served orders for this table."}, status=404)
+          return JsonResponse({"success": False, "message": "No served or printed  orders for this table."}, status=404)
 
       total_amount = sum(order.total_amount for order in orders)
       invoice = Invoice.objects.create(

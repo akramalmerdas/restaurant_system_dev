@@ -400,6 +400,7 @@ if(generateInvoiceButton){
         .then(data => {
             if (data.success) {
                 alert('Invoice created successfully! Invoice ID: ' + data.invoice_id);
+                window.location.href = `/invoices/`;
                 // Optionally, update the UI to show the invoice details or redirect to the invoice page
             } else {
                 alert('Error: ' + data.message);
