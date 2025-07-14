@@ -1447,6 +1447,7 @@ def mark_unpaid(request):
 
             # Optionally update invoice status
             invoice.status = "Unpaid"
+            invoice.is_paid = False
             invoice.save()
 
             return JsonResponse({'success': True})
