@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (printWindow) {
                 printWindow.focus();
             }
+            window.location.href = `/admin_dashboard/`;
         });
     });
 

@@ -1052,7 +1052,8 @@ def cancelled_orders(request):
             'deleted_by': order.deleted_by.get_full_name() if order.deleted_by else 'System',
             'deleted_reason': order.deleted_reason,
             'deleted_at': order.deleted_at.isoformat() if order.deleted_at else None,
-            'ordered_at': order.ordered_at.isoformat()
+            'ordered_at': order.ordered_at.isoformat(),
+            'deleted_by': order.deleted_by.get_full_name() if order.deleted_by else 'System',
         } for order in cancelled_orders]
         return JsonResponse(data, safe=False)
     

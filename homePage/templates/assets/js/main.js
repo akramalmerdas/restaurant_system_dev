@@ -434,7 +434,7 @@ if (addButton){
               message: 'the Item was added to your order successfully!',
               okButtonText: 'OK',
               onOk: function() {
-                  window.location.href = '/order_details/';
+                window.location.href = '/#menu';
               },
               // autoHideDelay: 10000 // Optional: auto-hide after 2 seconds
           });
