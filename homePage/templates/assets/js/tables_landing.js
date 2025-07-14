@@ -154,7 +154,7 @@ function setTableNumber(tableNumber) {
     .then(data => {
         if (data.status === 'success') {
             showNotification(`Table ${tableNumber} selected successfully!`, 'success');
-            window.location.href = '/';
+            window.location.href = '/#menu';
         } else {
             showNotification('Error: ' + (data.message || 'Failed to select table'), 'error');
         }
