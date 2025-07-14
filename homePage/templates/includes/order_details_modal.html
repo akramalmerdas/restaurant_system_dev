@@ -169,8 +169,8 @@ function loadOrderDetails(orderId) {
             document.getElementById('orderType').textContent = order.table_number ? 'Dine-in' : 'Take Away';
             document.getElementById('orderDate').textContent = new Date(order.ordered_at).toLocaleString();
             document.getElementById('cancellationDate').textContent = order.deleted_at ? 
-                new Date(order.deleted_at).toLocaleString() : 'N/A';
-            document.getElementById('cancelledBy').textContent = order.deleted_by.username || 'System';
+            new Date(order.deleted_at).toLocaleString() : 'N/A';
+            document.getElementById('cancelledBy').textContent = `${order.deleted_by.user}` || 'System';
             document.getElementById('orderTotal').textContent = `${order.total_amount} RWF`;
             document.getElementById('orderTotalFooter').textContent = `${order.total_amount} RWF`;
             document.getElementById('cancellationReason').textContent = 
