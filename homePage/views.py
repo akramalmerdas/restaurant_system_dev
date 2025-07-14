@@ -639,14 +639,15 @@ def submitOrder(request):
         if request.user.is_authenticated:
             try:
                 staff_member = Staff.objects.get(user=request.user)
+                
                 if staff_member.role.lower() == 'manager':
                     redirect_url = reverse('admin_dashboard')  # URL name from urls.py
                 else:
-                    redirect_url = reverse('table_landing')  # URL name from urls.py
+                    redirect_url = reverse('table_landing_page')  # URL name from urls.py
             except Staff.DoesNotExist:
-                redirect_url = reverse('table_landing')  # Default for non-staff
+                redirect_url = reverse('table_landing_page')  # Default for non-staff
         else:
-            redirect_url = reverse('table_landing')
+            redirect_url = reverse('table_landing_page')
         request.session['order'] = []
         channel_layer = get_channel_layer()
         

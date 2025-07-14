@@ -225,6 +225,9 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     alert('Invoice generated successfully!');
+                    setTimeout(() => {
+                        window.location.href = `/invoices/`;
+                    }, 500);
                     // Optionally redirect to invoice or refresh
                 } else {
                     alert('Error: ' + data.message);
