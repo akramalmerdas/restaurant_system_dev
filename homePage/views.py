@@ -21,6 +21,7 @@ from django.views.decorators.http import require_http_methods
 # Create your views here.
 from django.shortcuts import render, get_object_or_404
 from django.db import transaction
+from django.core.paginator import Paginator
 
 @login_required
 def index(request):
@@ -849,9 +850,13 @@ def adminDashboard(request):
         'served': orders.filter(order_status__name='served').count(),
         'cancelled': orders.filter(order_status__name='cancelled').count(),        
     }
-    print('this is the orders count' + str(orders.count()))
+    paginator = Paginator(orders, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'admin_dashboard.html', {
         'tables': tables,
+        'page_obj': page_obj, 
         'orders': orders,
         'selected_table_id': selected_table_id,
         'selected_status': status_filter,
@@ -1301,8 +1306,14 @@ def invoice_dashboard(request):
         elif end_date:
             invoices = invoices.filter(created_at__date__lte=end_date)
         
+        # Apply pagination
+        paginator = Paginator(invoices, 20)  # Show 20 invoices per page
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
         return render(request, 'invoice_dashboard.html', {
             'invoices': invoices,
+            'page_obj': page_obj,
             'tables': tables,
             'selected_table_id': table_id,
             'start_date': start_date_str,

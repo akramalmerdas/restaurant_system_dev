@@ -24,6 +24,27 @@
     <!-- Template Main CSS File -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <link href="{% static 'css/admin_dashboard.css' %}" rel="stylesheet">
+<style>
+    .pagination {
+    margin: 20px 0;
+}
+
+.page-link {
+    color: #495057;
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 0.75rem;
+}
+
+.page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+}
+
+.page-link:hover {
+    background-color: #e9ecef;
+}
+</style>
 </head>
 <body>
     <!-- ======= Top Bar ======= -->
@@ -148,7 +169,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for invoice in invoices %}
+                                {% for invoice in page_obj %}
                                 <tr>
                                     <td>{{ invoice.id }}</td>
                                     <td>Table {{ invoice.table.number }}</td>
@@ -186,6 +207,43 @@
                                 {% endfor %}
                             </tbody>
                         </table>
+                        <div class="pagination-container mt-4">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center">
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=1{% if selected_table_id %}&table_id={{ selected_table_id }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" aria-label="First">
+                                                &laquo;&laquo;
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_table_id %}&table_id={{ selected_table_id }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" aria-label="Previous">
+                                                &laquo;
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                        
+                                    <li class="page-item active">
+                                        <span class="page-link">
+                                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                        </span>
+                                    </li>
+                        
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_table_id %}&table_id={{ selected_table_id }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" aria-label="Next">
+                                                &raquo;
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if selected_table_id %}&table_id={{ selected_table_id }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" aria-label="Last">
+                                                &raquo;&raquo;
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
                 </div>
             </div>
