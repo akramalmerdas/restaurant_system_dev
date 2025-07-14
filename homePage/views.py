@@ -1245,22 +1245,76 @@ def generate_invoice_for_order(request, order_id):
         "message": "Invalid request method. Use POST."
     }, status=400)
 
+
 @login_required
 def invoice_dashboard(request):
-    table_id = request.GET.get('table_id')  # Get the table ID from the query parameters
-    tables = Table.objects.all()  # Fetch all tables for the filter dropdown
+    if request.method != "GET":
+        return JsonResponse({
+            "success": False,
+            "message": "Invalid request method. Only GET requests are allowed."
+        }, status=405)
 
-    if table_id:
-        invoices = Invoice.objects.filter(table_id=table_id)
-    else:
-        invoices = Invoice.objects.all()
-
-    return render(request, 'invoice_dashboard.html', {
-        'invoices': invoices,
-        'tables': tables,
-        'selected_table_id': table_id,
-    })  
-
+    try:
+        # Get all filter parameters
+        table_id = request.GET.get('table_id')
+        is_paid = request.GET.get('is_paid')  # New parameter
+        start_date_str = request.GET.get("start_date")
+        end_date_str = request.GET.get("end_date")
+        
+        tables = Table.objects.all()
+        invoices = Invoice.objects.filter(inHold=False)  # Base queryset
+        
+        # Apply table filter
+        if table_id:
+            invoices = invoices.filter(table_id=table_id)
+            
+        # Apply payment status filter
+        if is_paid == 'true':
+            invoices = invoices.filter(is_paid=True)
+        elif is_paid == 'false':
+            invoices = invoices.filter(is_paid=False)
+        
+        # Handle date filtering (existing code)
+        start_date = None
+        end_date = None
+        
+        try:
+            if start_date_str:
+                start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+            if end_date_str:
+                end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+        except ValueError as e:
+            return JsonResponse({
+                "success": False,
+                "message": f"Invalid date format. Please use YYYY-MM-DD format. Error: {str(e)}"
+            }, status=400)
+        
+        if start_date and end_date:
+            if start_date > end_date:
+                return JsonResponse({
+                    "success": False,
+                    "message": "Start date cannot be after end date."
+                }, status=400)
+            invoices = invoices.filter(created_at__date__range=[start_date, end_date])
+        elif start_date:
+            invoices = invoices.filter(created_at__date__gte=start_date)
+        elif end_date:
+            invoices = invoices.filter(created_at__date__lte=end_date)
+        
+        return render(request, 'invoice_dashboard.html', {
+            'invoices': invoices,
+            'tables': tables,
+            'selected_table_id': table_id,
+            'start_date': start_date_str,
+            'end_date': end_date_str,
+            'is_paid': is_paid,  # Pass back the payment status filter
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "message": f"An error occurred: {str(e)}"
+        }, status=500)
 
 @login_required
 def view_invoice(request, invoice_id):
@@ -1472,12 +1526,13 @@ def sales_report(request):
             end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
 
     # Fetch orders within the date range
-    orders = Order.objects.filter(ordered_at__range=[start_date, end_date]).exclude(order_status__name='cancelled',inHold=True)
+    orders = Order.objects.filter(ordered_at__range=[start_date, end_date]).exclude(inHold=True)
+    invoices = Invoice.objects.filter(created_at__range=[start_date, end_date]).exclude(inHold=True)
  
     # Calculate the sales summary
-    total_sales = orders.aggregate(total=Sum('total_amount'))['total'] or Decimal(0)
-    num_orders = orders.aggregate(num_orders=Count('id'))['num_orders'] or 0
-    avg_order_value = orders.aggregate(avg_value=Avg('total_amount'))['avg_value'] or 0
+    total_sales = invoices.aggregate(total=Sum('total_amount'))['total'] or Decimal(0)
+    num_orders = invoices.aggregate(num_orders=Count('id'))['num_orders'] or 0
+    avg_order_value = invoices.aggregate(avg_value=Avg('total_amount'))['avg_value'] or 0
  
     # Group sales by item/category (you can adjust this to your data model)
     item_sales = (
