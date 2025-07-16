@@ -120,7 +120,7 @@
       window.print();
 
       window.onafterprint = function () {
-        fetch(`/print_order_view/${orderId}/`, {
+        fetch("", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -130,6 +130,10 @@
         }).then(response => {
           if (!response.ok) {
             console.error("Print confirmation failed.");
+          }
+          if (response.ok) {
+         
+            // window.location.href = `/admin_dashboard/`;
           }
         }).catch(error => console.error("Error:", error));
       };

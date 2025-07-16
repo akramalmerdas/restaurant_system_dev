@@ -4,7 +4,7 @@ from django.utils.timezone import now
 from django.shortcuts import redirect, render , get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
-from item.models import Item ,Order,OrderItem,Extra,OrderItemExtra,OrderStatus,Customer,Table,Invoice,Staff,Payment,UnpaidReasonLog
+from item.models import Item ,Order,OrderItem,Extra,OrderItemExtra,OrderStatus,Customer,Table,Invoice,Staff,Payment,UnpaidReasonLog,DailyOrderCounter
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.contrib.auth import authenticate,login,logout
@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q,Sum ,F,Count, Avg
 from django.middleware.csrf import get_token
 from django.contrib.auth.decorators import login_required
-from datetime import datetime
+from datetime import datetime ,date
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.core import serializers
@@ -546,7 +546,17 @@ def submitOrder(request):
       
             orderTable = Table.objects.get(number='Take Away')
             
-        
+        with transaction.atomic():
+          # Get or create today's counter
+          today = date.today()
+          counter, created = DailyOrderCounter.objects.get_or_create(date=today)
+    
+          # Increment and save the counter
+          counter.counter += 1
+          counter.save()
+    
+          # Generate the display ID
+          display_id = f"{today.strftime('%Y%m%d')}-{counter.counter:03d}"
       
         
         
@@ -567,7 +577,8 @@ def submitOrder(request):
             order_status=pending_status,
             total_amount=0,
             table=orderTable,
-            table_number=orderTable.number
+            table_number=orderTable.number,
+            display_id=display_id
         )
           except Customer.DoesNotExist:
             order = Order.objects.create(
@@ -575,18 +586,17 @@ def submitOrder(request):
             order_status=pending_status,
             total_amount=0,
             table=orderTable,
-            table_number=orderTable.number
+            table_number=orderTable.number,
+            display_id=display_id
         )
         else:
             order = Order.objects.create(
             order_status=pending_status,
             total_amount=0,
             table=orderTable,
-            table_number=orderTable.number
+            table_number=orderTable.number,
+            display_id=display_id
         )
-
-            
-    
      
         total_amount = 0  # Initialize the total amount for the order
         orderTable.status = 'occupied'
@@ -605,7 +615,8 @@ def submitOrder(request):
                 item_price=item.price,
                 quantity=item_data['quantity'],
                 price=item_data['price'] * item_data['quantity'],  # Calculate price based on quantity
-                customizations=item_data['customizations']
+                customizations=item_data['customizations'],
+        
             )
             order_item.save()
         
@@ -626,7 +637,8 @@ def submitOrder(request):
                             extra=extra,
                             quantity=extra_data['quantity'],
                             extra_name=extra.name,       
-                            extra_price=extra.price 
+                            extra_price=extra.price,
+                            display_id=display_id
                         )
             order_item.save()
             # Update the running total amount
@@ -1078,13 +1090,10 @@ def print_order_view(request, order_id):
             order.order_status = printed_status
             order.printed_at = timezone.now() 
             order.save()
-            print('Print confirmed successfully')
             return JsonResponse({"success": True, "message": "Print confirmed."})
         except Order.DoesNotExist:
-            print('order not found ')
             return JsonResponse({"success": False, "message": "Order not found."}, status=404)
         except OrderStatus.DoesNotExist:
-            print('an error happened')
             return JsonResponse({"success": False, "message": "Printed status not found."}, status=500)
 
     # Render the print page if it's a GET request
@@ -1208,6 +1217,11 @@ def generate_invoice_for_order(request, order_id):
                 return JsonResponse({
                     "success": False, 
                     "message": "This order already has an invoice."
+                }, status=400)
+            if order.order_status.name != 'printed':
+                return JsonResponse({
+                    "success": False, 
+                    "message": "This order is not printed. please print before and then generate invoice"
                 }, status=400)
             
             # Create a new invoice

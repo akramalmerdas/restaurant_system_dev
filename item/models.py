@@ -136,6 +136,9 @@ class Order(models.Model):
     deleted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     deleted_reason = models.TextField(null=True, blank=True)
     waiter = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders_taken')
+    display_id = models.CharField(max_length=20, blank=True, null=True)
+
+
     def calculate_total_amount(self):
         if not self.pk:
             return 0
@@ -391,3 +394,8 @@ class UnpaidReasonLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     reason = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class DailyOrderCounter(models.Model):
+    date = models.DateField(unique=True)
+    counter = models.IntegerField(default=0)

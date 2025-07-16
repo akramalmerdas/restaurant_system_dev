@@ -7,18 +7,23 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!orderId) {
                 console.error('No order ID found');
                 return;
-            }``
-            
-            // Open the print view for the order in a new tab
+            }
+
+            // Open the print view in a new tab
             const printWindow = window.open(`/print_order_view/${orderId}/`, '_blank');
-            
-            // Focus the new window (required for some browsers)
+
+            // Optional: Bring focus to the new tab
             if (printWindow) {
                 printWindow.focus();
             }
-            window.location.href = `/admin_dashboard/`;
+            setTimeout(() => {
+                window.location.href = '/admin_dashboard/';
+            }, 10000); 
+            // Redirect the current page after opening the print window
+           
         });
     });
+    
 
     // Status change handler
     document.querySelectorAll('.status-option').forEach(option => {
