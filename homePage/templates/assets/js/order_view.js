@@ -219,25 +219,55 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.btn-invoice').forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
-            const orderId = this.getAttribute('data-order-id');
-            fetch(`/generate-invoice/${orderId}/`, {
+            const tableElement = document.querySelector('.info-item[data-table-id]');
+            if (!tableElement) {
+                alert('Table information not found');
+                return;
+            }
+            const tableId = tableElement.dataset.tableId;
+            orderId=[]
+              orderId = this.getAttribute('data-order-id');
+            if (!orderId) {
+                alert('Order id is not found');
+                return;
+            }
+            const data = {
+                order_ids: [orderId],  // Important: wrap in array
+                table_id: tableId
+            };
+            console.log('this is the data ' + data.toString());
+            
+            fetch('/generate-invoice-by-order/', {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': getCookie('csrftoken'),
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify(data)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    // Parse the error response as JSON to get the message
+                    return response.json().then(errData => {
+                        throw new Error(errData.message || 'Request failed');
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
-                    alert('Invoice generated successfully!');
+                    alert(`Invoice generated successfully for order ${orderId}!`);
                     setTimeout(() => {
-                        window.location.href = `/invoices/`;
+                        window.location.href = '/invoices/';
                     }, 500);
-                    // Optionally redirect to invoice or refresh
                 } else {
-                    alert('Error: ' + data.message);
+                    // Handle server-side success=false responses
+                    alert('Error: ' + (data.message || 'Unknown error'));
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to generate invoice: ' + error.message);
             });
         });
     });

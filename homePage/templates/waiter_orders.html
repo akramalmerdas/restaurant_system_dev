@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table Orders - Mocha Cafe</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4a4a4a 0%, #2c2c2c 100%);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin: 0;
+            font-style: italic;
+        }
+        
+        .table-info {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .table-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c2c2c;
+            margin-bottom: 10px;
+        }
+        
+        .order-card {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .order-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .order-time {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .order-status {
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-preparing {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-ready {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-served {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-printed {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .order-items {
+            padding: 20px;
+        }
+        
+        .order-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .item-name {
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 5px;
+        }
+        
+        .item-price {
+            color: #007bff;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .item-unit-price {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .item-extras {
+            margin-top: 10px;
+        }
+        
+        .extra-item {
+            background: #e9ecef;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .order-total {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-top: 1px solid #e9ecef;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+        }
+        
+        .total-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+        }
+        
+        .invoice-btn {
+            background: linear-gradient(135deg, #2c2c2c 0%, #4a4a4a 100%);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .invoice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(44, 44, 44, 0.3);
+            color: white;
+        }
+        
+        .btn-action {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .waiter-info {
+            background: #e9ecef;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .no-orders {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .table-number {
+                font-size: 1.5rem;
+            }
+            
+            .order-item {
+                padding: 12px;
+            }
+            
+            .summary-card {
+                position: static;
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1>Mocha Cafe</h1>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="badge bg-light text-dark fs-6">
+                        <i class="fas fa-user"></i> Waiter: {% if waiter %}{{ waiter.get_full_name|default:waiter.username }}{% else %}Staff Member{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Table Information -->
+                <div class="table-info" data-table-id="{{ table.id }}">
+                    <div class="table-number" >
+                        <i class="fas fa-utensils"></i> Table {{ table.number }}
+                    </div>
+                    <div class="waiter-info">
+                        <i class="fas fa-clock"></i> Session active | 
+                        <i class="fas fa-users"></i> {{ table.capacity }} seat capacity
+                    </div>
+                    <div class="d-flex flex-wrap">
+                        <button class="btn btn-outline-primary btn-sm btn-action">
+                            <i class="fas fa-plus"></i> Add Order
+                        </button>
+                        <button class="btn btn-outline-success btn-sm btn-action">
+                            <i class="fas fa-check"></i> Mark Ready
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm btn-action">
+                            <i class="fas fa-bell"></i> Call Customer
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Orders List -->
+                {% if orders %}
+                    {% for order in orders %}
+                    <div class="order-card" data-order-id="{{ order.id }}">
+                        <div class="order-header">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h5 class="mb-1">Order {{ order.order_number }}</h5>
+                                    <div class="order-time">Placed at {{ order.ordered_at|date:"g:i A" }}</div>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <span class="order-status status-{{ order.status|lower }}">
+                                        {{ order.status|title }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="order-items">
+                            {% for item in order.items %}
+                            <div class="order-item">
+                                <div class="item-name">{{ item.quantity }}x {{ item.name }}</div>
+                                <div class="item-price">{{ item.total_price|floatformat:2 }} RWF</div>
+                                <div class="item-unit-price">Unit Price: {{ item.unit_price|floatformat:2 }} RWF</div>
+                                {% if item.extras %}
+                                <div class="item-extras">
+                                    {% for extra in item.extras %}
+                                    <div class="extra-item">
+                                        <i class="fas fa-plus-circle text-success"></i> {{ extra.name }} (+{{ extra.price|floatformat:2 }} RWF)
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="order-total">
+                            Order Total: {{ order.total_amount|floatformat:2 }} RWF
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-orders">
+                        <i class="fas fa-clipboard-list fa-3x mb-3"></i>
+                        <h4>No orders found</h4>
+                        <p>There are no printed orders for this table.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Summary Card -->
+                <div class="summary-card">
+                    <h4 class="mb-3">
+                        <i class="fas fa-receipt"></i> Table Summary
+                    </h4>
+                    
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Total Orders:</span>
+                            <span class="fw-bold">{{ summary.total_orders }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Total Items:</span>
+                            <span class="fw-bold">{{ summary.total_items }}</span>
+                        </div>
+                        <hr>
+                        <div class="total-amount">
+                            Total: {{ summary.final_total|floatformat:2 }} RWF
+                        </div>
+                    </div>
+                    
+                    <button class="invoice-btn mb-3" onclick="generateInvoice()" {% if not orders %}disabled{% endif %}>
+                        <i class="fas fa-file-invoice"></i> GENERATE INVOICE
+                    </button>
+                    
+                    <!-- <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm" {% if not orders %}disabled{% endif %}>
+                            <i class="fas fa-print"></i> Print Orders
+                        </button>
+                        <button class="btn btn-outline-success btn-sm" {% if not orders %}disabled{% endif %}>
+                            <i class="fas fa-mobile-alt"></i> Send to Kitchen
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-edit"></i> Edit Table
+                        </button>
+                    </div> -->
+                    
+                    <div class="mt-3 text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle"></i> 
+                            {% if orders %}
+                                please check the orders carfully before generating the invoice
+                            {% else %}
+                                No orders available
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+    function generateInvoice() {
+    // Get table ID
+    const tableId = document.querySelector('.table-info').dataset.tableId;
+    
+    // Get order IDs (using the improved version from earlier)
+    const orderIds = [];
+    document.querySelectorAll('[data-order-id]').forEach(el => {
+        orderIds.push(el.dataset.orderId);
+    });
+
+    if (orderIds.length === 0) {
+        alert('No orders found');
+        return;
+    }
+
+    fetch('/generate-invoice-by-order/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            order_ids: orderIds,
+            table_id: tableId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Invoice generated successfully for ${orderIds.length} orders!`);
+            setTimeout(() => {
+                window.location.href = '/table_landing/';
+            }, 500);
+        } else {
+            // Handle server-side success=false responses
+            alert('Error: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Invoice generation failed');
+    });
+}      
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '9999';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+        function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+        // Add click handlers for status updates
+        document.querySelectorAll('.order-status').forEach(status => {
+            status.addEventListener('click', function() {
+                const currentStatus = this.textContent.trim().toLowerCase();
+                let newStatus = '';
+                let newClass = '';
+                
+                switch(currentStatus) {
+                    case 'pending':
+                        newStatus = 'Preparing';
+                        newClass = 'status-preparing';
+                        break;
+                    case 'preparing':
+                        newStatus = 'Ready';
+                        newClass = 'status-ready';
+                        break;
+                    case 'ready':
+                        newStatus = 'Served';
+                        newClass = 'status-served';
+                        break;
+                    case 'served':
+                        newStatus = 'Printed';
+                        newClass = 'status-printed';
+                        break;
+                    default:
+                        return;
+                }
+                
+                this.className = `order-status ${newClass}`;
+                this.textContent = newStatus;
+                
+                showNotification(`Order status updated to ${newStatus}`, 'info');
+            });
+        });
+        
+        // Auto-refresh page every 30 seconds to get updated order status
+        setInterval(function() {
+            if (document.querySelectorAll('.status-pending, .status-preparing').length > 0) {
+                location.reload();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

@@ -126,7 +126,7 @@
                                 {% endfor %}
                                 {% if extras_total %}
                                     <div style="font-size: 9px; margin-bottom: 3px;">
-                                        Extras Total: {{ extras_total }} RWF
+                                        Extras Total: {{ extras_total }} 
                                     </div>
                                 {% endif %}
                             {% endwith %}
@@ -137,7 +137,7 @@
                         {{ item.quantity }}
                     </td>
                     <td style="text-align: right; vertical-align: top;">
-                        {{ item.price }} RWF
+                        {{ item.price|floatformat:0 }} 
                     </td>
                 </tr>
                 {% endfor %}

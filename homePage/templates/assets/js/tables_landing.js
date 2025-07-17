@@ -210,5 +210,5 @@ function getOrderByTable(tableId) {
 
     const url = `/get_order_by_table/${tableId}/`;
     // Open in a new tab (can change to modal or fetch later)
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.location.href=url;
 }

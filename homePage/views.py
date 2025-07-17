@@ -1170,8 +1170,12 @@ def generate_invoice(request, table_id):
  
 
       orders_id = data.get('order_select', [])  # Get the selected orders from the JSON data
-
-
+      completed_status = OrderStatus.objects.filter(name='completed').first()
+      if not completed_status:
+        return JsonResponse({
+        "success": False,
+         "message": "Completed status not found."
+        }, status=500)
       if orders_id:
                 # Filter the selected orders
         orders = Order.objects.filter(id__in=orders_id, order_status__name__in=['served', 'printed'], invoice__isnull=True, inHold=False)
@@ -1191,7 +1195,7 @@ def generate_invoice(request, table_id):
         created_at=timezone.now()  
       )
       
-      completed_status = OrderStatus.objects.filter(name='completed').first()
+      
    
 
 # Update orders with the completed status
@@ -1206,28 +1210,43 @@ def generate_invoice(request, table_id):
     return JsonResponse({"success": False, "message": "Invalid request method."}, status=400)
 
 @login_required
-def generate_invoice_for_order(request, order_id):
+def generate_invoice_for_order(request):
+    
     if request.method == 'POST':
         try:
+            
             # Get the order
-            order = get_object_or_404(Order, id=order_id)
-            
-            # Check if the order already has an invoice
-            if order.invoice:
+            data = json.loads(request.body)
+            order_ids = data.get('order_ids', [])
+            table_id = data.get('table_id')
+            if not order_ids:
                 return JsonResponse({
                     "success": False, 
-                    "message": "This order already has an invoice."
+                    "message": "No orders selected for invoice"
                 }, status=400)
-            if order.order_status.name != 'printed':
-                return JsonResponse({
-                    "success": False, 
-                    "message": "This order is not printed. please print before and then generate invoice"
-                }, status=400)
-            
+            orders = Order.objects.filter(id__in=order_ids,order_status__name__in=['served', 'printed'], invoice__isnull=True, inHold=False)
+                  
+            if not orders.exists():
+              return JsonResponse({"success": False, "message": "No printed orders for this table. please make sure all the orders are printed "}, status=404)
+            # Validate orders
+            for order in orders:
+                
+                if order.invoice:
+                    return JsonResponse({
+                        "success": False, 
+                        "message": f"Order {order.order_number} already has an invoice."
+                    }, status=400)
+                if order.order_status.name != 'printed':
+                    return JsonResponse({
+                        "success": False, 
+                        "message": f"Order {order.order_number} is not printed yet please print it first."
+                    }, status=400)
+            total_amount = sum(order.total_amount for order in orders)
+           
             # Create a new invoice
             invoice = Invoice.objects.create(
-                table=order.table,  # Add this line
-                total_amount=order.total_amount,
+                table_id=table_id,
+                total_amount=total_amount,
                 created_at=timezone.now()
             )
             
@@ -1239,18 +1258,20 @@ def generate_invoice_for_order(request, order_id):
                     "message": "Completed status not found."
                 }, status=500)
             
-            # Update the order with the invoice and status
-            order.invoice = invoice
-            order.order_status = completed_status
-            order.save()
+            # Update all orders with the same invoice
+            orders.update(
+                invoice=invoice,
+                order_status=completed_status
+            )
             
             # If the order is associated with a table, update table status if no other active orders
       
             
             return JsonResponse({
                 "success": True, 
-                "message": "Invoice generated successfully for the order.",
-                "invoice_id": invoice.id
+                "message": f"Invoice generated successfully for {len(orders)} orders",
+                "invoice_id": invoice.id,
+               
             })
             
         except Exception as e:
@@ -1699,44 +1720,85 @@ def get_table_history(request, table_id):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 ############################## grt order by table waiter edition ########################
-def getOrderByTable(request,table_id):
+def getOrderByTable(request, table_id):
     try:
         table = Table.objects.get(id=table_id)
     except Table.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Table not found'}, status=404)
-
-    orders = Order.objects.filter(table=table).order_by('-ordered_at')
-
-    if not orders.exists():
-        return JsonResponse({'success': False, 'error': 'No orders found for this table'}, status=404)
-
-    # Collect all related order items
-    order_items = OrderItem.objects.filter(order__in=orders).prefetch_related('selected_extras')
-
-    # Calculate combined total
-    total_amount = sum(item.calculate_total_price() for item in order_items)
-    pending_status, created = OrderStatus.objects.get_or_create(name='pending')
-    # Create a fake combined order (not saved to DB)
-    fake_order = Order(
-        id=999,  # dummy ID just to satisfy the template
-        customer=None,
-        ordered_at=timezone.now(),
-        order_status=pending_status,
-        total_amount=total_amount,
+    
+    # Get orders that are served or printed but not invoiced and not on hold
+    orders = Order.objects.filter(
         table=table,
-        table_number=table.number,
-        inHold=False,
-    )
+        order_status__name__in=['printed'], 
+        invoice__isnull=True, 
+        inHold=False
+    ).order_by('-ordered_at')
+    
+    # if not orders.exists():
+    #     return JsonResponse({'success': False, 'error': 'No printed orders found for this table. please make sure all the orders are printed first'}, status=404)
+    
+    # Prepare orders data with their items
+    orders_data = []
+    total_amount = 0
+    total_items_count = 0
+    
+    for order in orders:
+        # Get order items for this specific order
+        order_items = OrderItem.objects.filter(order=order).prefetch_related('selected_extras')
+        
+        # Calculate order total
+        order_total = sum(item.calculate_total_price() for item in order_items)
+        total_amount += order_total
+        
+        # Prepare items data for this order
+        items_data = []
+        for item in order_items:
+            # Get extras for this item
+            extras_data = []
+            for extra in item.selected_extras.all():
+                extras_data.append({
+                    'name': extra.name,
+                    'price': extra.price
+                })
+            
+            items_data.append({
+                'id': item.id,
+                'name': item.item.name,
+                'quantity': item.quantity,
+                'unit_price': item.item_price,
+                'total_price': item.calculate_total_price(),
+                'extras': extras_data
+            })
+            
+        total_items_count += len(items_data)
+        
+        # Add order data
+        orders_data.append({
+            'id': order.id,
+            'order_number': f"#{str(order.id).zfill(3)}",
+            'ordered_at': order.ordered_at,
+            'status': order.order_status.name,
+            'total_amount': order_total,
+            'items': items_data,
+            'items_count': len(items_data)
+        })
+    
 
-    # Attach a dummy related manager for orderitem_set to mimic the real one
- 
-
+    final_total = total_amount 
+    
+    # Prepare context for template
     context = {
-        'order': fake_order,
-        'order_items': order_items,
+        'table': table,
+        'orders': orders_data,
+        'summary': {
+            'total_orders': len(orders_data),
+            'total_items': total_items_count,
+            'final_total': final_total
+        },
+        'waiter': request.user if request.user.is_authenticated else None
     }
-
-    return render(request, 'order_view.html', context)
+    
+    return render(request, 'waiter_orders.html', context)
 
 
 # def getOrderByTable(request, tableId):
