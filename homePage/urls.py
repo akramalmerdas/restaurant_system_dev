@@ -26,6 +26,7 @@ urlpatterns =[
     path('print_order_view/<int:order_id>/', views.print_order_view, name='print_order'),
     path('generate_invoice/<int:table_id>/', views.generate_invoice, name='generate_invoice'),  
     path('generate-invoice-by-order/', views.generate_invoice_for_order, name='generate_invoice_order'),
+    path('generate-invoice-by-item/', views.generateInvoiceByItem, name='generate_invoice_item'),
     path('invoices/', views.invoice_dashboard, name='invoice_dashboard'),
     path('invoice/<int:invoice_id>/', views.view_invoice, name='view_invoice'),
     path('invoiceA4/<int:invoice_id>/', views.view_invoiceA4, name='view_invoice_A4'),

@@ -638,7 +638,7 @@ def submitOrder(request):
                             quantity=extra_data['quantity'],
                             extra_name=extra.name,       
                             extra_price=extra.price,
-                            display_id=display_id
+                            
                         )
             order_item.save()
             # Update the running total amount
@@ -832,7 +832,7 @@ def logout_view(request):
 @login_required
 def adminDashboard(request):
     # Fetch all tables
-    tables = Table.objects.all()
+    tables = Table.objects.all().order_by('id')
     
     # Get filter parameters
     selected_table_id = request.GET.get('table_id')
@@ -1286,6 +1286,75 @@ def generate_invoice_for_order(request):
     }, status=400)
 
 
+def generateInvoiceByItem(request):
+    
+    if request.method == 'POST':
+        try:
+            
+            # Get the order
+            data = json.loads(request.body)
+            items_ids = data.get('item_ids', [])
+            table_id = data.get('table_id')
+            if not items_ids:
+                return JsonResponse({
+                    "success": False, 
+                    "message": "No items selected for invoice"
+                }, status=400)
+            items = OrderItem.objects.filter(id__in=items_ids,invoice__isnull=True, inHold=False,order__table__id=table_id)
+            total_amount = sum(item.calculate_total_price() for item in items)
+           
+                  
+            if not items.exists():
+              return JsonResponse({"success": False, "message": "No items selected for invoice"}, status=404)
+            # Validate orders
+            for item in items:
+                
+                if item.invoice:
+                    return JsonResponse({
+                        "success": False, 
+                        "message": f"Item {item.item.name} already has an invoice."
+                    }, status=400)
+               
+            
+           
+            # Create a new invoice
+            invoice = Invoice.objects.create(
+                table_id=table_id,
+                total_amount=total_amount,
+                created_at=timezone.now()
+            )
+            
+            # Get the completed status
+            
+            
+            # Update all orders with the same invoice
+            items.update(
+                invoice=invoice,
+               
+            )
+            
+            # If the order is associated with a table, update table status if no other active orders
+      
+            
+            return JsonResponse({
+                "success": True, 
+                "message": f"Invoice generated successfully for items",
+                # "invoice_id": invoice.id,
+               
+            })
+            
+        except Exception as e:
+            return JsonResponse({
+                "success": False, 
+                "message": str(e)
+            }, status=500)
+    
+    return JsonResponse({
+        "success": False, 
+        "message": "Invalid request method. Use POST."
+    }, status=400)
+
+
 @login_required
 def invoice_dashboard(request):
     if request.method != "GET":
@@ -1301,8 +1370,8 @@ def invoice_dashboard(request):
         start_date_str = request.GET.get("start_date")
         end_date_str = request.GET.get("end_date")
         
-        tables = Table.objects.all()
-        invoices = Invoice.objects.filter(inHold=False)  # Base queryset
+        tables = Table.objects.all().order_by('id')
+        invoices = Invoice.objects.filter(inHold=False).order_by('-created_at')  # Base queryset
         
         # Apply table filter
         if table_id:
@@ -1744,7 +1813,7 @@ def getOrderByTable(request, table_id):
     
     for order in orders:
         # Get order items for this specific order
-        order_items = OrderItem.objects.filter(order=order).prefetch_related('selected_extras')
+        order_items = OrderItem.objects.filter(order=order,invoice__isnull=True, inHold=False).prefetch_related('selected_extras')
         
         # Calculate order total
         order_total = sum(item.calculate_total_price() for item in order_items)
@@ -1771,9 +1840,9 @@ def getOrderByTable(request, table_id):
             })
             
         total_items_count += len(items_data)
-        
+        if items_data != []:
         # Add order data
-        orders_data.append({
+          orders_data.append({
             'id': order.id,
             'order_number': f"#{str(order.id).zfill(3)}",
             'ordered_at': order.ordered_at,
@@ -1781,7 +1850,7 @@ def getOrderByTable(request, table_id):
             'total_amount': order_total,
             'items': items_data,
             'items_count': len(items_data)
-        })
+          })
     
 
     final_total = total_amount 

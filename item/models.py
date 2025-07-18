@@ -184,7 +184,7 @@ class OrderItem(models.Model):
     item_price = models.DecimalField(max_digits=10, decimal_places=2,null=True)
     customizations = models.TextField(null=True, blank=True)  # Optional customizations for the item
     selected_extras = models.ManyToManyField(Extra, blank=True)
-  
+    invoice = models.ForeignKey('Invoice', on_delete=models.SET_NULL, null=True, blank=True, related_name='order_items')
     inHold = models.BooleanField(default=False)
 
     def calculate_total_price(self):
