@@ -39,6 +39,7 @@ class ExtraAdmin(admin.ModelAdmin):
 
 class OrderAdmin(admin.ModelAdmin):
     inlines = [OrderItemInline]
+    search_fields = ['order_status__name']
     list_display = ('id', 'ordered_at','order_status')
     
     def save_related(self, request, form, formsets, change):
