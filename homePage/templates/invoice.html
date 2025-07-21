@@ -67,18 +67,28 @@
                 </tr>
             </thead>
             <tbody>
+                <!-- The outer loop for orders is correct -->
                 {% for order in orders %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
+                    
+                    <!-- Column for Item Names and Extras -->
                     <td>
                         <ul style="padding-left: 0; list-style: none; margin: 0;">
+                            <!-- Loop through the items, which are pre-loaded on the order object -->
                             {% for item in order.orderitem_set.all %}
                             <li>
-                                {{ item.quantity }} x {{ item.item.name }}
-                                {% if item.selected_extras.exists %}
+                                <!-- LOGIC CHANGE 1: Use correct fields and set quantity to 1 -->
+                                1x {{ item.item_name }}
+            
+                                <!--
+                                LOGIC CHANGE 2: Access extras through the correct relationship.
+                                The design (parentheses, "Extras:") is preserved.
+                                -->
+                                {% if item.orderitemextra_set.all %}
                                 (Extras: 
-                                {% for extra in item.selected_extras.all %}
-                                    {{ extra.name }}{% if not forloop.last %}, {% endif %}
+                                {% for extra in item.orderitemextra_set.all %}
+                                    {{ extra.extra_name }}{% if not forloop.last %}, {% endif %}
                                 {% endfor %}
                                 )
                                 {% endif %}
@@ -86,10 +96,16 @@
                             {% endfor %}
                         </ul>
                     </td>
+            
+                    <!-- Column for Item Prices -->
                     <td>
                         <ul style="padding-left: 0; list-style: none; margin: 0;">
+                            <!-- Loop through the items again to align prices -->
                             {% for item in order.orderitem_set.all %}
-                            <li>{{ item.price }} RWF</li>
+                            <li>
+                                <!-- LOGIC CHANGE 3: Use the final price and format it -->
+                                {{ item.price|floatformat:2 }} RWF
+                            </li>
                             {% endfor %}
                         </ul>
                     </td>

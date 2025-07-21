@@ -3,7 +3,7 @@
 <head>
     {% load static %}
     <!-- Include Delete Order Modal -->
-    {% include 'includes/delete_order_modal.html' %}
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Mocha Cafe</title>
@@ -85,29 +85,6 @@
         </div>
     </section>
 
-    <!-- ======= Header ======= -->
-    <!-- <header id="header" class="fixed-top d-flex align-items-center header-dark">
-        <div class="container-fluid container-xl d-flex align-items-center justify-content-lg-between">
-            <h1 class="logo me-auto me-lg-0">
-                <a href="/" class="logo-light">Mocha Cafe</a>
-            </h1>
-            <nav id="navbar" class="navbar order-last order-lg-0">
-                <ul>
-                    <li><a class="nav-link" href="/">Home</a></li>
-                    <li><a class="nav-link" href="/#menu">Menu</a></li>
-                    {% if user.is_authenticated %}
-                        <li><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
-                    {% else %}
-                        <li><a class="nav-link" href="{% url 'login' %}">Login</a></li>
-                    {% endif %}
-                    <li>
-                        <a class="nav-link" href="{% url 'cancelled_orders' %}">Cancelled Orders</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </header> -->
-
     <section class="dashboard-section">
         <div class="container-fluid">
             <div class="row">
@@ -179,21 +156,10 @@
                                 <h2 class="dashboard-title">Admin Dashboard</h2>
                                 <p class="text-muted">Manage orders, staff, and settings</p>
                             </div>
-                            <!-- <a href="/" class="btn btn-home">
-                                <i class="bi bi-house-door"></i> Back to Home
-                            </a>
-                            <a href="/invoices/" class="btn btn-primary">
-                                <i class="bi bi-receipt"></i> Manage Invoices
-                            </a>
-                            <a href="/tables/" class="btn btn-primary">
-                                <i class="bi bi-receipt"></i> Manage Tables
-                            </a>
-                            <a href="/item_dashboard/" class="btn btn-primary">
-                                <i class="bi bi-receipt"></i> Manage Items
-                            </a> -->
-                            <a id="generate-invoice-btn" class="btn btn-primary" data-table-id="{{ selected_table_id }}">
+                       
+                            <!-- <a id="generate-invoice-btn" class="btn btn-primary" data-table-id="{{ selected_table_id }}">
                                 <i class="bi bi-receipt">Generate Invoice</i> ({{ selected_table_id }})
-                            </a>
+                            </a> -->
                         </div>
                     </div>
 
@@ -394,5 +360,6 @@
     <script src="{% static 'js/notifications.js' %}"></script>
     <script type="module" src="{% static 'js/dashboard.js' %}"></script>
     <script type="module" src="{% static 'js/invoice.js' %}"></script>
+   
 </body>
 </html>

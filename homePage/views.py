@@ -10,7 +10,7 @@ import json
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.db.models import Q,Sum ,F,Count, Avg
+from django.db.models import Q,Sum ,F,Count, Avg,Prefetch
 from django.middleware.csrf import get_token
 from django.contrib.auth.decorators import login_required
 from datetime import datetime ,date
@@ -289,13 +289,15 @@ def addToOrder(request):
                     return JsonResponse({"status": "success", "message": "Item quantity updated"})
         
         # Create a new order item structure (for items with extras or new items)
+       
+       
         order_item = {
-            'item_id': item.id,
-            'name': item.name,
-            'quantity': quantity,
-            'price': item_price,  # Store the price as a float
-            'customizations': notes,
-            'extras': [
+         'item_id': item.id,
+         'name': item.name,
+         'quantity': quantity,
+         'price': item_price,  # Store the price as a float
+         'customizations': notes,
+         'extras': [
                 {
                     'id': extra.id,
                     'name': extra.name,
@@ -304,8 +306,8 @@ def addToOrder(request):
                 }
                 for extra, extra_data in zip(extras, extras_data)
             ],
-            'subtotal': item_price * quantity + sum(float(extra.price) * extra_data['quantity'] for extra, extra_data in zip(extras, extras_data)),  # Calculate subtotal with float values
-             'table':'table1'      
+         'subtotal': item_price * quantity + sum(float(extra.price) * extra_data['quantity'] for extra, extra_data in zip(extras, extras_data)),  # Calculate subtotal with float values
+         'table':'table1'      
         }
 
         # Add the new order item to the session order list
@@ -521,167 +523,149 @@ def emptyOrder(request):
 #     return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)
 #######################################submit order waiter edition #############################################
 @csrf_exempt
+@transaction.atomic # Use a transaction to ensure the whole order saves or none of it does
 def submitOrder(request):
-    if request.method == "POST":
-     
-        # Get the order data from the session
-        order_data = request.session.get('order', [])
-     
-        # Ensure there are items in the session
-        if not order_data:
-            return JsonResponse({"status": "error", "message": "No items in the cart."}, status=400)
-       
-        # Fetch or create the "Pending" order status
-        pending_status, created = OrderStatus.objects.get_or_create(name='pending')
-        
-        table_number = request.session.get('table_number', None)
-        print ('this is the table number ' + str(table_number))
-       
-        if table_number:
- 
-            orderTable = Table.objects.get(number=table_number)
-            # orderTable = Table.objects.get(number=table_number)
-         
-        else:
-      
-            orderTable = Table.objects.get(number='Take Away')
-            
-        with transaction.atomic():
-          # Get or create today's counter
-          today = date.today()
-          counter, created = DailyOrderCounter.objects.get_or_create(date=today)
-    
-          # Increment and save the counter
-          counter.counter += 1
-          counter.save()
-    
-          # Generate the display ID
-          display_id = f"{today.strftime('%Y%m%d')}-{counter.counter:03d}"
-      
-        
-        
-        if request.user.is_authenticated:
-          staff_waiter = None
-          try:
-            # Check if the user is a waiter
-            staff_member = Staff.objects.get(user=request.user)
-            staff_waiter = staff_member
-          except Staff.DoesNotExist:
-            staff_waiter = None  # Not a waiter, don't assign
+    if request.method != "POST":
+        return JsonResponse({"status": "error", "message": "Invalid request method."}, status=405)
 
-          try:
+    order_data = request.session.get('order', [])
+    if not order_data:
+        return JsonResponse({"status": "error", "message": "Your cart is empty."}, status=400)
+
+    # --- 1. SETUP THE ORDER ENVIRONMENT ---
+
+    # Fetch the "Pending" status for the new order
+    try:
+        pending_status = OrderStatus.objects.get(name__iexact='pending')
+    except OrderStatus.DoesNotExist:
+        # This is a critical error, the system isn't set up correctly
+        return JsonResponse({"status": "error", "message": "Order status 'pending' not found."}, status=500)
+
+    # Determine the table for the order
+    table_number = request.session.get('table_number')
+    try:
+        orderTable = Table.objects.get(number=table_number) if table_number else Table.objects.get(number='Take Away')
+    except Table.DoesNotExist:
+        return JsonResponse({"status": "error", "message": f"Table '{table_number or 'Take Away'}' not found."}, status=400)
+
+    # --- 2. CREATE THE MAIN ORDER INSTANCE ---
+
+    # Generate a unique, sequential display ID for the order
+    today = date.today()
+    counter, _ = DailyOrderCounter.objects.get_or_create(date=today)
+    counter.counter += 1
+    counter.save()
+    display_id = f"{today.strftime('%Y%m%d')}-{counter.counter:03d}"
+
+    # Identify the customer and/or staff member from the request user
+    customer = None
+    staff_waiter = None
+    if request.user.is_authenticated:
+        try:
             customer = Customer.objects.get(user=request.user)
-            order = Order.objects.create(
-            customer=customer,
-            waiter=staff_waiter,
-            order_status=pending_status,
-            total_amount=0,
-            table=orderTable,
-            table_number=orderTable.number,
-            display_id=display_id
-        )
-          except Customer.DoesNotExist:
-            order = Order.objects.create(
-            waiter=staff_waiter,
-            order_status=pending_status,
-            total_amount=0,
-            table=orderTable,
-            table_number=orderTable.number,
-            display_id=display_id
-        )
-        else:
-            order = Order.objects.create(
-            order_status=pending_status,
-            total_amount=0,
-            table=orderTable,
-            table_number=orderTable.number,
-            display_id=display_id
-        )
-     
-        total_amount = 0  # Initialize the total amount for the order
-        orderTable.status = 'occupied'
-        orderTable.save()
-        # Loop through the items from the session and create OrderItems
-        for item_data in order_data:
-        
-            item = Item.objects.get(id=item_data['item_id'])  # Fetch the item from the database
-           
-    
-            # Create the OrderItem
+        except Customer.DoesNotExist:
+            pass  # User is not a customer
+        try:
+            staff_waiter = Staff.objects.get(user=request.user)
+        except Staff.DoesNotExist:
+            pass  # User is not a staff member
+
+    # Create the main Order object with an initial total of 0
+    order = Order.objects.create(
+        customer=customer,
+        waiter=staff_waiter,
+        order_status=pending_status,
+        total_amount=0,  # Will be calculated and updated later
+        table=orderTable,
+        table_number=orderTable.number,
+        display_id=display_id
+    )
+
+    # Mark the table as occupied
+    orderTable.status = 'occupied'
+    orderTable.save()
+
+    total_order_amount = 0
+
+    # --- 3. CREATE ORDER ITEMS AND EXTRAS (Corrected Loop) ---
+
+    for item_data in order_data:
+        try:
+            item = Item.objects.get(id=item_data['item_id'])
+            extras_list_data = item_data.get('extras', [])
+        except Item.DoesNotExist:
+            continue # Skip if an item from the session is no longer in the DB
+
+        # Loop for each quantity of the main item (e.g., for 2 burgers, this loop runs twice)
+        for _ in range(item_data['quantity']):
+            # Create one OrderItem instance for this single unit
             order_item = OrderItem.objects.create(
                 order=order,
                 item=item,
                 item_name=item.name,
                 item_price=item.price,
-                quantity=item_data['quantity'],
-                price=item_data['price'] * item_data['quantity'],  # Calculate price based on quantity
-                customizations=item_data['customizations'],
-        
+                price=item.price,  # Set initial price, model's save() will update it
+                customizations=item_data.get('customizations', '')
             )
-            order_item.save()
-        
-            # Add the selected extras to the OrderItem
-            # Safeguard: Only process extras if they are dicts with 'id' and 'quantity'
-            extras_list = item_data.get('extras', [])
-            if isinstance(extras_list, list):
-                for extra_data in extras_list:
-                    if (
-                        isinstance(extra_data, dict)
-                        and 'id' in extra_data
-                        and 'quantity' in extra_data
-                    ):
-                        extra = Extra.objects.get(id=extra_data['id'])
-                        order_item.selected_extras.add(extra, through_defaults={'quantity': extra_data['quantity']})
-                        OrderItemExtra.objects.create(
-                            order_item=order_item,
-                            extra=extra,
-                            quantity=extra_data['quantity'],
-                            extra_name=extra.name,       
-                            extra_price=extra.price,
-                            
-                        )
-            order_item.save()
-            # Update the running total amount
-            total_amount += order_item.price
 
-        # Update the total amount of the order
-        order.total_amount = total_amount
-        order.save(update_fields=["total_amount"])
+            # Add all its extras to THIS specific OrderItem
+            for extra_data in extras_list_data:
+                try:
+                    extra = Extra.objects.get(id=extra_data['id'])
+                    OrderItemExtra.objects.create(
+                        order_item=order_item,
+                        extra=extra,
+                        quantity=1,  # The quantity of an extra is always 1
+                        extra_name=extra.name,
+                        extra_price=extra.price
+                    )
+                except Extra.DoesNotExist:
+                    continue # Skip if an extra is no longer in the DB
 
-        # Clear the session as the order is now confirmed and saved in the database
-        if request.user.is_authenticated:
-            try:
-                staff_member = Staff.objects.get(user=request.user)
-                
-                if staff_member.role.lower() == 'manager':
-                    redirect_url = reverse('admin_dashboard')  # URL name from urls.py
-                else:
-                    redirect_url = reverse('table_landing_page')  # URL name from urls.py
-            except Staff.DoesNotExist:
-                redirect_url = reverse('table_landing_page')  # Default for non-staff
-        else:
-            redirect_url = reverse('table_landing_page')
-        request.session['order'] = []
-        channel_layer = get_channel_layer()
-        
-        async_to_sync(channel_layer.group_send)(
+            # Trigger the model's save method to recalculate the price with extras
+            order_item.save()
+            
+            # Add this single item's final, recalculated price to the order's total
+            total_order_amount += order_item.price
+
+    # --- 4. FINALIZE THE ORDER ---
+
+    # Update the total amount of the entire order with the calculated sum
+    order.total_amount = total_order_amount
+    order.save(update_fields=["total_amount"])
+
+    # Clear the cart from the session
+    request.session['order'] = []
+    request.session.pop('table_number', None) # Also clear the table number
+
+    # --- 5. SEND NOTIFICATIONS AND RESPOND ---
+
+    # Determine redirect URL based on user role
+    if staff_waiter and staff_waiter.role.lower() == 'manager':
+        redirect_url = reverse('admin_dashboard')
+    else:
+        redirect_url = reverse('table_landing_page')
+
+    # Send real-time notification via Channels
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
         "admin_notifications",
         {
             "type": "order_notification",
             "order_id": order.id,
-            "customer": order.customer.user.username if order.customer and order.customer.user else "Guest",
+            "customer": order.customer.user.username if customer and customer.user else "Guest",
             "total": str(order.total_amount),
             "timestamp": timezone.now().isoformat(),
-            "redirect_url": redirect_url
+            "redirect_url": redirect_url,
         }
     )
 
-        # Return a success response
-        return JsonResponse({"status": "success", "message": "Order submitted successfully."})
-
-    return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)
-
-####################################### set table number waiters Edition###############################################
+    return JsonResponse({
+        "status": "success",
+        "message": "Order submitted successfully!",
+        "redirect_url": redirect_url
+    })
+    ####################################### set table number waiters Edition###############################################
 
 def setTableNumber(request):
     print ('we enterd the set table number function')
@@ -1210,149 +1194,129 @@ def generate_invoice(request, table_id):
     return JsonResponse({"success": False, "message": "Invalid request method."}, status=400)
 
 @login_required
-def generate_invoice_for_order(request):
-    
-    if request.method == 'POST':
+@transaction.atomic
+def generate_invoice_by_table(request):
+    print('generate_invoice_by_table')
+    if request.method != 'POST':
+        return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        table_id = data.get('table_id')
+
+        if not table_id:
+            return JsonResponse({"success": False, "message": "Table ID is missing."}, status=400)
+        
+        # Securely fetch all uninvoiced items for this table.
+        items_to_invoice = OrderItem.objects.filter(
+            order__table_id=table_id,
+            invoice__isnull=True,
+            order__inHold=False,
+            order__order_status__name__in=['printed']
+        )
+
+        if not items_to_invoice.exists():
+            return JsonResponse({"success": False, "message": "No uninvoiced items found for this table."}, status=404)
+        
+        # 1. Get the unique IDs of all parent orders that were affected.
+        affected_order_ids = set(items_to_invoice.values_list('order_id', flat=True))
+        print('affected_order_ids',str(affected_order_ids))
+        
+        # Calculate total and create the invoice
+        total_amount = sum(item.price for item in items_to_invoice)
+        invoice = Invoice.objects.create(
+            table_id=table_id,
+            total_amount=total_amount,
+            created_at=timezone.now()
+        )
+
+        # Link all found items to the new invoice
+        items_to_invoice.update(invoice=invoice)
+        
+        # 2. Get the 'completed' status object once.
         try:
-            
-            # Get the order
-            data = json.loads(request.body)
-            order_ids = data.get('order_ids', [])
-            table_id = data.get('table_id')
-            if not order_ids:
-                return JsonResponse({
-                    "success": False, 
-                    "message": "No orders selected for invoice"
-                }, status=400)
-            orders = Order.objects.filter(id__in=order_ids,order_status__name__in=['served', 'printed'], invoice__isnull=True, inHold=False)
-                  
-            if not orders.exists():
-              return JsonResponse({"success": False, "message": "No printed orders for this table. please make sure all the orders are printed "}, status=404)
-            # Validate orders
-            for order in orders:
-                
-                if order.invoice:
-                    return JsonResponse({
-                        "success": False, 
-                        "message": f"Order {order.order_number} already has an invoice."
-                    }, status=400)
-                if order.order_status.name != 'printed':
-                    return JsonResponse({
-                        "success": False, 
-                        "message": f"Order {order.order_number} is not printed yet please print it first."
-                    }, status=400)
-            total_amount = sum(order.total_amount for order in orders)
-           
-            # Create a new invoice
-            invoice = Invoice.objects.create(
-                table_id=table_id,
-                total_amount=total_amount,
-                created_at=timezone.now()
-            )
-            
-            # Get the completed status
-            completed_status = OrderStatus.objects.filter(name='completed').first()
-            if not completed_status:
-                return JsonResponse({
-                    "success": False,
-                    "message": "Completed status not found."
-                }, status=500)
-            
-            # Update all orders with the same invoice
-            orders.update(
-                invoice=invoice,
-                order_status=completed_status
-            )
-            
-            # If the order is associated with a table, update table status if no other active orders
-      
-            
-            return JsonResponse({
-                "success": True, 
-                "message": f"Invoice generated successfully for {len(orders)} orders",
-                "invoice_id": invoice.id,
-               
-            })
-            
-        except Exception as e:
-            return JsonResponse({
-                "success": False, 
-                "message": str(e)
-            }, status=500)
-    
-    return JsonResponse({
-        "success": False, 
-        "message": "Invalid request method. Use POST."
-    }, status=400)
+            completed_status = OrderStatus.objects.get(name='completed')
+        except OrderStatus.DoesNotExist:
+            return JsonResponse({"success": False, "message": "System error: 'completed' status not found."}, status=500)
+
+        # 3. Loop through each affected order and check its status.
+        for order_id in affected_order_ids:
+            # Since we just invoiced ALL remaining items, every order involved is now complete.
+            # The check `if not OrderItem.objects.filter(...).exists()` will always be true here,
+            # but we keep it for logical consistency and safety.
+            if not OrderItem.objects.filter(order_id=order_id, invoice__isnull=True).exists():
+                Order.objects.filter(id=order_id).update(order_status=completed_status)
+
+        return JsonResponse({
+            "success": True,
+            "message": f"Invoice generated successfully for {items_to_invoice.count()} items.",
+            "invoice_id": invoice.id,
+        })
+
+    except Exception as e:
+        return JsonResponse({"success": False, "message": str(e)}, status=500)
 
 
+@transaction.atomic
 def generateInvoiceByItem(request):
     
-    if request.method == 'POST':
-        try:
-            
-            # Get the order
-            data = json.loads(request.body)
-            items_ids = data.get('item_ids', [])
-            table_id = data.get('table_id')
-            if not items_ids:
-                return JsonResponse({
-                    "success": False, 
-                    "message": "No items selected for invoice"
-                }, status=400)
-            items = OrderItem.objects.filter(id__in=items_ids,invoice__isnull=True, inHold=False,order__table__id=table_id)
-            total_amount = sum(item.calculate_total_price() for item in items)
-           
-                  
-            if not items.exists():
-              return JsonResponse({"success": False, "message": "No items selected for invoice"}, status=404)
-            # Validate orders
-            for item in items:
-                
-                if item.invoice:
-                    return JsonResponse({
-                        "success": False, 
-                        "message": f"Item {item.item.name} already has an invoice."
-                    }, status=400)
-               
-            
-           
-            # Create a new invoice
-            invoice = Invoice.objects.create(
-                table_id=table_id,
-                total_amount=total_amount,
-                created_at=timezone.now()
-            )
-            
-            # Get the completed status
-            
-            
-            # Update all orders with the same invoice
-            items.update(
-                invoice=invoice,
-               
-            )
-            
-            # If the order is associated with a table, update table status if no other active orders
+    if request.method != 'POST':
+        return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        item_ids = data.get('item_ids', [])
+        table_id = data.get('table_id') # You might not need the table_id if you get it from the items
+
+        if not item_ids:
+            return JsonResponse({"success": False, "message": "No items selected."}, status=400)
+
+        # Fetch the specific items to be invoiced
+        items_to_invoice = OrderItem.objects.filter(id__in=item_ids, invoice__isnull=True)
+        print('items_to_invoice',str(items_to_invoice))
+        if not items_to_invoice.exists():
+            return JsonResponse({"success": False, "message": "Selected items are already invoiced or do not exist."}, status=404)
+          # 1. Get the unique IDs of all parent orders that were affected.
+        affected_order_ids = set(items_to_invoice.values_list('order_id', flat=True))
+        print('affected_order_ids',str(affected_order_ids))
+        print('items_to_invoice',str(items_to_invoice)) 
+        print('order Id',str(items_to_invoice.values_list('order_id', flat=True)))
+        # Calculate total and create the invoice
+        total_amount = sum(item.price for item in items_to_invoice)
+        invoice = Invoice.objects.create(
+            table_id=items_to_invoice.first().order.table.id, # Get table_id from an item
+            total_amount=total_amount,
+            created_at=timezone.now()
+        )
+        
+        # Link the items to the new invoice
+        items_to_invoice.update(invoice=invoice)
+
       
-            
-            return JsonResponse({
-                "success": True, 
-                "message": f"Invoice generated successfully for items",
-                # "invoice_id": invoice.id,
-               
-            })
-            
-        except Exception as e:
-            return JsonResponse({
-                "success": False, 
-                "message": str(e)
-            }, status=500)
-    
-    return JsonResponse({
-        "success": False, 
-        "message": "Invalid request method. Use POST."
-    }, status=400)
+        # 2. Get the 'completed' status object once.
+        try:
+            completed_status = OrderStatus.objects.get(name='completed')
+        except OrderStatus.DoesNotExist:
+            # This is a critical configuration error, so we stop the transaction.
+            return JsonResponse({"success": False, "message": "System error: 'completed' status not found."}, status=500)
+
+        # 3. Loop through each affected order and check its status.
+        for order_id in affected_order_ids:
+            # Check if the order has any OTHER items that are still uninvoiced.
+            is_fully_invoiced = not OrderItem.objects.filter(order_id=order_id, invoice__isnull=True).exists()
+            print('is_fully_invoiced',str(is_fully_invoiced))
+            if is_fully_invoiced:
+                # If all items for this order are now invoiced, update its status.
+                Order.objects.filter(id=order_id).update(order_status=completed_status)
+                print('Order updated to completed status:', order_id)
+        return JsonResponse({
+            "success": True,
+            "message": f"Invoice generated successfully for {len(item_ids)} items.",
+            "invoice_id": invoice.id,
+        })
+
+    except Exception as e:
+        return JsonResponse({"success": False, "message": str(e)}, status=500)
 
 
 @login_required
@@ -1433,17 +1397,73 @@ def invoice_dashboard(request):
 
 @login_required
 def view_invoice(request, invoice_id):
+    """
+    Fetches an invoice and all its related orders, items, and extras efficiently
+    for display on an 88mm receipt.
+    """
+    # 1. Fetch the invoice object.
     invoice = get_object_or_404(Invoice, id=invoice_id)
-    orders = Order.objects.filter(invoice__id=invoice_id)# Assuming an Invoice has related Orders
-   
-    return render(request, 'invoice.html', {'invoice': invoice, 'orders': orders})
+
+    # 2. THE FIX: Fetch the related orders and pre-load all their children.
+    # This is the most efficient way to get the data for the template.
+    orders = invoice.orders.prefetch_related(
+        'orderitem_set__orderitemextra_set' # For each order, get its items, and for each item, get its extras.
+    ).all()
+    print('orders : ',str(orders))
+    # 3. Pass the invoice and the fully-loaded orders to the template.
+    context = {
+        'invoice': invoice,
+        'orders': orders
+    }
+    
+    return render(request, 'invoice.html', context)
 
 @login_required
 def view_invoiceA4(request, invoice_id):
+    """
+    Fetches an invoice, then groups its items by type and extras,
+    calculates quantities and subtotals, and renders them for display.
+    """
     invoice = get_object_or_404(Invoice, id=invoice_id)
-    orders = Order.objects.filter(invoice__id=invoice_id)# Assuming an Invoice has related Orders
-   
-    return render(request, 'invoiceA4.html', {'invoice': invoice, 'orders': orders})
+
+    # 1. Fetch all items and their extras efficiently.
+    items = invoice.order_items.prefetch_related('orderitemextra_set').all()
+
+    # 2. THE GROUPING LOGIC
+    # We will process the flat list of items into a grouped dictionary.
+    grouped_items = {}
+
+    for item in items:
+        # Create a unique signature for the item based on its extras.
+        # We sort the extras by name to ensure that [Cheese, Bacon] is the same as [Bacon, Cheese].
+        extra_names = sorted([extra.extra_name for extra in item.orderitemextra_set.all()])
+        
+        # The signature combines the main item's ID and the sorted list of extra names.
+        # e.g., "item_5-extra_Avocado-extra_Fries"
+        signature = f"item_{item.item.id}-" + "-".join([f"extra_{name}" for name in extra_names])
+
+        if signature not in grouped_items:
+            # If this is the first time we've seen this combination, create a new entry.
+            grouped_items[signature] = {
+                'name': item.item_name,
+                'unit_price': item.price, # The price of one unit with its extras
+                'quantity': 0,
+                'subtotal': 0,
+                'extras': list(item.orderitemextra_set.all().values('extra_name', 'extra_price'))
+            }
+        
+        # Increment the quantity and subtotal for this group.
+        grouped_items[signature]['quantity'] += 1
+        grouped_items[signature]['subtotal'] += item.price
+
+    # 3. Pass the invoice and the *values* of the grouped_items dictionary to the template.
+    context = {
+        'invoice': invoice,
+        'grouped_items': grouped_items.values() # The template will receive a list of these dictionaries
+    }
+    
+    return render(request, 'invoiceA4.html', context)
+
 
     
 @require_http_methods(["POST"])
@@ -1614,12 +1634,48 @@ def update_invoice_status(request, invoice_id):
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 def print_invoice_view(request, invoice_id):
+    """
+    Fetches an invoice, then groups its items by type and extras,
+    calculating quantities and subtotals for a compact 88mm receipt.
+    """
+    # 1. Get the invoice object.
     invoice = get_object_or_404(Invoice, id=invoice_id)
-    orders = Order.objects.filter(invoice=invoice)
-    
+
+    # 2. Fetch all individual items and their extras efficiently.
+    items = invoice.order_items.prefetch_related('orderitemextra_set').all()
+
+    # 3. THE GROUPING LOGIC
+    # This dictionary will store the aggregated items.
+    grouped_items = {}
+
+    for item in items:
+        # Create a unique signature for the item based on its extras.
+        # We sort the extras by name to ensure the order doesn't matter.
+        extra_names = sorted([extra.extra_name for extra in item.orderitemextra_set.all()])
+        
+        # The signature combines the main item's ID and the sorted list of extra names.
+        # e.g., "item_5-extra_Avocado-extra_Fries"
+        signature = f"item_{item.item.id}-" + "-".join([f"extra_{name}" for name in extra_names])
+
+        if signature not in grouped_items:
+            # If this is the first time we've seen this combination, create a new entry.
+            grouped_items[signature] = {
+                'name': item.item_name,
+                'unit_price': item.price, # The price of a single unit with its extras
+                'quantity': 0,
+                'subtotal': 0,
+                'extras': list(item.orderitemextra_set.all().values('extra_name', 'extra_price'))
+            }
+        
+        # For every item that matches this signature, increment the quantity and subtotal.
+        grouped_items[signature]['quantity'] += 1
+        grouped_items[signature]['subtotal'] += item.price
+
+    # 4. Prepare the context for the template.
+    # We pass the invoice and the list of grouped item dictionaries.
     context = {
         'invoice': invoice,
-        'orders': orders,
+        'grouped_items': grouped_items.values()
     }
     
     return render(request, 'print_invoice.html', context)
@@ -1790,86 +1846,65 @@ def get_table_history(request, table_id):
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 ############################## grt order by table waiter edition ########################
 def getOrderByTable(request, table_id):
+    """
+    This view fetches all uninvoiced orders for a specific table,
+    calculates a summary, and renders the waiter's order management page.
+    It is designed to work perfectly with the provided waiter_orders.html template.
+    """
     try:
         table = Table.objects.get(id=table_id)
     except Table.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Table not found'}, status=404)
-    
-    # Get orders that are served or printed but not invoiced and not on hold
-    orders = Order.objects.filter(
-        table=table,
-        order_status__name__in=['printed'], 
-        invoice__isnull=True, 
-        inHold=False
-    ).order_by('-ordered_at')
-    
-    # if not orders.exists():
-    #     return JsonResponse({'success': False, 'error': 'No printed orders found for this table. please make sure all the orders are printed first'}, status=404)
-    
-    # Prepare orders data with their items
-    orders_data = []
-    total_amount = 0
-    total_items_count = 0
-    
-    for order in orders:
-        # Get order items for this specific order
-        order_items = OrderItem.objects.filter(order=order,invoice__isnull=True, inHold=False).prefetch_related('selected_extras')
-        
-        # Calculate order total
-        order_total = sum(item.calculate_total_price() for item in order_items)
-        total_amount += order_total
-        
-        # Prepare items data for this order
-        items_data = []
-        for item in order_items:
-            # Get extras for this item
-            extras_data = []
-            for extra in item.selected_extras.all():
-                extras_data.append({
-                    'name': extra.name,
-                    'price': extra.price
-                })
-            
-            items_data.append({
-                'id': item.id,
-                'name': item.item.name,
-                'quantity': item.quantity,
-                'unit_price': item.item_price,
-                'total_price': item.calculate_total_price(),
-                'extras': extras_data
-            })
-            
-        total_items_count += len(items_data)
-        if items_data != []:
-        # Add order data
-          orders_data.append({
-            'id': order.id,
-            'order_number': f"#{str(order.id).zfill(3)}",
-            'ordered_at': order.ordered_at,
-            'status': order.order_status.name,
-            'total_amount': order_total,
-            'items': items_data,
-            'items_count': len(items_data)
-          })
-    
+        return render(request, 'error_page.html', {'message': 'Table not found.'}, status=404)
 
-    final_total = total_amount 
-    
-    # Prepare context for template
+    # 1. EFFICIENTLY FETCH DATA
+    # This is the most critical part. We fetch all orders and their related,
+    # uninvoiced items and extras in just a few database queries.
+    orders_queryset = Order.objects.filter(
+        table=table,
+        order_status__name__in=['printed'],
+        inHold=False
+    ).prefetch_related(
+        # Use a Prefetch object to get ONLY the uninvoiced items for each order.
+        Prefetch(
+            'orderitem_set',
+            queryset=OrderItem.objects.filter(invoice__isnull=True),
+            to_attr='uninvoiced_items' # Store these filtered items in a custom attribute
+        ),
+        # For those specific uninvoiced items, prefetch their extras.
+        'uninvoiced_items__orderitemextra_set'
+    ).distinct().order_by('ordered_at')
+
+    # 2. PREPARE DATA AND CALCULATE SUMMARY
+    # Now we loop through the results in Python to build the final context.
+    # This is fast because all database queries are already done.
+    final_orders_list = []
+    final_total_amount = 0
+    total_items_count = 0
+
+    for order in orders_queryset:
+        # The 'uninvoiced_items' attribute exists on each order because of our Prefetch object.
+        if hasattr(order, 'uninvoiced_items') and order.uninvoiced_items:
+            # This order has items to display, so we add it to our final list.
+            final_orders_list.append(order)
+            
+            # Calculate totals based only on the items we are displaying.
+            for item in order.uninvoiced_items:
+                total_items_count += 1
+                final_total_amount += item.price
+
+    # 3. CREATE THE FINAL CONTEXT
     context = {
         'table': table,
-        'orders': orders_data,
+        'orders': final_orders_list, # Pass the filtered list of order objects
         'summary': {
-            'total_orders': len(orders_data),
+            'total_orders': len(final_orders_list),
             'total_items': total_items_count,
-            'final_total': final_total
+            'final_total': final_total_amount
         },
         'waiter': request.user if request.user.is_authenticated else None
     }
-    
+
     return render(request, 'waiter_orders.html', context)
-
-
 # def getOrderByTable(request, tableId):
 #     table = get_object_or_404(Table, id=tableId)
 

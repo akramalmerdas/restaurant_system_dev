@@ -428,16 +428,17 @@ if (addButton){
         });
   
         if (response.ok) {
+          window.location.href = '/#menu';
           // Replace alert with custom success dialog
-          showSuccessDialog({
-              title: 'Success!',
-              message: 'the Item was added to your order successfully!',
-              okButtonText: 'OK',
-              onOk: function() {
-                window.location.href = '/#menu';
-              },
-              // autoHideDelay: 10000 // Optional: auto-hide after 2 seconds
-          });
+          // showSuccessDialog({
+          //     title: 'Success!',
+          //     message: 'the Item was added to your order successfully!',
+          //     okButtonText: 'OK',
+          //     onOk: function() {
+          //       window.location.href = '/#menu';
+          //     },
+          //     // autoHideDelay: 10000 // Optional: auto-hide after 2 seconds
+          // });
       }else {
             alert("Error adding item to order.");
         }

@@ -178,7 +178,7 @@ class Extra(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     item = models.ForeignKey(Item,on_delete=models.SET_NULL, null=True, blank=True)
-    quantity = models.IntegerField()
+    # quantity = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     item_name = models.CharField(max_length=255,null=True) 
     item_price = models.DecimalField(max_digits=10, decimal_places=2,null=True)
@@ -188,7 +188,7 @@ class OrderItem(models.Model):
     inHold = models.BooleanField(default=False)
 
     def calculate_total_price(self):
-      base_price = self.item.price * self.quantity
+      base_price = self.item.price
       extras_price = sum(extra.calculate_price() for extra in self.orderitemextra_set.all())
       return base_price + extras_price
         
@@ -197,7 +197,7 @@ class OrderItem(models.Model):
 
     # Set the price initially before saving
       if not self.price:  # If the price is not set yet
-        self.price = self.item.price * self.quantity   
+        self.price = self.item.price  
       super().save(*args, **kwargs)
     
       if self.pk:
@@ -215,7 +215,7 @@ class OrderItem(models.Model):
        
 
     def __str__(self):
-        return f"{self.quantity} x {self.item.name}"    
+        return f"{self.item.name}"    
 
 # Inventory Model
 class Inventory(models.Model):

@@ -580,3 +580,33 @@ body::before {
 }
 
 
+/* static/css/order_view.css */
+
+/* ... your existing styles ... */
+/* Styles the container of the checkbox */
+.form-check {
+    display: flex;
+    align-items: flex-start;
+    padding-left: 15px;
+}
+
+/* Styles the checkbox itself to be larger and more clickable */
+.form-check-input.item-checkbox {
+    width: 1.5em;
+    height: 1.5em;
+    cursor: pointer;
+    border: 2px solid #adb5bd;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Styles the checkbox when it is selected */
+.form-check-input.item-checkbox:checked {
+    background-color: #0d6efd; /* Bootstrap primary blue */
+    border-color: #0d6efd;
+}
+
+/* Optional but recommended: Highlight the whole card when selected */
+.item-card.selected {
+    border-color: #0d6efd;
+    background-color: #f0f6ff;
+}

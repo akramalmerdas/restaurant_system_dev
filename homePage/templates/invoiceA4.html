@@ -321,29 +321,30 @@
                 </tr>
             </thead>
             <tbody>
-                {% for order in orders %}
+                {% for item_group in grouped_items %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td colspan="2">
                             <table style="width: 100%;">
-                                {% for item in order.orderitem_set.all %}
+                                
                                     <tr>
                                         <td style="padding: 4px 0;">
-                                            {{ item.quantity }} x {{ item.item.name }}
-                                            {% if item.selected_extras.exists %}
+                                            {{ item_group.quantity }}x {{ item_group.name }}
+                                            {% if item_group.extras %}
                                                 <br>
                                                 <span class="extras">Extras:
-                                                    {% for extra in item.selected_extras.all %}
-                                                        {{ extra.name }}{% if not forloop.last %}, {% endif %}
-                                                    {% endfor %}
+                                                    {% for extra in item_group.extras %}
+                                                    {{ extra.extra_name }} (+{{ extra.extra_price|floatformat:2 }} RWF){% if not forloop.last %}, {% endif %}
+                                                
+                                                {% endfor %}
                                                 </span>
                                             {% endif %}
                                         </td>
                                         <td style="text-align: right; white-space: nowrap;">
-                                            {{ item.price }} RWF
+                                            {{ item_group.subtotal|floatformat:2 }} RWF
                                         </td>
                                     </tr>
-                                {% endfor %}
+                               
                             </table>
                         </td>
                     </tr>

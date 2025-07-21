@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice #{{ invoice.id }}</title>
@@ -77,12 +78,29 @@
                 display: none;
             }
         }
+        /* =================================================
+        === STYLES FOR THE NEW LOGO SECTION ===
+        ================================================= */
+        
+        .logo-container {
+            text-align: center; /* Center the logo */
+            margin-bottom: 10px; /* Space below the logo */
+        }
+        .logo-container img {
+            max-width: 60mm;  /* Set a maximum width to prevent it from being too large */
+            max-height: 40px; /* Set a maximum height to control vertical space */
+            object-fit: contain; /* Ensures the logo scales correctly without distortion */
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>Mocha Cafe</h1>
         <p>Invoice #{{ invoice.id }}</p>
+    </div>
+    <div class="logo-container">
+        <!-- Make sure the path to your logo is correct -->
+        <img src="{% static 'img/logo.png' %}" alt="Mocha Cafe Logo">
     </div>
     <div class="header">
         <h1>Momo code 027247</h1>
@@ -97,58 +115,54 @@
     <table>
         <thead>
             <tr>
-                <th>Item</th>
-                <th>Qty</th>
+                <th style="text-align: left; margin-left: 0px; margin-right: 10px;">Qty</th>
+                <th style="text-align: center; margin-left: 10px; margin-right: 10px;">Item</th>
+                
                 <th style="text-align: right; vertical-align: top;">Price</th>
             </tr>
         </thead>
         <tbody>
-            {% for order in orders %}
-                {% for item in order.orderitem_set.all %}
-                <tr>
-                    <td>
-                        <div style="font-weight: bold;">{{ item.item.name }}</div>
-                        {% if item.selected_extras.exists %}
-                            <div style="font-size: 9px; margin: 2px 0 4px 0;">
-                                {% for extra in item.selected_extras.all %}
-                                    + {{ extra.name }} ({{ extra.price }} RWF){% if not forloop.last %}<br>{% endif %}
-                                {% endfor %}
-                            </div>
-                            {% comment %} Calculate and show extras total {% endcomment %}
-                            {% with "" as extras_total %}
-                                {% for extra in item.selected_extras.all %}
-                                    {% if forloop.first %}
-                                        {% with extra.price as extras_total %}
-                                        {% endwith %}
-                                    {% else %}
-                                        {% with extras_total|add:extra.price as extras_total %}
-                                        {% endwith %}
-                                    {% endif %}
-                                {% endfor %}
-                                {% if extras_total %}
-                                    <div style="font-size: 9px; margin-bottom: 3px;">
-                                        Extras Total: {{ extras_total }} 
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
-                        {% endif %}
-                     
-                    </td>
-                    <td style="text-align: right; vertical-align: top;margin-left: 10px;">
-                        {{ item.quantity }}
-                    </td>
-                    <td style="text-align: right; vertical-align: top;">
-                        {{ item.price|floatformat:0 }} 
-                    </td>
-                </tr>
-                {% endfor %}
+            <!--
+            THE FIX: We loop directly over the 'grouped_items' context variable.
+            Each 'item_group' is a dictionary containing the aggregated data.
+            -->
+            {% for item_group in grouped_items %}
+            <tr>
+                <td style="text-align: left; vertical-align: top; margin-left: 0px;">
+                    <!-- Display the calculated quantity for the group -->
+                    {{ item_group.quantity }}
+                </td>
+                <!-- Column 1: Item Name and Extras -->
+                <td>
+                    <!-- Display the grouped item's name -->
+                    <div style="font-weight: bold;">{{ item_group.name }}</div>
+        
+                    <!-- Display the extras for this group -->
+                    {% if item_group.extras %}
+                        <div style="font-size: 9px; margin: 2px 0 4px 0;">
+                            {% for extra in item_group.extras %}
+                                + {{ extra.extra_name }} ({{ extra.extra_price|floatformat:0 }} RWF){% if not forloop.last %}<br>{% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </td>
+        
+                <!-- Column 2: Quantity -->
+              
+        
+                <!-- Column 3: Price (This is now the subtotal for the group) -->
+                <td style="text-align: right; vertical-align: top;">
+                    {{ item_group.subtotal|floatformat:0 }} 
+                </td>
+            </tr>
             {% endfor %}
         </tbody>
-    </table>
-
-    <div class="total">
-        Total: {{ invoice.total_amount }} RWF
-    </div>
+        </table> <!-- This closing tag was in your original code -->
+        
+        <!-- The total section is correct -->
+        <div class="total">
+            Total: {{ invoice.total_amount|floatformat:0 }} RWF
+        </div>
 
     <div class="footer">
         <p>Thank you for visiting Mocha Cafe!</p>
