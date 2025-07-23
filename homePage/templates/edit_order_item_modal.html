@@ -55,6 +55,11 @@
     -webkit-appearance: none; /* Safari and Chrome */
     margin: 0;
 }
+#modal-notes {
+  resize: vertical;
+  min-height: 80px;
+  max-height: 200px;
+}
 </style>
 
 <!-- Edit Order Item Modal -->
@@ -85,6 +90,17 @@
             </div>
             <input type="hidden" name="extras" id="modal-extras">
           </div>
+          <div class="mb-3">
+            <label for="modal-notes" class="form-label">Notes</label>
+            <textarea
+              name="notes_display"
+              id="modal-notes"
+              class="form-control"
+              rows="3"
+              placeholder="Write any special instructions or customizations here..."
+            ></textarea>
+          </div>
+          <input type="hidden" name="notes" id="modal-notes-hidden">
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

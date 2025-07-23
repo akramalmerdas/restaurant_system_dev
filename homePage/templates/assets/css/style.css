@@ -1101,46 +1101,7 @@ section {
 .menu #menu-flters li:last-child {
   margin-right: 0;
 }
-/*---------------------------------------------------------------------
-this is to activate a sub menu still in progress 
-*/
 
-
-/*
-.menu #subMenu-filters {
-  padding: 0;
-  margin: 0 auto 0 auto;
-  list-style: none;
-  text-align: center;
-  border-radius: 50px;
-}
-
-.menu #subMenu-filters li {
-  cursor: pointer;
-  display: inline-block;
-  padding: 8px 16px 10px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1;
-  color: #444444;
-  margin: 0 3px 10px 3px;
-  transition: all ease-in-out 0.3s;
-  background: #fff;
-  border: 2px solid var(--color-orange-light);
-  border-radius: 50px;
-}
-
-.menu #subMenu-filters li:hover,
-.menu #subMenu-filters li.filter-active {
-  color: #fff;
-  background: var(--color-orange-light);
-} 
-.menu #subMenu-filters li:last-child {
-  margin-right: 0;
-}
-
-
-*/
 
 .menu .menu-content-wrapper {
     display: flex !important;
@@ -2301,4 +2262,162 @@ th:nth-child(1), td:nth-child(1) {
 .profile-heading {
   margin-top: 20px;
   font-size: 1.25rem;
+}
+
+/* =================================================
+   Custom Styles for Menu Item Quantity Stepper
+   ================================================= */
+/* Main container for the quantity controls */
+/* Global box-sizing rule for layout stability */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Main container for the quantity controls */
+.menu-card-container {
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 100%;
+}
+
+/* Ensure the main content area fills the available space */
+.menu-item-link {
+  flex-grow: 1;
+}
+
+/* Integrated actions bar (quantity + total) always stacked vertically */
+.item-actions {
+  display: flex;
+  flex-direction: column; /* Always stack vertically */
+  align-items: center;
+  padding: 10px 15px;
+  border-top: 1px solid #f0f0f0;
+  background-color: #fafafa;
+  width: 100%;
+  gap: 8px;
+}
+
+/* Quantity stepper layout */
+.quantity-stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Reduced spacing between buttons and input */
+}
+
+/* Quantity input */
+.item-quantity {
+  border: none;
+  background-color: transparent;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+  min-width: 36px;
+  text-align: center;
+  padding: 0 8px;
+}
+
+.item-quantity:focus {
+  outline: none;
+}
+
+/* Total price section (always below) */
+.total-price-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.total-label {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-right: 5px;
+}
+
+.total-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffb03b;
+}
+
+/* Plus and minus buttons */
+.btn-quantity {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-quantity:hover {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+  color: #000;
+}
+
+.btn-quantity:active {
+  transform: scale(0.95);
+  background-color: #dee2e6;
+}
+
+/* Medium screens */
+@media (max-width: 768px) {
+  .btn-quantity {
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
+
+  .item-quantity {
+    min-width: 30px;
+    padding: 0 5px;
+    font-size: 1rem;
+  }
+
+  .total-label {
+    font-size: 0.75rem;
+  }
+
+  .total-price {
+    font-size: 1rem;
+  }
+}
+
+/* Small screens */
+@media (max-width: 576px) {
+  .item-actions {
+    padding: 10px;
+  }
+
+  .quantity-stepper,
+  .total-price-container {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 360px) {
+  .item-actions {
+    gap: 6px;
+  }
+
+  .quantity-stepper,
+  .total-price-container {
+    flex: 1 1 100%;
+    justify-content: center;
+    margin: 5px 0;
+  }
 }

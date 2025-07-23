@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var quantity = button.getAttribute('data-quantity');
         var extrasRaw = button.getAttribute('data-extras');
         var itemName = button.getAttribute('data-item-name'); // Use plain JS to get the attribute
+        var notes = button.getAttribute('data-notes') || '';
+        document.getElementById('modal-notes').value = notes.trim();
         // Set the item name in the modal (plain JS)
         var nameSpan = document.querySelector('.modal-item-name');
         if (nameSpan) {
@@ -86,6 +88,9 @@ document.getElementById('edit-order-item-form').addEventListener('submit', funct
 const checked = Array.from(document.querySelectorAll('#modal-extras-checkboxes input[type="checkbox"]:checked'))
 .map(cb => cb.value);
 document.getElementById('modal-extras').value = checked.join(',');
+
+const notes = document.getElementById('modal-notes').value.trim();
+document.getElementById('modal-notes-hidden').value = notes;
 });
 
 //////////////////////////////// confirm order ///////////////////////
@@ -215,33 +220,6 @@ if (emptyOrderButton){
 
 
 
-// function setTableNumber(tableId) {
-//   // Store locally (optional)
-//   sessionStorage.setItem('table_number', tableId);
-//   console.log('This is the table number ' + tableId);
-
-//   // Send to backend
-//   fetch("/set-table/", {
-//       method: 'POST',
-//       headers: {
-//           'Content-Type': 'application/x-www-form-urlencoded',
-//           'X-CSRFToken': getCookie('csrftoken') // CSRF token for Django
-//       },
-//       body: new URLSearchParams({
-//           'table_number': tableId
-//       })
-//   })
-//   .then(response => response.json())
-//   .then(data => {
-//       if (data.status === 'success') {
-//           console.log('Table number saved in Django session.');
-//       } else {
-//           console.error('Error saving table number:', data.message);
-//       }
-//   });
-// }
-
-// Helper function to get CSRF token
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== '') {

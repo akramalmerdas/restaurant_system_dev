@@ -5,7 +5,7 @@
   {% load static %}
 
   <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Mocha Cafe</title>
   <meta content="" name="description">
@@ -273,438 +273,389 @@
 
 {% endif %}
 <section id="menu" class="menu">
-        <div class="row">
+  <div class="container"> <!-- It's good practice to wrap sections in a .container -->
+      <div class="row">
           <div class="col-lg-12 d-flex justify-content-center">
-            <ul id="menu-flters">
-              <li data-filter="*" class="filter-all">Show All</li>
-            <!--  <li data-filter=".filter-breakfast">BreakFast</li>  -->
-              <li data-filter=".filter-salads">Salads</li>
-              <li data-filter=".filter-lunch">Lunch</li>
-              <li data-filter=".filter-sandwiches">Sandwiches and wraps</li>
-            <li data-filter=".filter-soups">Soups</li>
-            <li data-filter=".filter-burgers">burger and pizza</li> 
-            <li data-filter=".filter-smoothies">Smoothie Bowls</li> 
-            <li data-filter=".filter-bowls">Bowls</li>   
-            <li data-filter=".filter-pots">Pot</li>    
-              <li data-filter=".filter-drinks">Drinks</li>
-              <li data-filter=".filter-sweets">Sweets</li>
-              <li data-filter=".filter-extra">Extras</li>  
-              <li data-filter=".filter-breakfast">Breakfast</li>
-              <li data-filter=".filter-yemeni-sweets">Yemeni Sweets</li>
-              <li data-filter=".filter-dips">Lebnah And Hummus</li> 
-          
-            </ul>
+              <ul id="menu-flters">
+                  <li data-filter="*" class="filter-active">Show All</li>
+                  <li data-filter=".filter-breakfast">Breakfast</li>
+                  <li data-filter=".filter-lunch">Lunch</li>
+                  <li data-filter=".filter-salads">Salads</li>
+                  <li data-filter=".filter-sandwiches">Sandwiches</li>
+                  <li data-filter=".filter-burgers">Pizza and Burgers</li>
+                  <li data-filter=".filter-soups">Soups</li>
+                  <li data-filter=".filter-bowls">Bowls</li>
+                  <li data-filter=".filter-pots">Pot</li>
+                  <li data-filter=".filter-smoothie-bowls">Smoothie Bowls</li>
+                  <li data-filter=".filter-dips">Dips</li>
+                  <li data-filter=".filter-yemeni-sweets">Yemeni Sweets</li>
+                  <li data-filter=".filter-sweets">Sweets</li>
+                  <li data-filter=".filter-drinks">Drinks</li>
+                  <li data-filter=".filter-extra">Extras</li>
+              </ul>
           </div>
-        </div>
+      </div>
 
-        <!--
-        --------------------- this is to activate the sub menu ---still in progress 
+      <!--
+      The main row container for all menu items.
+      - "gy-4" adds a consistent vertical gap.
+      - "gx-3" adds a slightly smaller horizontal gap.
+      -->
+      <div class="row menu-container gy-4 gx-3">
 
-        <div class="row sub-filter-container" id="sub-filter-drinks">
-          <div class="col-lg-12 d-flex justify-content-center">
-            <ul id="subMenu-filters">
-              <li data-filter=".filter-hotDrinks">Fresh Juice</li>
-              <li data-filter=".filter-coldDrinks">Tea</li>
-            </ul>
-          </div>
-        </div>
-      
-         -->
-       
-      <div class="row menu-container">
-        <!------------------------------------------------ Lunch Menue ------------------------------------------>
-        {% for item in lunch %}
-        <div class="col-lg-6 menu-item filter-lunch">
-          <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
-        <div class="menu-content-wrapper">
-            <div class="menu-img-wrapper">
-              {% if item.image %}
-                <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
-              {% else %}
-                <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
-              {% endif %}
-            </div>
-            <div class="menu-details">
-              <div class="menu-content">
-                <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
-              </div>
-              <div class="menu-ingredients">
-                {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
-              </div>
-            </div>
-          </div>
-          </a>
-        </div>
-
-        {% endfor %}
-
-
-
-            <!------------------------------------------------ Sandwiches Menue ------------------------------------------>
-
-            {% for item in sandwiches %}
-                  <div class="col-lg-6 menu-item filter-sandwiches">
-          <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
-        <div class="menu-content-wrapper">
-            <div class="menu-img-wrapper">
-              {% if item.image %}
-                <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
-              {% else %}
-                <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
-              {% endif %}
-            </div>
-            <div class="menu-details">
-              <div class="menu-content">
-                <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
-              </div>
-              <div class="menu-ingredients">
-                {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
-              </div>
-            </div>
-          </div>
-          </a>
-        </div>
-            {% endfor %}
-                 <!------------------------------------------------ Breakfast Menue ------------------------------------------>
-                 {% for item in breakFast %}
-                 <div class="col-lg-6 menu-item filter-breakfast">
-                  <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
-                <div class="menu-content-wrapper">
-                    <div class="menu-img-wrapper">
-                      {% if item.image %}
-                        <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
-                      {% else %}
-                        <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
-                      {% endif %}
-                    </div>
-                    <div class="menu-details">
-                      <div class="menu-content">
-                        <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
-                      </div>
-                      <div class="menu-ingredients">
-                        {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
-                      </div>
-                    </div>
-                  </div>
-                  </a>
-                </div>
-         
-                 {% endfor %}
-
-
-             <!------------------------------------------------ Pizza Menue ------------------------------------------>
-             {% for item in burgers %}
-             <div class="col-lg-6 menu-item filter-burgers">
-              <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
-            <div class="menu-content-wrapper">
-                <div class="menu-img-wrapper">
-                  {% if item.image %}
-                    <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
-                  {% else %}
-                    <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
-                  {% endif %}
-                </div>
-                <div class="menu-details">
-                  <div class="menu-content">
-                    <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
-                  </div>
-                  <div class="menu-ingredients">
-                    {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
-                  </div>
-                </div>
-              </div>
-              </a>
-            </div>
-     
-             {% endfor %}
-
-             <!------------------------------------------------ Burgers Menue ------------------------------------------>
-             {% for item in smoothie_bowls %}
-             <div class="col-lg-6 menu-item filter-smoothies">
-              <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
-            <div class="menu-content-wrapper">
-                <div class="menu-img-wrapper">
-                  {% if item.image %}
-                    <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
-                  {% else %}
-                    <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
-                  {% endif %}
-                </div>
-                <div class="menu-details">
-                  <div class="menu-content">
-                    <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
-                  </div>
-                  <div class="menu-ingredients">
-                    {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
-                  </div>
-                </div>
-              </div>
-              </a>
-            </div>
-     
-             {% endfor %}
-      
-                 <!------------------------------------------------ Salads Menue ------------------------------------------>
-
-
-
-                 {% for item in salad %}
-                 <div class="col-lg-6 menu-item filter-salads">
-                  <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
-                <div class="menu-content-wrapper">
-                    <div class="menu-img-wrapper">
-                      {% if item.image %}
-                        <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
-                      {% else %}
-                        <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
-                      {% endif %}
-                    </div>
-                    <div class="menu-details">
-                      <div class="menu-content">
-                        <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
-                      </div>
-                      <div class="menu-ingredients">
-                        {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
-                      </div>
-                    </div>
-                  </div>
-                  </a>
-                </div>
-        {% endfor %}
-
-               <!------------------------------------------------ Extras Menue ------------------------------------------>
-
-               {% for item in extra %}
-               <div class="col-lg-6 menu-item filter-extra">
-                <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
-              <div class="menu-content-wrapper">
-                  <div class="menu-img-wrapper">
-                    {% if item.image %}
-                      <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
-                    {% else %}
-                      <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
-                    {% endif %}
-                  </div>
-                  <div class="menu-details">
-                    <div class="menu-content">
-                      <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
-                    </div>
-                    <div class="menu-ingredients">
-                      {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
-                    </div>
-                  </div>
-                </div>
-                </a>
-              </div>
-               {% endfor %}
-   
-                    <!------------------------------------------------Smoothie Bowls Menue ------------------------------------------>
-                    {% for item in bowls %}
-                    <div class="col-lg-6 menu-item filter-bowls">
-                      <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
-                    <div class="menu-content-wrapper">
-                        <div class="menu-img-wrapper">
-                          {% if item.image %}
-                            <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
-                          {% else %}
-                            <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
-                          {% endif %}
-                        </div>
-                        <div class="menu-details">
-                          <div class="menu-content">
-                            <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+          <!-- ================================================= -->
+          <!-- LUNCH -->
+          <!-- ================================================= -->
+          {% for item in lunch %}
+          <div class="col-md-6 menu-item filter-lunch">
+              <div class="menu-card-container">
+                  <a href="#" onclick="event.preventDefault(); addItemToOrder('{{ item.id }}', '{% url 'add_to_order' %}')" class="menu-item-link">
+                      <div class="menu-content-wrapper">
+                          <div class="menu-img-wrapper">
+                              {% if item.image %}<img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">{% else %}<img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">{% endif %}
                           </div>
-                          <div class="menu-ingredients">
-                            {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+                          <div class="menu-details">
+                              <div class="menu-content"><span class="item-name">{{ item.name }}</span><span class="price">{{ item.price|floatformat:0 }} RWF</span></div>
+                              <div class="menu-ingredients">{{ item.description }} <span style="color:black;font-weight:bold;">{{ item.availability }}</span></div>
                           </div>
-                        </div>
                       </div>
-                      </a>
-                    </div>
-            
-                    {% endfor %}
-
-               <!------------------------------------------------ Pancakes and crepes Menue ------------------------------------------>
-               {% for item in yemeni_sweets %}
-               <div class="col-lg-6 menu-item filter-yemeni-sweets">
-                <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
-              <div class="menu-content-wrapper">
-                  <div class="menu-img-wrapper">
-                    {% if item.image %}
-                      <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
-                    {% else %}
-                      <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
-                    {% endif %}
+                  </a>
+                  <div class="item-actions">
+                      <div class="quantity-stepper"><button type="button" class="btn-quantity btn-decrease" onclick="updateQuantity('{{ item.id }}', -1, {{ item.price }})"><i class="bi bi-chevron-down"></i></button><input type="text" class="item-quantity" id="quantity-{{ item.id }}" value="1" readonly><button type="button" class="btn-quantity btn-increase" onclick="updateQuantity('{{ item.id }}', 1, {{ item.price }})"><i class="bi bi-chevron-up"></i></button></div>
+                      <div class="total-price-container"><span class="total-label">Total:</span><span class="total-price" id="total-price-{{ item.id }}">{{ item.price|floatformat:0 }} RWF</span></div>
                   </div>
-                  <div class="menu-details">
-                    <div class="menu-content">
-                      <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
-                    </div>
-                    <div class="menu-ingredients">
-                      {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
-                    </div>
+              </div>
+          </div>
+          {% endfor %}
+
+          <!-- ================================================= -->
+          <!-- SANDWICHES -->
+          <!-- ================================================= -->
+          {% for item in sandwiches %}
+          <div class="col-md-6 menu-item filter-sandwiches">
+              <div class="menu-card-container">
+                  <a href="#" onclick="event.preventDefault(); addItemToOrder('{{ item.id }}', '{% url 'add_to_order' %}')" class="menu-item-link">
+                      <div class="menu-content-wrapper">
+                          <div class="menu-img-wrapper">
+                              {% if item.image %}<img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">{% else %}<img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">{% endif %}
+                          </div>
+                          <div class="menu-details">
+                              <div class="menu-content"><span class="item-name">{{ item.name }}</span><span class="price">{{ item.price|floatformat:0 }} RWF</span></div>
+                              <div class="menu-ingredients">{{ item.description }} <span style="color:black;font-weight:bold;">{{ item.availability }}</span></div>
+                          </div>
+                      </div>
+                  </a>
+                  <div class="item-actions">
+                      <div class="quantity-stepper"><button type="button" class="btn-quantity btn-decrease" onclick="updateQuantity('{{ item.id }}', -1, {{ item.price }})"><i class="bi bi-chevron-down"></i></button><input type="text" class="item-quantity" id="quantity-{{ item.id }}" value="1" readonly><button type="button" class="btn-quantity btn-increase" onclick="updateQuantity('{{ item.id }}', 1, {{ item.price }})"><i class="bi bi-chevron-up"></i></button></div>
+                      <div class="total-price-container"><span class="total-label">Total:</span><span class="total-price" id="total-price-{{ item.id }}">{{ item.price|floatformat:0 }} RWF</span></div>
                   </div>
-                </div>
-                </a>
               </div>
-               {% endfor %}
+          </div>
+          {% endfor %}
 
-               <!------------------------------------------------ Hot Drinks  Menue ------------------------------------------>
-               {% for item in sweets %}
-               <div class="col-lg-6 menu-item filter-sweets">
-                <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
-              <div class="menu-content-wrapper">
-                  <div class="menu-img-wrapper">
-                    {% if item.image %}
-                      <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
-                    {% else %}
-                      <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
-                    {% endif %}
+          <!-- ================================================= -->
+          <!-- BREAKFAST -->
+          <!-- ================================================= -->
+          {% for item in breakFast %}
+          <div class="col-md-6 menu-item filter-breakfast">
+              <div class="menu-card-container">
+                  <a href="#" onclick="event.preventDefault(); addItemToOrder('{{ item.id }}', '{% url 'add_to_order' %}')" class="menu-item-link">
+                      <div class="menu-content-wrapper">
+                          <div class="menu-img-wrapper">
+                              {% if item.image %}<img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">{% else %}<img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">{% endif %}
+                          </div>
+                          <div class="menu-details">
+                              <div class="menu-content"><span class="item-name">{{ item.name }}</span><span class="price">{{ item.price|floatformat:0 }} RWF</span></div>
+                              <div class="menu-ingredients">{{ item.description }} <span style="color:black;font-weight:bold;">{{ item.availability }}</span></div>
+                          </div>
+                      </div>
+                  </a>
+                  <div class="item-actions">
+                      <div class="quantity-stepper"><button type="button" class="btn-quantity btn-decrease" onclick="updateQuantity('{{ item.id }}', -1, {{ item.price }})"><i class="bi bi-chevron-down"></i></button><input type="text" class="item-quantity" id="quantity-{{ item.id }}" value="1" readonly><button type="button" class="btn-quantity btn-increase" onclick="updateQuantity('{{ item.id }}', 1, {{ item.price }})"><i class="bi bi-chevron-up"></i></button></div>
+                      <div class="total-price-container"><span class="total-label">Total:</span><span class="total-price" id="total-price-{{ item.id }}">{{ item.price|floatformat:0 }} RWF</span></div>
                   </div>
-                  <div class="menu-details">
-                    <div class="menu-content">
-                      <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
-                    </div>
-                    <div class="menu-ingredients">
-                      {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
-                    </div>
+              </div>
+          </div>
+          {% endfor %}
+
+          <!-- ================================================= -->
+          <!-- PIZZA AND BURGERS -->
+          <!-- ================================================= -->
+          {% for item in burgers %}
+          <div class="col-md-6 menu-item filter-burgers">
+              <div class="menu-card-container">
+                  <a href="#" onclick="event.preventDefault(); addItemToOrder('{{ item.id }}', '{% url 'add_to_order' %}')" class="menu-item-link">
+                      <div class="menu-content-wrapper">
+                          <div class="menu-img-wrapper">
+                              {% if item.image %}<img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">{% else %}<img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">{% endif %}
+                          </div>
+                          <div class="menu-details">
+                              <div class="menu-content"><span class="item-name">{{ item.name }}</span><span class="price">{{ item.price|floatformat:0 }} RWF</span></div>
+                              <div class="menu-ingredients">{{ item.description }} <span style="color:black;font-weight:bold;">{{ item.availability }}</span></div>
+                          </div>
+                      </div>
+                  </a>
+                  <div class="item-actions">
+                      <div class="quantity-stepper"><button type="button" class="btn-quantity btn-decrease" onclick="updateQuantity('{{ item.id }}', -1, {{ item.price }})"><i class="bi bi-chevron-down"></i></button><input type="text" class="item-quantity" id="quantity-{{ item.id }}" value="1" readonly><button type="button" class="btn-quantity btn-increase" onclick="updateQuantity('{{ item.id }}', 1, {{ item.price }})"><i class="bi bi-chevron-up"></i></button></div>
+                      <div class="total-price-container"><span class="total-label">Total:</span><span class="total-price" id="total-price-{{ item.id }}">{{ item.price|floatformat:0 }} RWF</span></div>
                   </div>
-                </div>
-                </a>
               </div>
-{% endfor %}
+          </div>
+          {% endfor %}
 
-         <!------------------------------------------------ Cold Drinks  Menue ------------------------------------------>
-
-         {% for item in drinks %}
-         <div class="col-lg-6 menu-item filter-drinks">
-          <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
-        <div class="menu-content-wrapper">
-            <div class="menu-img-wrapper">
-              {% if item.image %}
-                <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
-              {% else %}
-                <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
-              {% endif %}
-            </div>
-            <div class="menu-details">
-              <div class="menu-content">
-                <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
+          <!-- ================================================= -->
+          <!-- SMOOTHIE BOWLS -->
+          <!-- ================================================= -->
+          {% for item in smoothie_bowls %}
+          <div class="col-md-6 menu-item filter-smoothie-bowls">
+              <div class="menu-card-container">
+                  <a href="#" onclick="event.preventDefault(); addItemToOrder('{{ item.id }}', '{% url 'add_to_order' %}')" class="menu-item-link">
+                      <div class="menu-content-wrapper">
+                          <div class="menu-img-wrapper">
+                              {% if item.image %}<img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">{% else %}<img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">{% endif %}
+                          </div>
+                          <div class="menu-details">
+                              <div class="menu-content"><span class="item-name">{{ item.name }}</span><span class="price">{{ item.price|floatformat:0 }} RWF</span></div>
+                              <div class="menu-ingredients">{{ item.description }} <span style="color:black;font-weight:bold;">{{ item.availability }}</span></div>
+                          </div>
+                      </div>
+                  </a>
+                  <div class="item-actions">
+                      <div class="quantity-stepper"><button type="button" class="btn-quantity btn-decrease" onclick="updateQuantity('{{ item.id }}', -1, {{ item.price }})"><i class="bi bi-chevron-down"></i></button><input type="text" class="item-quantity" id="quantity-{{ item.id }}" value="1" readonly><button type="button" class="btn-quantity btn-increase" onclick="updateQuantity('{{ item.id }}', 1, {{ item.price }})"><i class="bi bi-chevron-up"></i></button></div>
+                      <div class="total-price-container"><span class="total-label">Total:</span><span class="total-price" id="total-price-{{ item.id }}">{{ item.price|floatformat:0 }} RWF</span></div>
+                  </div>
               </div>
-              <div class="menu-ingredients">
-                {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
+          </div>
+          {% endfor %}
+
+          <!-- ================================================= -->
+          <!-- SALADS -->
+          <!-- ================================================= -->
+          {% for item in salad %}
+          <div class="col-md-6 menu-item filter-salads">
+              <div class="menu-card-container">
+                  <a href="#" onclick="event.preventDefault(); addItemToOrder('{{ item.id }}', '{% url 'add_to_order' %}')" class="menu-item-link">
+                      <div class="menu-content-wrapper">
+                          <div class="menu-img-wrapper">
+                              {% if item.image %}<img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">{% else %}<img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">{% endif %}
+                          </div>
+                          <div class="menu-details">
+                              <div class="menu-content"><span class="item-name">{{ item.name }}</span><span class="price">{{ item.price|floatformat:0 }} RWF</span></div>
+                              <div class="menu-ingredients">{{ item.description }} <span style="color:black;font-weight:bold;">{{ item.availability }}</span></div>
+                          </div>
+                      </div>
+                  </a>
+                  <div class="item-actions">
+                      <div class="quantity-stepper"><button type="button" class="btn-quantity btn-decrease" onclick="updateQuantity('{{ item.id }}', -1, {{ item.price }})"><i class="bi bi-chevron-down"></i></button><input type="text" class="item-quantity" id="quantity-{{ item.id }}" value="1" readonly><button type="button" class="btn-quantity btn-increase" onclick="updateQuantity('{{ item.id }}', 1, {{ item.price }})"><i class="bi bi-chevron-up"></i></button></div>
+                      <div class="total-price-container"><span class="total-label">Total:</span><span class="total-price" id="total-price-{{ item.id }}">{{ item.price|floatformat:0 }} RWF</span></div>
+                  </div>
               </div>
-            </div>
           </div>
-          </a>
-        </div>
-{% endfor %}
+          {% endfor %}
 
+          <!-- ================================================= -->
+          <!-- EXTRAS -->
+          <!-- ================================================= -->
+          {% for item in extra %}
+          <div class="col-md-6 menu-item filter-extra">
+              <div class="menu-card-container">
+                  <a href="#" onclick="event.preventDefault(); addItemToOrder('{{ item.id }}', '{% url 'add_to_order' %}')" class="menu-item-link">
+                      <div class="menu-content-wrapper">
+                          <div class="menu-img-wrapper">
+                              {% if item.image %}<img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">{% else %}<img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">{% endif %}
+                          </div>
+                          <div class="menu-details">
+                              <div class="menu-content"><span class="item-name">{{ item.name }}</span><span class="price">{{ item.price|floatformat:0 }} RWF</span></div>
+                              <div class="menu-ingredients">{{ item.description }} <span style="color:black;font-weight:bold;">{{ item.availability }}</span></div>
+                          </div>
+                      </div>
+                  </a>
+                  <div class="item-actions">
+                      <div class="quantity-stepper"><button type="button" class="btn-quantity btn-decrease" onclick="updateQuantity('{{ item.id }}', -1, {{ item.price }})"><i class="bi bi-chevron-down"></i></button><input type="text" class="item-quantity" id="quantity-{{ item.id }}" value="1" readonly><button type="button" class="btn-quantity btn-increase" onclick="updateQuantity('{{ item.id }}', 1, {{ item.price }})"><i class="bi bi-chevron-up"></i></button></div>
+                      <div class="total-price-container"><span class="total-label">Total:</span><span class="total-price" id="total-price-{{ item.id }}">{{ item.price|floatformat:0 }} RWF</span></div>
+                  </div>
+              </div>
+          </div>
+          {% endfor %}
 
-       <!------------------------------------------------ Soups  Menue ------------------------------------------>
+          <!-- ================================================= -->
+          <!-- BOWLS -->
+          <!-- ================================================= -->
+          {% for item in bowls %}
+          <div class="col-md-6 menu-item filter-bowls">
+              <div class="menu-card-container">
+                  <a href="#" onclick="event.preventDefault(); addItemToOrder('{{ item.id }}', '{% url 'add_to_order' %}')" class="menu-item-link">
+                      <div class="menu-content-wrapper">
+                          <div class="menu-img-wrapper">
+                              {% if item.image %}<img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">{% else %}<img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">{% endif %}
+                          </div>
+                          <div class="menu-details">
+                              <div class="menu-content"><span class="item-name">{{ item.name }}</span><span class="price">{{ item.price|floatformat:0 }} RWF</span></div>
+                              <div class="menu-ingredients">{{ item.description }} <span style="color:black;font-weight:bold;">{{ item.availability }}</span></div>
+                          </div>
+                      </div>
+                  </a>
+                  <div class="item-actions">
+                      <div class="quantity-stepper"><button type="button" class="btn-quantity btn-decrease" onclick="updateQuantity('{{ item.id }}', -1, {{ item.price }})"><i class="bi bi-chevron-down"></i></button><input type="text" class="item-quantity" id="quantity-{{ item.id }}" value="1" readonly><button type="button" class="btn-quantity btn-increase" onclick="updateQuantity('{{ item.id }}', 1, {{ item.price }})"><i class="bi bi-chevron-up"></i></button></div>
+                      <div class="total-price-container"><span class="total-label">Total:</span><span class="total-price" id="total-price-{{ item.id }}">{{ item.price|floatformat:0 }} RWF</span></div>
+                  </div>
+              </div>
+          </div>
+          {% endfor %}
 
-       {% for item in soups %}
-       <div class="col-lg-6 menu-item filter-soups">
-        <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
-      <div class="menu-content-wrapper">
-          <div class="menu-img-wrapper">
-            {% if item.image %}
-              <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
-            {% else %}
-              <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
-            {% endif %}
+          <!-- ================================================= -->
+          <!-- DIPS -->
+          <!-- ================================================= -->
+          {% for item in dips %}
+          <div class="col-md-6 menu-item filter-dips">
+              <div class="menu-card-container">
+                  <a href="#" onclick="event.preventDefault(); addItemToOrder('{{ item.id }}', '{% url 'add_to_order' %}')" class="menu-item-link">
+                      <div class="menu-content-wrapper">
+                          <div class="menu-img-wrapper">
+                              {% if item.image %}<img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">{% else %}<img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">{% endif %}
+                          </div>
+                          <div class="menu-details">
+                              <div class="menu-content"><span class="item-name">{{ item.name }}</span><span class="price">{{ item.price|floatformat:0 }} RWF</span></div>
+                              <div class="menu-ingredients">{{ item.description }} <span style="color:black;font-weight:bold;">{{ item.availability }}</span></div>
+                          </div>
+                      </div>
+                  </a>
+                  <div class="item-actions">
+                      <div class="quantity-stepper"><button type="button" class="btn-quantity btn-decrease" onclick="updateQuantity('{{ item.id }}', -1, {{ item.price }})"><i class="bi bi-chevron-down"></i></button><input type="text" class="item-quantity" id="quantity-{{ item.id }}" value="1" readonly><button type="button" class="btn-quantity btn-increase" onclick="updateQuantity('{{ item.id }}', 1, {{ item.price }})"><i class="bi bi-chevron-up"></i></button></div>
+                      <div class="total-price-container"><span class="total-label">Total:</span><span class="total-price" id="total-price-{{ item.id }}">{{ item.price|floatformat:0 }} RWF</span></div>
+                  </div>
+              </div>
           </div>
-          <div class="menu-details">
-            <div class="menu-content">
-              <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
-            </div>
-            <div class="menu-ingredients">
-              {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
-            </div>
-          </div>
-        </div>
-        </a>
-      </div>
-       {% endfor %}
+          {% endfor %}
 
-       <!------------------------------------------------ pots  Menue ------------------------------------------>
+          <!-- ================================================= -->
+          <!-- YEMENI SWEETS -->
+          <!-- ================================================= -->
+          {% for item in yemeni_sweets %}
+          <div class="col-md-6 menu-item filter-yemeni-sweets">
+              <div class="menu-card-container">
+                  <a href="#" onclick="event.preventDefault(); addItemToOrder('{{ item.id }}', '{% url 'add_to_order' %}')" class="menu-item-link">
+                      <div class="menu-content-wrapper">
+                          <div class="menu-img-wrapper">
+                              {% if item.image %}<img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">{% else %}<img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">{% endif %}
+                          </div>
+                          <div class="menu-details">
+                              <div class="menu-content"><span class="item-name">{{ item.name }}</span><span class="price">{{ item.price|floatformat:0 }} RWF</span></div>
+                              <div class="menu-ingredients">{{ item.description }} <span style="color:black;font-weight:bold;">{{ item.availability }}</span></div>
+                          </div>
+                      </div>
+                  </a>
+                  <div class="item-actions">
+                      <div class="quantity-stepper"><button type="button" class="btn-quantity btn-decrease" onclick="updateQuantity('{{ item.id }}', -1, {{ item.price }})"><i class="bi bi-chevron-down"></i></button><input type="text" class="item-quantity" id="quantity-{{ item.id }}" value="1" readonly><button type="button" class="btn-quantity btn-increase" onclick="updateQuantity('{{ item.id }}', 1, {{ item.price }})"><i class="bi bi-chevron-up"></i></button></div>
+                      <div class="total-price-container"><span class="total-label">Total:</span><span class="total-price" id="total-price-{{ item.id }}">{{ item.price|floatformat:0 }} RWF</span></div>
+                  </div>
+              </div>
+          </div>
+          {% endfor %}
 
-       {% for item in pots %}
-       <div class="col-lg-6 menu-item filter-pots">
-        <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
-      <div class="menu-content-wrapper">
-          <div class="menu-img-wrapper">
-            {% if item.image %}
-              <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
-            {% else %}
-              <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
-            {% endif %}
+          <!-- ================================================= -->
+          <!-- SWEETS -->
+          <!-- ================================================= -->
+          {% for item in sweets %}
+          <div class="col-md-6 menu-item filter-sweets">
+              <div class="menu-card-container">
+                  <a href="#" onclick="event.preventDefault(); addItemToOrder('{{ item.id }}', '{% url 'add_to_order' %}')" class="menu-item-link">
+                      <div class="menu-content-wrapper">
+                          <div class="menu-img-wrapper">
+                              {% if item.image %}<img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">{% else %}<img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">{% endif %}
+                          </div>
+                          <div class="menu-details">
+                              <div class="menu-content"><span class="item-name">{{ item.name }}</span><span class="price">{{ item.price|floatformat:0 }} RWF</span></div>
+                              <div class="menu-ingredients">{{ item.description }} <span style="color:black;font-weight:bold;">{{ item.availability }}</span></div>
+                          </div>
+                      </div>
+                  </a>
+                  <div class="item-actions">
+                      <div class="quantity-stepper"><button type="button" class="btn-quantity btn-decrease" onclick="updateQuantity('{{ item.id }}', -1, {{ item.price }})"><i class="bi bi-chevron-down"></i></button><input type="text" class="item-quantity" id="quantity-{{ item.id }}" value="1" readonly><button type="button" class="btn-quantity btn-increase" onclick="updateQuantity('{{ item.id }}', 1, {{ item.price }})"><i class="bi bi-chevron-up"></i></button></div>
+                      <div class="total-price-container"><span class="total-label">Total:</span><span class="total-price" id="total-price-{{ item.id }}">{{ item.price|floatformat:0 }} RWF</span></div>
+                  </div>
+              </div>
           </div>
-          <div class="menu-details">
-            <div class="menu-content">
-              <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
-            </div>
-            <div class="menu-ingredients">
-              {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
-            </div>
-          </div>
-        </div>
-        </a>
-      </div>
-       {% endfor %}
-       <!------------------------------------------------ bowls  Menue ------------------------------------------>
+          {% endfor %}
 
-       {% for item in bowls %}
-       <div class="col-lg-6 menu-item filter-bowls">
-        <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
-      <div class="menu-content-wrapper">
-          <div class="menu-img-wrapper">
-            {% if item.image %}
-              <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
-            {% else %}
-              <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
-            {% endif %}
+          <!-- ================================================= -->
+          <!-- DRINKS -->
+          <!-- ================================================= -->
+          {% for item in drinks %}
+          <div class="col-md-6 menu-item filter-drinks">
+              <div class="menu-card-container">
+                  <a href="#" onclick="event.preventDefault(); addItemToOrder('{{ item.id }}', '{% url 'add_to_order' %}')" class="menu-item-link">
+                      <div class="menu-content-wrapper">
+                          <div class="menu-img-wrapper">
+                              {% if item.image %}<img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">{% else %}<img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">{% endif %}
+                          </div>
+                          <div class="menu-details">
+                              <div class="menu-content"><span class="item-name">{{ item.name }}</span><span class="price">{{ item.price|floatformat:0 }} RWF</span></div>
+                              <div class="menu-ingredients">{{ item.description }} <span style="color:black;font-weight:bold;">{{ item.availability }}</span></div>
+                          </div>
+                      </div>
+                  </a>
+                  <div class="item-actions">
+                      <div class="quantity-stepper"><button type="button" class="btn-quantity btn-decrease" onclick="updateQuantity('{{ item.id }}', -1, {{ item.price }})"><i class="bi bi-chevron-down"></i></button><input type="text" class="item-quantity" id="quantity-{{ item.id }}" value="1" readonly><button type="button" class="btn-quantity btn-increase" onclick="updateQuantity('{{ item.id }}', 1, {{ item.price }})"><i class="bi bi-chevron-up"></i></button></div>
+                      <div class="total-price-container"><span class="total-label">Total:</span><span class="total-price" id="total-price-{{ item.id }}">{{ item.price|floatformat:0 }} RWF</span></div>
+                  </div>
+              </div>
           </div>
-          <div class="menu-details">
-            <div class="menu-content">
-              <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
-            </div>
-            <div class="menu-ingredients">
-              {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
-            </div>
-          </div>
-        </div>
-        </a>
-      </div>
-       {% endfor %}
+          {% endfor %}
 
-       <!------------------------------------------------ bowls  Menue ------------------------------------------>
+          <!-- ================================================= -->
+          <!-- SOUPS -->
+          <!-- ================================================= -->
+          {% for item in soups %}
+          <div class="col-md-6 menu-item filter-soups">
+              <div class="menu-card-container">
+                  <a href="#" onclick="event.preventDefault(); addItemToOrder('{{ item.id }}', '{% url 'add_to_order' %}')" class="menu-item-link">
+                      <div class="menu-content-wrapper">
+                          <div class="menu-img-wrapper">
+                              {% if item.image %}<img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">{% else %}<img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">{% endif %}
+                          </div>
+                          <div class="menu-details">
+                              <div class="menu-content"><span class="item-name">{{ item.name }}</span><span class="price">{{ item.price|floatformat:0 }} RWF</span></div>
+                              <div class="menu-ingredients">{{ item.description }} <span style="color:black;font-weight:bold;">{{ item.availability }}</span></div>
+                          </div>
+                      </div>
+                  </a>
+                  <div class="item-actions">
+                      <div class="quantity-stepper"><button type="button" class="btn-quantity btn-decrease" onclick="updateQuantity('{{ item.id }}', -1, {{ item.price }})"><i class="bi bi-chevron-down"></i></button><input type="text" class="item-quantity" id="quantity-{{ item.id }}" value="1" readonly><button type="button" class="btn-quantity btn-increase" onclick="updateQuantity('{{ item.id }}', 1, {{ item.price }})"><i class="bi bi-chevron-up"></i></button></div>
+                      <div class="total-price-container"><span class="total-label">Total:</span><span class="total-price" id="total-price-{{ item.id }}">{{ item.price|floatformat:0 }} RWF</span></div>
+                  </div>
+              </div>
+          </div>
+          {% endfor %}
 
-       {% for item in dips %}
-       <div class="col-lg-6 menu-item filter-dips">
-        <a href="{% url 'orderPage' item.id %}" class="menu-item-link">
-      <div class="menu-content-wrapper">
-          <div class="menu-img-wrapper">
-            {% if item.image %}
-              <img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">
-            {% else %}
-              <img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">
-            {% endif %}
+          <!-- ================================================= -->
+          <!-- POTS -->
+          <!-- ================================================= -->
+          {% for item in pots %}
+          <div class="col-md-6 menu-item filter-pots">
+              <div class="menu-card-container">
+                  <a href="#" onclick="event.preventDefault(); addItemToOrder('{{ item.id }}', '{% url 'add_to_order' %}')" class="menu-item-link">
+                      <div class="menu-content-wrapper">
+                          <div class="menu-img-wrapper">
+                              {% if item.image %}<img src="{{ item.image.url }}" class="menu-img" alt="{{ item.name }}">{% else %}<img src="{% static 'img/default-food.jpg' %}" class="menu-img" alt="Default Image">{% endif %}
+                          </div>
+                          <div class="menu-details">
+                              <div class="menu-content"><span class="item-name">{{ item.name }}</span><span class="price">{{ item.price|floatformat:0 }} RWF</span></div>
+                              <div class="menu-ingredients">{{ item.description }} <span style="color:black;font-weight:bold;">{{ item.availability }}</span></div>
+                          </div>
+                      </div>
+                  </a>
+                  <div class="item-actions">
+                      <div class="quantity-stepper"><button type="button" class="btn-quantity btn-decrease" onclick="updateQuantity('{{ item.id }}', -1, {{ item.price }})"><i class="bi bi-chevron-down"></i></button><input type="text" class="item-quantity" id="quantity-{{ item.id }}" value="1" readonly><button type="button" class="btn-quantity btn-increase" onclick="updateQuantity('{{ item.id }}', 1, {{ item.price }})"><i class="bi bi-chevron-up"></i></button></div>
+                      <div class="total-price-container"><span class="total-label">Total:</span><span class="total-price" id="total-price-{{ item.id }}">{{ item.price|floatformat:0 }} RWF</span></div>
+                  </div>
+              </div>
           </div>
-          <div class="menu-details">
-            <div class="menu-content">
-              <span class="item-name">{{item.name}}</span><span class="price">{{item.price}} RWF</span>
-            </div>
-            <div class="menu-ingredients">
-              {{item.description}} <span style="color:black;font-weight:bold;"> {{item.availability}} </span>
-            </div>
-          </div>
-        </div>
-        </a>
-      </div>
-       {% endfor %}
-        
-  </section><!-- End Menu Section -->
+          {% endfor %}
+
+      </div><!-- .row .menu-container -->
+  </div><!-- .container -->
+</section><!-- End Menu Section -->
   
           
           
@@ -806,161 +757,6 @@
       </div>
     </section><!-- End Specials Section -->
 
-    <!-- ======= Events Section ======= 
-    <section id="events" class="events">
-      <div class="container">
-
-        <div class="section-title">
-          <h2>Organize Your <span>Events</span> in our Restaurant</h2>
-        </div>
-
-        <div class="events-slider swiper">
-          <div class="swiper-wrapper">
-
-            <div class="swiper-slide">
-              <div class="row event-item">
-                <div class="col-lg-6">
-                  <img src="{% static "img/event-birthday.jpg" %}" class="img-fluid" alt="">
-                </div>
-                <div class="col-lg-6 pt-4 pt-lg-0 content">
-                  <h3>Birthday Parties</h3>
-                  <div class="price">
-                    <p><span>$189</span></p>
-                  </div>
-                  <p class="fst-italic">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                    magna aliqua.
-                  </p>
-                  <ul>
-                    <li><i class="bi bi-check-circle"></i> Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-                    <li><i class="bi bi-check-circle"></i> Duis aute irure dolor in reprehenderit in voluptate velit.</li>
-                    <li><i class="bi bi-check-circle"></i> Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-                  </ul>
-                  <p>
-                    Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                    velit esse cillum dolore eu fugiat nulla pariatur
-                  </p>
-                </div>
-              </div>
-            </div><!- End testimonial item >
-
-            <div class="swiper-slide">
-              <div class="row event-item">
-                <div class="col-lg-6">
-                  <img src="{% static "img/event-private.jpg" %}" class="img-fluid" alt="">
-                </div>
-                <div class="col-lg-6 pt-4 pt-lg-0 content">
-                  <h3>Private Parties</h3>
-                  <div class="price">
-                    <p><span>$290</span></p>
-                  </div>
-                  <p class="fst-italic">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                    magna aliqua.
-                  </p>
-                  <ul>
-                    <li><i class="bi bi-check-circle"></i> Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-                    <li><i class="bi bi-check-circle"></i> Duis aute irure dolor in reprehenderit in voluptate velit.</li>
-                    <li><i class="bi bi-check-circle"></i> Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-                  </ul>
-                  <p>
-                    Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                    velit esse cillum dolore eu fugiat nulla pariatur
-                  </p>
-                </div>
-              </div>
-            </div><!- End testimonial item ->
-
-            <div class="swiper-slide">
-              <div class="row event-item">
-                <div class="col-lg-6">
-                  <img src="{% static "img/event-custom.jpg" %}" class="img-fluid" alt="">
-                </div>
-                <div class="col-lg-6 pt-4 pt-lg-0 content">
-                  <h3>Custom Parties</h3>
-                  <div class="price">
-                    <p><span>$99</span></p>
-                  </div>
-                  <p class="fst-italic">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                    magna aliqua.
-                  </p>
-                  <ul>
-                    <li><i class="bi bi-check-circle"></i> Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-                    <li><i class="bi bi-check-circle"></i> Duis aute irure dolor in reprehenderit in voluptate velit.</li>
-                    <li><i class="bi bi-check-circle"></i> Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-                  </ul>
-                  <p>
-                    Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                    velit esse cillum dolore eu fugiat nulla pariatur
-                  </p>
-                </div>
-              </div>
-            </div><!- End testimonial item ->
-
-          </div>
-          <div class="swiper-pagination"></div>
-        </div>
-
-      </div>
-    </section>End Events Section -->
-
-
-
-
-
-
-
-    <!-- ======= Book A Table Section =======this field to be activated after we add database and the dashboard  ->
-    <section id="book-a-table" class="book-a-table">
-      <div class="container">
-
-        <div class="section-title">
-          <h2>Book a <span>Table</span></h2>
-          <p>Ut possimus qui ut temporibus culpa velit eveniet modi omnis est adipisci expedita at voluptas atque vitae autem.</p>
-        </div>
-
-        <form action="forms/book-a-table.php" method="post" role="form" class="php-email-form">
-          <div class="row">
-            <div class="col-lg-4 col-md-6 form-group">
-              <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" data-rule="minlen:4" data-msg="Please enter at least 4 chars">
-              <div class="validate"></div>
-            </div>
-            <div class="col-lg-4 col-md-6 form-group mt-3 mt-md-0">
-              <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" data-rule="email" data-msg="Please enter a valid email">
-              <div class="validate"></div>
-            </div>
-            <div class="col-lg-4 col-md-6 form-group mt-3 mt-md-0">
-              <input type="text" class="form-control" name="phone" id="phone" placeholder="Your Phone" data-rule="minlen:4" data-msg="Please enter at least 4 chars">
-              <div class="validate"></div>
-            </div>
-            <div class="col-lg-4 col-md-6 form-group mt-3">
-              <input type="text" name="date" class="form-control" id="date" placeholder="Date" data-rule="minlen:4" data-msg="Please enter at least 4 chars">
-              <div class="validate"></div>
-            </div>
-            <div class="col-lg-4 col-md-6 form-group mt-3">
-              <input type="text" class="form-control" name="time" id="time" placeholder="Time" data-rule="minlen:4" data-msg="Please enter at least 4 chars">
-              <div class="validate"></div>
-            </div>
-            <div class="col-lg-4 col-md-6 form-group mt-3">
-              <input type="number" class="form-control" name="people" id="people" placeholder="# of people" data-rule="minlen:1" data-msg="Please enter at least 1 chars">
-              <div class="validate"></div>
-            </div>
-          </div>
-          <div class="form-group mt-3">
-            <textarea class="form-control" name="message" rows="5" placeholder="Message"></textarea>
-            <div class="validate"></div>
-          </div>
-          <div class="mb-3">
-            <div class="loading">Loading</div>
-            <div class="error-message"></div>
-            <div class="sent-message">Your booking request was sent. We will call back or send an Email to confirm your reservation. Thank you!</div>
-          </div>
-          <div class="text-center"><button type="submit">Send Message</button></div>
-        </form>
-
-      </div>
-    </section><!- End Book A Table Section -->
 
     <!-- ======= Gallery Section ======= -->
     <section id="gallery" class="gallery">
@@ -1042,164 +838,7 @@
       </div>
     </section><!-- End Gallery Section -->
 
-    <!-- ======= Chefs Section ======= --
-    <section id="chefs" class="chefs">
-      <div class="container">
-
-        <div class="section-title">
-          <h2>Our Proffesional <span>Chefs</span></h2>
-          <p>Ut possimus qui ut temporibus culpa velit eveniet modi omnis est adipisci expedita at voluptas atque vitae autem.</p>
-        </div>
-
-        <div class="row">
-
-          <div class="col-lg-4 col-md-6">
-            <div class="member">
-              <div class="pic"><img src="{% static "img/chefs/chefs-1.jpg" %}" class="img-fluid" alt=""></div>
-              <div class="member-info">
-                <h4>Walter White</h4>
-                <span>Master Chef</span>
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="member">
-              <div class="pic"><img src="{% static "img/chefs/chefs-2.jpg" %}" class="img-fluid" alt=""></div>
-              <div class="member-info">
-                <h4>Sarah Jhonson</h4>
-                <span>Patissier</span>
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="member">
-              <div class="pic"><img src="{% static "img/chefs/chefs-3.jpg" %}" class="img-fluid" alt=""></div>
-              <div class="member-info">
-                <h4>William Anderson</h4>
-                <span>Cook</span>
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </section><!- End Chefs Section -->
-
-    <!-- ======= Testimonials Section ======= ->
-    <section id="testimonials" class="testimonials">
-      <div class="container position-relative">
-
-        <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">
-          <div class="swiper-wrapper">
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="{% static "img/testimonials/testimonials-1.jpg" %}" class="testimonial-img" alt="">
-                <h3>Saul Goodman</h3>
-                <h4>Ceo &amp; Founder</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                  Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.
-                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!- End testimonial item ->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="{% static "img/testimonials/testimonials-2.jpg" %}" class="testimonial-img" alt="">
-                <h3>Sara Wilsson</h3>
-                <h4>Designer</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                  Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.
-                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!- End testimonial item ->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="{% static "img/testimonials/testimonials-3.jpg" %}" class="testimonial-img" alt="">
-                <h3>Jena Karlis</h3>
-                <h4>Store Owner</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                  Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.
-                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!- End testimonial item ->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="{% static "img/testimonials/testimonials-4.jpg" %}" class="testimonial-img" alt="">
-                <h3>Matt Brandon</h3>
-                <h4>Freelancer</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                  Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.
-                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!- End testimonial item ->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="{% static "img/testimonials/testimonials-5.jpg" %}" class="testimonial-img" alt="">
-                <h3>John Larson</h3>
-                <h4>Entrepreneur</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                  Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.
-                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!- End testimonial item ->
-
-          </div>
-          <div class="swiper-pagination"></div>
-        </div>
-
-      </div>
-    </section><!- End Testimonials Section -->
-
+    
     <!-- ======= Contact Section ======= -->
     <section id="contact" class="contact">
       <div class="container">
@@ -1243,33 +882,7 @@
             </div>
           </div>
         </div>
-<!--This field to be activated after when we add a data base and a dashboard ->
-        <form action="forms/contact.php" method="post" role="form" class="php-email-form">
-          <div class="row">
-            <div class="col-md-6 form-group">
-              <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" required>
-            </div>
-            <div class="col-md-6 form-group mt-3 mt-md-0">
-              <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" required>
-            </div>
-          </div>
-          <div class="form-group mt-3">
-            <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject" required>
-          </div>
-          <div class="form-group mt-3">
-            <textarea class="form-control" name="message" rows="5" placeholder="Message" required></textarea>
-          </div>
-          <div class="my-3">
-            <div class="loading">Loading</div>
-            <div class="error-message"></div>
-            <div class="sent-message">Your message has been sent. Thank you!</div>
-          </div>
-          <div class="text-center"><button type="submit">Send Message</button></div>
-        </form>
 
-      </div>
-    </section><!- End Contact Section -->
-    
 
   </main><!-- End #main -->
 {% if request.session.order and request.session.order|length > 0 %}
@@ -1315,8 +928,100 @@
 
   <!-- Template Main JS File -->
   <script src="{% static "js/main.js" %}"></script>
-  <script src="{% static "js/Notifications.js" %}"></script>
-<!--Start of Tawk.to Script->
+
+  <!-- <script src="{% static "js/Notifications.js" %}"></script> -->
+  <script>
+    
+  function updateQuantity(itemId, change, unitPrice) {
+    const quantityInput = document.getElementById(`quantity-${itemId}`);
+    const totalPriceElement = document.getElementById(`total-price-${itemId}`);
+
+    if (quantityInput && totalPriceElement) {
+        let currentQuantity = parseInt(quantityInput.value, 10);
+        
+        // Calculate the new quantity, ensuring it doesn't go below 1.
+        let newQuantity = Math.max(1, currentQuantity + change);
+
+        // Update the input field with the new quantity.
+        quantityInput.value = newQuantity;
+
+        // Calculate the new total price.
+        const newTotalPrice = newQuantity * unitPrice;
+
+        // Update the total price display with formatting.
+        totalPriceElement.textContent = `${newTotalPrice.toLocaleString()} RWF`;
+    }
+}
+async function addItemToOrder(itemId, addToOrderUrl) {
+    // 1. Find the quantity input for the specific item to get the current quantity.
+    const quantityInput = document.getElementById(`quantity-${itemId}`);
+    
+    // Default to quantity 1 if the input isn't found, as a safety measure.
+    const quantity = quantityInput ? parseInt(quantityInput.value, 10) : 1;
+
+    console.log(`Adding item ${itemId} to order with quantity ${quantity}`);
+
+    // 2. Construct the data payload in the exact format the backend view expects.
+    const data = {
+        item_id: itemId,
+        quantity: quantity,
+        extras: [], // Send an empty list as required by the view
+        notes: ""   // Send an empty string as required by the view
+    };
+
+    // 3. Perform the asynchronous fetch request.
+    try {
+        // Get the CSRF token from the cookie (a helper function is recommended).
+        const csrfToken = getCookie('csrftoken'); 
+
+        const response = await fetch('/add_to_order/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken // Crucial for Django POST requests
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          alert("item has been created successfully");
+          window.location.reload();
+         
+       
+        } else {
+            // The server responded with an error.
+            const errorData = await response.json();
+            console.error("Error adding item:", errorData.message);
+            alert(`Error: ${errorData.message || 'Could not add item to order.'}`);
+        }
+    } catch (error) {
+        // A network error occurred.
+        console.error("Network or fetch error:", error);
+        alert("A network error occurred. Please try again.");
+    }
+}
+
+/**
+ * Helper function to get the CSRF token from cookies.
+ * Django requires this for secure POST requests.
+ */
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+</script>
+  <!--Start of Tawk.to Script->
 <script type="text/javascript">
   var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
   (function(){

@@ -351,11 +351,13 @@ def updateOrderItem(request):
         item_id = request.POST.get('item_id')
         quantity = int(request.POST.get('quantity', 1))
         extras_raw = request.POST.get('extras', '')
+        notes = request.POST.get('notes', '')
 
         order = request.session.get('order', [])
         for item in order:
             if str(item['item_id']) == str(item_id):
                 item['quantity'] = quantity
+                item['customizations'] = notes
                 # Only update extras if provided
                 if extras_raw:
                     extras = []
@@ -1196,7 +1198,7 @@ def generate_invoice(request, table_id):
 @login_required
 @transaction.atomic
 def generate_invoice_by_table(request):
-    print('generate_invoice_by_table')
+  
     if request.method != 'POST':
         return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)
 
@@ -1220,7 +1222,7 @@ def generate_invoice_by_table(request):
         
         # 1. Get the unique IDs of all parent orders that were affected.
         affected_order_ids = set(items_to_invoice.values_list('order_id', flat=True))
-        print('affected_order_ids',str(affected_order_ids))
+  
         
         # Calculate total and create the invoice
         total_amount = sum(item.price for item in items_to_invoice)
@@ -1273,14 +1275,12 @@ def generateInvoiceByItem(request):
 
         # Fetch the specific items to be invoiced
         items_to_invoice = OrderItem.objects.filter(id__in=item_ids, invoice__isnull=True)
-        print('items_to_invoice',str(items_to_invoice))
+  
         if not items_to_invoice.exists():
             return JsonResponse({"success": False, "message": "Selected items are already invoiced or do not exist."}, status=404)
           # 1. Get the unique IDs of all parent orders that were affected.
         affected_order_ids = set(items_to_invoice.values_list('order_id', flat=True))
-        print('affected_order_ids',str(affected_order_ids))
-        print('items_to_invoice',str(items_to_invoice)) 
-        print('order Id',str(items_to_invoice.values_list('order_id', flat=True)))
+   
         # Calculate total and create the invoice
         total_amount = sum(item.price for item in items_to_invoice)
         invoice = Invoice.objects.create(
@@ -1304,11 +1304,11 @@ def generateInvoiceByItem(request):
         for order_id in affected_order_ids:
             # Check if the order has any OTHER items that are still uninvoiced.
             is_fully_invoiced = not OrderItem.objects.filter(order_id=order_id, invoice__isnull=True).exists()
-            print('is_fully_invoiced',str(is_fully_invoiced))
+    
             if is_fully_invoiced:
                 # If all items for this order are now invoiced, update its status.
                 Order.objects.filter(id=order_id).update(order_status=completed_status)
-                print('Order updated to completed status:', order_id)
+    
         return JsonResponse({
             "success": True,
             "message": f"Invoice generated successfully for {len(item_ids)} items.",

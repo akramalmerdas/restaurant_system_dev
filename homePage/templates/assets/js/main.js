@@ -405,8 +405,7 @@ if (addButton){
         quantity: quantity
     }));
     document.querySelectorAll('.extra-item.selected').forEach(item => {
-    console.log("Element:", item); // Logs the element
-    console.log("data-extra-id:", item.getAttribute('data-extra-id')); // Logs the attribute value
+   
   });
   
     const data = {
