@@ -1402,7 +1402,7 @@ section {
 # Events
 --------------------------------------------------------------*/
 .events {
-  background: url(../img/events-bg.webp) center center no-repeat;
+  background: url("../img/events-bg.754389ca6d3d.webp") center center no-repeat;
   background-size: cover;
   position: relative;
 }
@@ -1604,7 +1604,7 @@ section {
 # Chefs
 --------------------------------------------------------------*/
 .chefs {
-  background: url("../img/chefs-bg.webp") center center no-repeat;
+  background: url("../img/chefs-bg.0119c4db55f7.webp") center center no-repeat;
   background-size: cover;
   padding: 60px 0;
   position: relative;
@@ -1710,7 +1710,7 @@ section {
 --------------------------------------------------------------*/
 .testimonials {
   padding: 80px 0;
-  background: url("../img/testimonials-bg.webp") no-repeat;
+  background: url("../img/testimonials-bg.b22cc80b0d50.webp") no-repeat;
   background-position: center center;
   background-size: cover;
   position: relative;

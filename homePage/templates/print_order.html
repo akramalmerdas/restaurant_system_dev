@@ -82,35 +82,36 @@
     <p><strong>Printed At:</strong> {{ order.printed_at }}</p>
     <p><strong>Table:</strong> {{ order.table.number }}</p>
     <p><strong>Waiter:</strong> {{ order.waiter.user.username }}</p>
-  
   </div>
-
+  
   <div class="line"></div>
-
-  {% for item in order.orderitem_set.all %}
-    <div class="item">
-      <div class="item-name">
-        <span>{{ item.quantity }} x {{ item.item.name }}</span>
-      
-      </div>
-      
-      {% for extra in item.selected_extras.all %}
-        <div class="extras">+ {{ extra.name }} </div>
-      {% empty %}
-        <div class="extras">No extras</div>
-      {% endfor %}
-
-      {% if item.customizations %}
-        <div class="customization">Note: {{ item.customizations }}</div>
-      {% endif %}
+  
+  {% for item in grouped_items %}
+  <div class="item">
+    <div class="item-name">
+      <span>{{ item.quantity }} x {{ item.name }}</span>
     </div>
-  {% endfor %}
 
+    {% if item.extras %}
+      <div class="extras">
+        {% for extra in item.extras %}
+          + {{ extra.extra_name }}<br>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="extras">No extras</div>
+    {% endif %}
+
+    {% if item.customizations %}
+      <div class="customization">Note: {{ item.customizations }}</div>
+    {% endif %}
+  </div>
+{% endfor %}
+  
   <div class="line"></div>
-
- 
-
+  
   <div class="thank-you">Thank you!!!</div>
+  
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {

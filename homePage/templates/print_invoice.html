@@ -4,7 +4,7 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice #{{ invoice.id }}</title>
+    <title>Invoice #{{ invoice.display_id }}</title>
     <style>
         @page {
             size: 80mm auto;
@@ -96,7 +96,7 @@
 <body>
     <div class="header">
         <h1>Mocha Cafe</h1>
-        <p>Invoice #{{ invoice.id }}</p>
+        <p>Invoice #{{ invoice.display_id }}</p>
     </div>
     <div class="logo-container">
         <!-- Make sure the path to your logo is correct -->

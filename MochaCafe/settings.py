@@ -163,7 +163,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'homePage','templates', 'assets'),
-    os.path.join(BASE_DIR, 'item', 'static'),
+    os.path.join(BASE_DIR, 'item', 'templates','static'),
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')

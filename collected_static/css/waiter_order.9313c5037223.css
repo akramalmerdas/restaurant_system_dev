@@ -1,0 +1,222 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header {
+    background: linear-gradient(135deg, #4a4a4a 0%, #2c2c2c 100%);
+    color: white;
+    padding: 20px 0;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    margin: 0;
+    font-style: italic;
+}
+
+.table-info {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.table-number {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #2c2c2c;
+    margin-bottom: 10px;
+}
+
+.order-card {
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 1px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.order-header {
+    background: #f8f9fa;
+    padding: 5px 10px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.order-time {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.order-status {
+    font-weight: bold;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-preparing {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-ready {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-served {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-printed {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+.order-items {
+    padding: 20px;
+}
+
+.order-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-left: 4px solid #007bff;
+}
+
+.item-name {
+    font-weight: 600;
+    color: #2c2c2c;
+    margin-bottom: 5px;
+}
+
+.item-price {
+    color: #007bff;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.item-unit-price {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.item-extras {
+    margin-top: 10px;
+}
+
+.extra-item {
+    background: #e9ecef;
+    padding: 8px 12px;
+    margin: 5px 0;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.order-total {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-top: 1px solid #e9ecef;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 20px;
+}
+
+.total-amount {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2c2c2c;
+    margin-bottom: 20px;
+}
+
+.invoice-btn {
+    background: linear-gradient(135deg, #2c2c2c 0%, #4a4a4a 100%);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.invoice-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(44, 44, 44, 0.3);
+    color: white;
+}
+
+.btn-action {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.waiter-info {
+    background: #e9ecef;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.no-orders {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .table-number {
+        font-size: 1.5rem;
+    }
+    
+    .order-item {
+        padding: 12px;
+    }
+    
+    .summary-card {
+        position: static;
+        margin-top: 20px;
+    }
+}
+/* Checkbox styling */
+.form-check-input {
+width: 1.25em;
+height: 1.25em;
+margin-top: 0.25em;
+}
+
+/* Item styling with checkbox */
+.order-item {
+padding: 10px 0;
+border-bottom: 1px dashed #eee;
+}
+
+/* Visual feedback for selected items */
+.order-item.selected {
+background-color: rgba(13, 110, 253, 0.1);
+border-radius: 5px;
+}

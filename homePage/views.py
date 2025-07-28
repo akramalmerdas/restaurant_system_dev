@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q,Sum ,F,Count, Avg,Prefetch
 from django.middleware.csrf import get_token
 from django.contrib.auth.decorators import login_required
-from datetime import datetime ,date
+from datetime import datetime ,date, time
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.core import serializers
@@ -22,6 +22,7 @@ from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, get_object_or_404
 from django.db import transaction
 from django.core.paginator import Paginator
+from collections import defaultdict
 
 @login_required
 def index(request):
@@ -1070,26 +1071,43 @@ def print_order_view(request, order_id):
     csrf_token = get_token(request)
 
     if request.method == "POST":
-        # Handle the confirmation of the print
         try:
             printed_status = OrderStatus.objects.get(name="printed")
             order.order_status = printed_status
-            order.printed_at = timezone.now() 
+            order.printed_at = timezone.now()
             order.save()
             return JsonResponse({"success": True, "message": "Print confirmed."})
-        except Order.DoesNotExist:
-            return JsonResponse({"success": False, "message": "Order not found."}, status=404)
         except OrderStatus.DoesNotExist:
             return JsonResponse({"success": False, "message": "Printed status not found."}, status=500)
 
-    # Render the print page if it's a GET request
+    # Grouping logic
+    items = order.orderitem_set.prefetch_related('orderitemextra_set').all()
+
+    grouped_items = {}
+    for item in items:
+        extra_names = sorted([extra.extra_name for extra in item.orderitemextra_set.all()])
+        custom_note = item.customizations.strip().lower() if item.customizations else ""
+        signature = f"item_{item.item.id}-note_{custom_note}-" + "-".join([f"extra_{name}" for name in extra_names])
+
+        if signature not in grouped_items:
+            grouped_items[signature] = {
+                'name': item.item.name,
+                'customizations': item.customizations,
+                'unit_price': item.price,
+                'quantity': 1,
+                'extras': list(item.orderitemextra_set.all().values('extra_name', 'extra_price')),
+            }
+        else:
+            grouped_items[signature]['quantity'] += 1
+
     return render(request, 'print_order.html', {
         'order': order,
         'order_id': order_id,
-        'csrf_token': csrf_token
+        'csrf_token': csrf_token,
+        'grouped_items': grouped_items.values()
     })
 
-
+    
 @login_required
 def cancelled_orders(request):
     # Get filter parameters
@@ -1149,7 +1167,11 @@ def generate_invoice(request, table_id):
   if request.method == "POST":
     try:
 
-
+      today = date.today()
+      counter, _ = DailyOrderCounter.objects.get_or_create(date=today)
+      counter.counter += 1
+      counter.save()
+      display_id = f"{today.strftime('%Y%m%d')}-{counter.counter:03d}"
       table = get_object_or_404(Table, id=table_id)
   
       data = json.loads(request.body)
@@ -1178,7 +1200,8 @@ def generate_invoice(request, table_id):
       invoice = Invoice.objects.create(
         table=table, 
         total_amount=total_amount, 
-        created_at=timezone.now()  
+        created_at=timezone.now(),
+        display_id=display_id
       )
       
       
@@ -1208,7 +1231,11 @@ def generate_invoice_by_table(request):
 
         if not table_id:
             return JsonResponse({"success": False, "message": "Table ID is missing."}, status=400)
-        
+        today = date.today()
+        counter, _ = DailyOrderCounter.objects.get_or_create(date=today)
+        counter.counter += 1
+        counter.save()
+        display_id = f"{today.strftime('%Y%m%d')}-{counter.counter:03d}"
         # Securely fetch all uninvoiced items for this table.
         items_to_invoice = OrderItem.objects.filter(
             order__table_id=table_id,
@@ -1229,7 +1256,8 @@ def generate_invoice_by_table(request):
         invoice = Invoice.objects.create(
             table_id=table_id,
             total_amount=total_amount,
-            created_at=timezone.now()
+            created_at=timezone.now(),
+            display_id=display_id
         )
 
         # Link all found items to the new invoice
@@ -1269,13 +1297,17 @@ def generateInvoiceByItem(request):
         data = json.loads(request.body)
         item_ids = data.get('item_ids', [])
         table_id = data.get('table_id') # You might not need the table_id if you get it from the items
-
+        
         if not item_ids:
             return JsonResponse({"success": False, "message": "No items selected."}, status=400)
 
         # Fetch the specific items to be invoiced
         items_to_invoice = OrderItem.objects.filter(id__in=item_ids, invoice__isnull=True)
-  
+        today = date.today()
+        counter, _ = DailyOrderCounter.objects.get_or_create(date=today)
+        counter.counter += 1
+        counter.save()
+        display_id = f"{today.strftime('%Y%m%d')}-{counter.counter:03d}"
         if not items_to_invoice.exists():
             return JsonResponse({"success": False, "message": "Selected items are already invoiced or do not exist."}, status=404)
           # 1. Get the unique IDs of all parent orders that were affected.
@@ -1286,7 +1318,8 @@ def generateInvoiceByItem(request):
         invoice = Invoice.objects.create(
             table_id=items_to_invoice.first().order.table.id, # Get table_id from an item
             total_amount=total_amount,
-            created_at=timezone.now()
+            created_at=timezone.now(),
+            display_id=display_id
         )
         
         # Link the items to the new invoice
@@ -1683,37 +1716,52 @@ def print_invoice_view(request, invoice_id):
 
 @login_required
 def sales_report(request):
-    # Default date range (e.g., last 30 days)
-    today = timezone.now().today()
-    start_date = today.replace(day=1)  # Start of the month
+    # Get today's date properly
+    today = timezone.now().date()
+    start_date = today.replace(day=1)  # Start of current month
     end_date = today
 
-    # Get the date range from the request if provided
+    # Process date parameters from GET request
     if request.method == "GET":
         start_date_str = request.GET.get("start_date")
         end_date_str = request.GET.get("end_date")
+        
         if start_date_str:
-            start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+            try:
+                start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+            except ValueError:
+                pass  # Keep default if invalid format
+                
         if end_date_str:
-            end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+            try:
+                end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+            except ValueError:
+                pass  # Keep default if invalid format
 
-    # Fetch orders within the date range
-    orders = Order.objects.filter(ordered_at__range=[start_date, end_date]).exclude(inHold=True)
-    invoices = Invoice.objects.filter(created_at__range=[start_date, end_date]).exclude(inHold=True)
- 
-    # Calculate the sales summary
+    # Convert dates to datetime objects for proper filtering
+    start_datetime = timezone.make_aware(datetime.combine(start_date, time.min))
+    end_datetime = timezone.make_aware(datetime.combine(end_date, time.max))
+
+    # Filter invoices within the date range (this is your primary data source)
+    invoices = Invoice.objects.filter(
+        created_at__range=[start_datetime, end_datetime]
+    ).exclude(inHold=True)
+
+    # Calculate sales summary from invoices
     total_sales = invoices.aggregate(total=Sum('total_amount'))['total'] or Decimal(0)
-    num_orders = invoices.aggregate(num_orders=Count('id'))['num_orders'] or 0
-    avg_order_value = invoices.aggregate(avg_value=Avg('total_amount'))['avg_value'] or 0
- 
-    # Group sales by item/category (you can adjust this to your data model)
+    num_orders = invoices.count()
+    avg_order_value = invoices.aggregate(avg_value=Avg('total_amount'))['avg_value'] or Decimal(0)
+
+    # Get item sales data - use invoice-related items for consistency
     item_sales = (
-    OrderItem.objects.filter(order__in=orders)
-    .values('item__name')
-    .annotate(total_items_sold=Sum('quantity'))  # Summing quantity to get total items sold
-    .order_by('-total_items_sold')  # Sorting by most sold items
-     )
- 
+        OrderItem.objects.filter(
+            invoice__in=invoices
+        ).values('item__name')
+        .annotate(
+            total_items_sold=Count('id'),  # Count individual order items instead of sum of quantity
+            total_revenue=Sum('price')     # Total revenue from this item
+        ).order_by('-total_items_sold')
+    )
 
     context = {
         'start_date': start_date,
@@ -1851,7 +1899,9 @@ def getOrderByTable(request, table_id):
     calculates a summary, and renders the waiter's order management page.
     It is designed to work perfectly with the provided waiter_orders.html template.
     """
+    
     try:
+        tables = Table.objects.all().order_by('id')
         table = Table.objects.get(id=table_id)
     except Table.DoesNotExist:
         return render(request, 'error_page.html', {'message': 'Table not found.'}, status=404)
@@ -1894,6 +1944,7 @@ def getOrderByTable(request, table_id):
 
     # 3. CREATE THE FINAL CONTEXT
     context = {
+        'tables': tables,
         'table': table,
         'orders': final_orders_list, # Pass the filtered list of order objects
         'summary': {
@@ -1905,6 +1956,9 @@ def getOrderByTable(request, table_id):
     }
 
     return render(request, 'waiter_orders.html', context)
+
+
+
 # def getOrderByTable(request, tableId):
 #     table = get_object_or_404(Table, id=tableId)
 
@@ -1926,3 +1980,130 @@ def getOrderByTable(request, table_id):
 #     }
 
 #     return render(request, 'order_view.html', context)
+
+
+######################### move order to another table #########################
+@login_required
+
+def moveTable(request):
+    print('we enterd the move table function')
+    if request.method != 'POST':
+        return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)
+
+    """
+    Transfer specified orders to a target table
+    Accepts a list of order IDs - can be one order, multiple orders, or all orders from a table
+    """
+    try:
+        # Get data from POST request
+        data = json.loads(request.body)
+        order_ids = data.get('order_select', [])  # List of order IDs to transfer
+        target_table_id = data.get('target_table_id')
+        
+        # Validate input
+        if not order_ids:
+            return JsonResponse({
+                "success": False, 
+                "message": "No orders selected for transfer"
+            }, status=400)
+            
+        if not target_table_id:
+            return JsonResponse({
+                "success": False, 
+                "message": "Target table ID is required"
+            }, status=400)
+        
+        # Ensure order_ids is a list
+        if not isinstance(order_ids, list):
+            order_ids = [order_ids]
+        
+        # Get target table
+        target_table = get_object_or_404(Table, id=target_table_id)
+        
+        # Get orders to transfer
+        orders_to_transfer = Order.objects.filter(
+            id__in=order_ids,
+            inHold=False  # Only active orders
+        )
+        
+        if not orders_to_transfer.exists():
+            return JsonResponse({
+                "success": False, 
+                "message": "No valid orders found for transfer"
+            }, status=404)
+        
+        # Check if any orders are already on the target table
+
+       
+        already_on_target = orders_to_transfer.filter(table=target_table)
+        if already_on_target.exists():
+            already_on_target_ids = list(already_on_target.values_list('id', flat=True))
+            return JsonResponse({
+                "success": False, 
+                "message": f"Orders {already_on_target_ids} are already on table {target_table.table_number}"
+            }, status=400)
+       
+        # Transfer orders with transaction for data integrity
+        with transaction.atomic():
+            transferred_orders = []
+            source_tables = set()  # Track source tables for response message
+            
+            for order in orders_to_transfer:
+                # Store current table info for history
+                current_table_number = order.table_number
+                source_tables.add(current_table_number)
+               
+                # Store previous table information
+                if order.previous_table:
+                    # Append to existing previous table history
+                    order.previous_table += f" -> {current_table_number}"
+                else:
+                    # First time moving, store the original table
+                    order.previous_table = current_table_number
+                
+                # Update table assignment
+                order.table = target_table
+                order.table_number = target_table.number
+                order.save()
+                print('this is the order ids '+ str(order_ids))
+                print('this is the target table id '+ str(current_table_number))
+                transferred_orders.append({
+                    'id': order.id,
+                    'display_id': order.display_id,
+                    'previous_table': current_table_number,
+                    'new_table': target_table.number
+                })
+        
+        # Create response message
+        transferred_count = len(transferred_orders)
+        source_tables_str = ", ".join(source_tables)
+        
+        if transferred_count == 1:
+            message = f"Successfully transferred 1 order from {source_tables_str} to {target_table.number}"
+        else:
+            message = f"Successfully transferred {transferred_count} orders from {source_tables_str} to {target_table.number}"
+        
+        return JsonResponse({
+            "success": True,
+            "message": message,
+            "transferred_count": transferred_count,
+            "target_table": target_table.number,
+            "transferred_orders": transferred_orders
+        })
+        
+    except Table.DoesNotExist:
+        return JsonResponse({
+            "success": False, 
+            "message": "Target table not found"
+        }, status=404)
+    except json.JSONDecodeError:
+        return JsonResponse({
+            "success": False, 
+            "message": "Invalid JSON data"
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            "success": False, 
+            "message": f"An error occurred: {str(e)}"
+        }, status=500)
+        

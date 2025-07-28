@@ -137,6 +137,7 @@ class Order(models.Model):
     deleted_reason = models.TextField(null=True, blank=True)
     waiter = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders_taken')
     display_id = models.CharField(max_length=20, blank=True, null=True)
+    previous_table= models.TextField(null=True, blank=True)
 
 
     def calculate_total_amount(self):
@@ -307,7 +308,7 @@ class Invoice(models.Model):
     is_paid = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=INVOICE_STATUS_CHOICES, default="pending")
     inHold = models.BooleanField(default=False)
-
+    display_id = models.CharField(max_length=20, blank=True, null=True)
     class Meta:
         # Add ordering for invoices, e.g., by creation date descending
         ordering = ["-created_at"]

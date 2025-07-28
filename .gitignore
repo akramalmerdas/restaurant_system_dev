@@ -49,3 +49,4 @@ htmlcov/
 *.swp
 __pycache__/
 *.pyc
+run_server.bat

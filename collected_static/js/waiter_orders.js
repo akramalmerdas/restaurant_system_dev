@@ -74,7 +74,6 @@ function generateInvoice() {
 
     
 }
-
 function generateInvoiceByItem() {
     // --- 1. CORRECTED: Get table ID ---
     // We select the element that has the 'data-table-id' attribute.
@@ -224,4 +223,7 @@ function generateInvoiceByItem() {
                 location.reload();
             }
         }, 30000);
+        
+
+
         
