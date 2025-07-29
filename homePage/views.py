@@ -358,7 +358,7 @@ def updateOrderItem(request):
         notes = request.POST.get('notes', '')
         row = request.POST.get('row', '')
         order = request.session.get('order', [])
-        print ('this is the row number ' + str(row))
+   
         for item in order:
             if str(item['row']) == str(row) and item_id == str(item['item_id']):
                 item['quantity'] = quantity

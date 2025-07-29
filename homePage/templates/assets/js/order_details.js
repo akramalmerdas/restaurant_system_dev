@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('modal-notes').value = notes.trim();
         var row = button.getAttribute('data-row') || '';
         document.getElementById('modal-row').value = row;
-        console.log('this is the row number ',row);
+     
         // Set the item name in the modal (plain JS)
         var nameSpan = document.querySelector('.modal-item-name');
         if (nameSpan) {

@@ -22,9 +22,9 @@ class ItemAdmin(admin.ModelAdmin):
     filter_horizontal = ('extras',) 
 class orderItemAdmin(admin.ModelAdmin):
     inlines=[OrderItemExtraInline]
-    search_fields = ['order__customer__name']
+    search_fields = ['order__id']
     # list_display=['item','quantity','price']
-    list_display = ('id', 'item__name')
+    list_display = ('id', 'item__name','order__id')
 
     
     def save_related(self, request, form, formsets, change):
