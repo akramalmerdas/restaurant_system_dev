@@ -183,7 +183,8 @@ def orderDetails(request):
             'extras_names': ', '.join(extra['name'] for extra in extras) if extras else 'None',  # <-- add this line
             'extra_price': extra_price,
             'subtotal': subtotal,
-            'table':item['table']
+            'table':item['table'],
+            'row': item['row'] 
              
         })
 
@@ -291,8 +292,10 @@ def addToOrder(request):
         
         # Create a new order item structure (for items with extras or new items)
        
-       
+        row_number = len(order)
+        print('this is the row number ' + str(row_number))
         order_item = {
+         'row': row_number,
          'item_id': item.id,
          'name': item.name,
          'quantity': quantity,
@@ -330,7 +333,7 @@ def delete_order_item(request, item_id):
     # Find the item in the session
     item_to_delete = None
     for item in order_items:
-        if item['item_id'] == item_id:  # Match the item by its ID
+        if item['row'] == item_id:  # Match the item by its ID
             item_to_delete = item
             break
 
@@ -353,10 +356,11 @@ def updateOrderItem(request):
         quantity = int(request.POST.get('quantity', 1))
         extras_raw = request.POST.get('extras', '')
         notes = request.POST.get('notes', '')
-
+        row = request.POST.get('row', '')
         order = request.session.get('order', [])
+        print ('this is the row number ' + str(row))
         for item in order:
-            if str(item['item_id']) == str(item_id):
+            if str(item['row']) == str(row) and item_id == str(item['item_id']):
                 item['quantity'] = quantity
                 item['customizations'] = notes
                 # Only update extras if provided

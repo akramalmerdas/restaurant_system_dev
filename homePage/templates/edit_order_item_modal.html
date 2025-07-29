@@ -75,6 +75,7 @@
         </div>
         <div class="modal-body">
           <input type="hidden" name="item_id" id="modal-item-id">
+          <input type="hidden" name="row" id="modal-row">
           <div class="mb-3">
             <label for="modal-quantity" class="form-label">Quantity</label>
             <div class="quantity-control">
@@ -167,9 +168,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const deleteBtn = document.getElementById('delete-order-item-btn');
     if (deleteBtn) {
         deleteBtn.addEventListener('click', function() {
-            const itemId = document.getElementById('modal-item-id').value;
+            const row = document.getElementById('modal-row').value;
             if (confirm('Are you sure you want to remove this item from your order?')) {
-                window.location.href = `/order_details/delete_item/${itemId}/`;
+                window.location.href = `/order_details/delete_item/${row}/`;
             }
         });
     }
