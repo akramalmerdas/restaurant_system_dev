@@ -1166,61 +1166,61 @@ def cancelled_orders(request):
 
 
 
-@login_required
-def generate_invoice(request, table_id):
-  if request.method == "POST":
-    try:
+# @login_required
+# def generate_invoice(request, table_id):
+#   if request.method == "POST":
+#     try:
 
-      today = date.today()
-      counter, _ = DailyOrderCounter.objects.get_or_create(date=today)
-      counter.counter += 1
-      counter.save()
-      display_id = f"{today.strftime('%Y%m%d')}-{counter.counter:03d}"
-      table = get_object_or_404(Table, id=table_id)
+#       today = date.today()
+#       counter, _ = DailyOrderCounter.objects.get_or_create(date=today)
+#       counter.counter += 1
+#       counter.save()
+#       display_id = f"{today.strftime('%Y%m%d')}-{counter.counter:03d}"
+#       table = get_object_or_404(Table, id=table_id)
   
-      data = json.loads(request.body)
+#       data = json.loads(request.body)
  
 
-      orders_id = data.get('order_select', [])  # Get the selected orders from the JSON data
-      completed_status = OrderStatus.objects.filter(name='completed').first()
-      if not completed_status:
-        return JsonResponse({
-        "success": False,
-         "message": "Completed status not found."
-        }, status=500)
-      if orders_id:
-                # Filter the selected orders
-        orders = Order.objects.filter(id__in=orders_id, order_status__name__in=['served', 'printed'], invoice__isnull=True, inHold=False)
-        if not orders.exists():
-          return JsonResponse({"success": False, "message": "No served orders for this table."}, status=404)
+#       orders_id = data.get('order_select', [])  # Get the selected orders from the JSON data
+#       completed_status = OrderStatus.objects.filter(name='completed').first()
+#       if not completed_status:
+#         return JsonResponse({
+#         "success": False,
+#          "message": "Completed status not found."
+#         }, status=500)
+#       if orders_id:
+#                 # Filter the selected orders
+#         orders = Order.objects.filter(id__in=orders_id, order_status__name__in=['served', 'printed'], inHold=False)
+#         if not orders.exists():
+#           return JsonResponse({"success": False, "message": "No served orders for this table."}, status=404)
 
-      else:
-        orders = Order.objects.filter(table=table, order_status__name__in=['served', 'printed'], invoice__isnull=True, inHold=False)
+#       else:
+#         orders = Order.objects.filter(table=table, order_status__name__in=['served', 'printed'], inHold=False)
 
-        if not orders.exists():
-          return JsonResponse({"success": False, "message": "No served or printed  orders for this table."}, status=404)
+#         if not orders.exists():
+#           return JsonResponse({"success": False, "message": "No served or printed  orders for this table."}, status=404)
 
-      total_amount = sum(order.total_amount for order in orders)
-      invoice = Invoice.objects.create(
-        table=table, 
-        total_amount=total_amount, 
-        created_at=timezone.now(),
-        display_id=display_id
-      )
+#       total_amount = sum(order.total_amount for order in orders)
+#       invoice = Invoice.objects.create(
+#         table=table, 
+#         total_amount=total_amount, 
+#         created_at=timezone.now(),
+#         display_id=display_id
+#       )
       
       
    
 
-# Update orders with the completed status
-      orders.update(invoice=invoice, order_status=completed_status)
-      table.status = 'available'
-      table.save()
+# # Update orders with the completed status
+#       orders.update(invoice=invoice, order_status=completed_status)
+#       table.status = 'available'
+#       table.save()
    
-      return JsonResponse({"success": True, "message": "Invoice generated successfully."})
-    except Exception as e:
-      return JsonResponse({"success": False, "message": str(e)}, status=500)
-  else: 
-    return JsonResponse({"success": False, "message": "Invalid request method."}, status=400)
+#       return JsonResponse({"success": True, "message": "Invoice generated successfully."})
+#     except Exception as e:
+#       return JsonResponse({"success": False, "message": str(e)}, status=500)
+#   else: 
+#     return JsonResponse({"success": False, "message": "Invalid request method."}, status=400)
 
 @login_required
 @transaction.atomic
@@ -1241,7 +1241,7 @@ def generate_invoice_by_table(request):
         counter.save()
         display_id = f"{today.strftime('%Y%m%d')}-{counter.counter:03d}"
         # Securely fetch all uninvoiced items for this table.
-        items_to_invoice = OrderItem.objects.filter(
+        items_to_invoice = OrderItem.objects.select_for_update().filter(
             order__table_id=table_id,
             invoice__isnull=True,
             order__inHold=False,
@@ -1306,7 +1306,7 @@ def generateInvoiceByItem(request):
             return JsonResponse({"success": False, "message": "No items selected."}, status=400)
 
         # Fetch the specific items to be invoiced
-        items_to_invoice = OrderItem.objects.filter(id__in=item_ids, invoice__isnull=True)
+        items_to_invoice = OrderItem.objects.select_for_update().filter(id__in=item_ids, invoice__isnull=True)
         today = date.today()
         counter, _ = DailyOrderCounter.objects.get_or_create(date=today)
         counter.counter += 1

@@ -132,7 +132,7 @@ class Order(models.Model):
     inHold = models.BooleanField(default=False)
     table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True)
     table_number = models.CharField(default='Take Away', max_length=50)
-    invoice = models.ForeignKey('Invoice', on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
+   
     deleted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     deleted_reason = models.TextField(null=True, blank=True)
     waiter = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders_taken')
