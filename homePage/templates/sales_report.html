@@ -18,8 +18,9 @@
         .card-custom {
             border: none;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1 );
             transition: transform 0.2s;
+            margin-bottom: 1.5rem; /* Add margin for spacing */
         }
         .card-custom:hover {
             transform: scale(1.02);
@@ -27,6 +28,11 @@
         .table th {
             background-color: #dc3545;
             color: white;
+        }
+        .chart-container {
+            position: relative;
+            height: 40vh;
+            width: 100%;
         }
     </style>
 </head>
@@ -37,9 +43,9 @@
 </div>
 
 <div class="container my-5">
-    <div class="row mb-4">
+    <div class="row mb-4 align-items-center">
         <div class="col-md-6">
-            <h4 class="text-muted">Filter by Date</h4>
+            <h4 class="text-muted mb-0">Filter by Date</h4>
         </div>
         <div class="col-md-6 text-right">
             <button class="btn btn-primary">Download Report</button>
@@ -55,7 +61,7 @@
                 <input type="date" name="end_date" class="form-control" value="{{ end_date|date:'Y-m-d' }}">
             </div>
             <div class="col-md-4">
-                <button type="submit" class="btn btn-danger">Filter</button>
+                <button type="submit" class="btn btn-danger btn-block">Filter</button>
             </div>
         </div>
     </form>
@@ -64,7 +70,7 @@
         <div class="col-md-4">
             <div class="card card-custom p-3 text-center">
                 <h5>Total Sales</h5>
-                <h3 class="text-danger">{{ total_sales }} RWF</h3>
+                <h3 class="text-danger">{{ total_sales|floatformat:2 }} RWF</h3>
             </div>
         </div>
         <div class="col-md-4">
@@ -76,17 +82,48 @@
         <div class="col-md-4">
             <div class="card card-custom p-3 text-center">
                 <h5>Average Order Value</h5>
-                <h3 class="text-success">{{ avg_order_value }} RWF</h3>
+                <h3 class="text-success">{{ avg_order_value|floatformat:2 }} RWF</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Section: Payment Method Breakdown -->
+    <h3 class="mt-5">Payment Method Breakdown</h3>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card card-custom p-4">
+                <h5 class="mb-3">Summary by Method</h5>
+                {% if payment_method_summary %}
+                    <ul class="list-group list-group-flush">
+                        {% for payment in payment_method_summary %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ payment.method }}
+                            <span class="badge badge-info badge-pill" style="font-size: 1rem;">{{ payment.total|floatformat:2 }} RWF</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">No payment data available for this period.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card card-custom p-4">
+                <h5 class="mb-3">Payment Distribution</h5>
+                <div class="chart-container">
+                    <canvas id="paymentPieChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
 
     <h3 class="mt-5">Sales Breakdown by Item</h3>
-    <table class="table table-bordered">
-        <thead>
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
             <tr>
                 <th>Item</th>
                 <th>Items Sold</th>
+                <th>Total Revenue</th>
             </tr>
         </thead>
         <tbody>
@@ -94,41 +131,81 @@
             <tr>
                 <td>{{ item.item__name }}</td>
                 <td>{{ item.total_items_sold }}</td>
+                <td>{{ item.total_revenue|floatformat:2 }} RWF</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center">No item sales data available for this period.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
     <h3 class="mt-5">Sales by Item (Chart)</h3>
-    <canvas id="salesChart"></canvas>
+    <div class="card card-custom p-4">
+        <div class="chart-container">
+            <canvas id="salesBarChart"></canvas>
+        </div>
+    </div>
 </div>
 
 <script>
-    const salesData = {
+    // Bar Chart for Item Sales
+    const salesBarData = {
         labels: [{% for item in item_sales %}"{{ item.item__name }}",{% endfor %}],
         datasets: [{
             label: 'Items Sold',
             data: [{% for item in item_sales %}{{ item.total_items_sold }},{% endfor %}],
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgba(255, 99, 132, 1)',
+            backgroundColor: 'rgba(220, 53, 69, 0.7)',
+            borderColor: 'rgba(220, 53, 69, 1)',
             borderWidth: 1
         }]
     };
 
-    const config = {
+    new Chart(document.getElementById('salesBarChart'), {
         type: 'bar',
-        data: salesData,
+        data: salesBarData,
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             scales: {
-                y: {
-                    beginAtZero: true
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Pie Chart for Payment Methods
+    const paymentPieData = {
+        labels: {{ payment_labels|safe }},
+        datasets: [{
+            label: 'Payment Amount',
+            data: {{ payment_data|safe }},
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 206, 86, 0.7)',
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(153, 102, 255, 0.7)',
+                'rgba(255, 159, 64, 0.7)'
+            ],
+            borderColor: '#fff',
+            borderWidth: 2
+        }]
+    };
+
+    new Chart(document.getElementById('paymentPieChart'), {
+        type: 'pie',
+        data: paymentPieData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
                 }
             }
         }
-    };
-
-    new Chart(document.getElementById('salesChart'), config);
+    });
 </script>
 
 </body>

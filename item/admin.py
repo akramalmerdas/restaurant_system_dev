@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django import forms
 
 
 from .models import *
@@ -53,6 +54,47 @@ class OrderAdmin(admin.ModelAdmin):
         order.total_amount = order.calculate_total_amount()
         order.save(update_fields=["total_amount"])
 
+
+class InvoiceAdminForm(forms.ModelForm):
+    # By explicitly defining the fields here, we override the default
+    # non-editable behavior of auto_now and auto_now_add.
+    created_at = forms.DateTimeField()
+    updated_at = forms.DateTimeField()
+
+    class Meta:
+        model = Invoice
+        fields = '__all__'
+
+# 2. Define the ModelAdmin for the Invoice model
+class InvoiceAdmin(admin.ModelAdmin):
+    # 3. Tell the admin to use your custom form
+    form = InvoiceAdminForm
+
+    # You can keep your other helpful settings
+    list_display = (
+        'display_id', 
+        'table', 
+        'total_amount', 
+        'status', 
+        'created_at', 
+        'updated_at'
+    )
+    list_filter = ('status', 'is_paid', 'created_at')
+    search_fields = ('display_id', 'table__number')
+    
+    # We no longer need readonly_fields for these, as they are now in the form
+    readonly_fields = ('created_at', 'updated_at', 'amount_paid', 'balance_due')
+
+
+
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('invoice', 'amount', 'method', 'created_at', 'processed_by')
+    list_filter = ('method', 'created_at')
+    search_fields = ('invoice__display_id', 'transaction_id')
+    readonly_fields = ('created_at',)
+
+
+
 admin.site.register(OrderItem,orderItemAdmin)
 admin.site.register(Item,ItemAdmin)
 admin.site.register(Order,OrderAdmin)
@@ -68,6 +110,6 @@ admin.site.register(Supplier)
 admin.site.register(Extra,ExtraAdmin)
 admin.site.register(OrderItemExtra)
 admin.site.register(Table)
-admin.site.register(Invoice)
-admin.site.register(Payment)
+admin.site.register(Invoice,InvoiceAdmin)
+admin.site.register(Payment,PaymentAdmin)
 admin.site.register(UnpaidReasonLog)
