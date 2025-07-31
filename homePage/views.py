@@ -1261,6 +1261,7 @@ def generate_invoice_by_table(request):
             table_id=table_id,
             total_amount=total_amount,
             created_at=timezone.now(),
+            created_by=request.user,
             display_id=display_id
         )
 
@@ -1323,6 +1324,7 @@ def generateInvoiceByItem(request):
             table_id=items_to_invoice.first().order.table.id, # Get table_id from an item
             total_amount=total_amount,
             created_at=timezone.now(),
+            created_by=request.user,
             display_id=display_id
         )
         
@@ -1365,15 +1367,15 @@ def invoice_dashboard(request):
         }, status=405)
 
     try:
-        # Get all filter parameters
+        # Get all filter parameters from the URL
         table_id = request.GET.get('table_id')
-        is_paid = request.GET.get('is_paid')  # New parameter
-        start_date_str = request.GET.get("start_date")
-        end_date_str = request.GET.get("end_date")
+        is_paid = request.GET.get('is_paid')
+        start_date_str = request.GET.get("start_date") # This is the string 'YYYY-MM-DD' or None
+        end_date_str = request.GET.get("end_date")     # This is the string 'YYYY-MM-DD' or None
         
         tables = Table.objects.all().order_by('id')
-        invoices = Invoice.objects.filter(inHold=False).order_by('-created_at')  # Base queryset
-        
+        invoices = Invoice.objects.filter(inHold=False).order_by('-created_at')
+
         # Apply table filter
         if table_id:
             invoices = invoices.filter(table_id=table_id)
@@ -1384,7 +1386,7 @@ def invoice_dashboard(request):
         elif is_paid == 'false':
             invoices = invoices.filter(is_paid=False)
         
-        # Handle date filtering (existing code)
+        # Handle date filtering
         start_date = None
         end_date = None
         
@@ -1396,15 +1398,12 @@ def invoice_dashboard(request):
         except ValueError as e:
             return JsonResponse({
                 "success": False,
-                "message": f"Invalid date format. Please use YYYY-MM-DD format. Error: {str(e)}"
+                "message": f"Invalid date format. Please use YYYY-MM-DD. Error: {str(e)}"
             }, status=400)
         
         if start_date and end_date:
             if start_date > end_date:
-                return JsonResponse({
-                    "success": False,
-                    "message": "Start date cannot be after end date."
-                }, status=400)
+                return JsonResponse({"success": False, "message": "Start date cannot be after end date."}, status=400)
             invoices = invoices.filter(created_at__date__range=[start_date, end_date])
         elif start_date:
             invoices = invoices.filter(created_at__date__gte=start_date)
@@ -1412,25 +1411,23 @@ def invoice_dashboard(request):
             invoices = invoices.filter(created_at__date__lte=end_date)
         
         # Apply pagination
-        paginator = Paginator(invoices, 20)  # Show 20 invoices per page
+        paginator = Paginator(invoices, 20)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         
+        # --- THIS IS THE FIX ---
+        # Pass the original STRING variables back to the template context.
         return render(request, 'invoice_dashboard.html', {
-            'invoices': invoices,
             'page_obj': page_obj,
             'tables': tables,
             'selected_table_id': table_id,
-            'start_date': start_date_str,
-            'end_date': end_date_str,
-            'is_paid': is_paid,  # Pass back the payment status filter
+            'start_date_str': start_date_str, # Pass the string for the form value
+            'end_date_str': end_date_str,     # Pass the string for the form value
+            'is_paid': is_paid,
         })
         
     except Exception as e:
-        return JsonResponse({
-            "success": False,
-            "message": f"An error occurred: {str(e)}"
-        }, status=500)
+        return JsonResponse({"success": False, "message": f"An error occurred: {str(e)}"}, status=500)
 
 @login_required
 def view_invoice(request, invoice_id):
