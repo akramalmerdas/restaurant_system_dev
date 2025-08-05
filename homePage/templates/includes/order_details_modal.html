@@ -50,7 +50,6 @@
                             <thead>
                                 <tr>
                                     <th>Item</th>
-                                    <th>Quantity</th>
                                     <th>Price</th>
                                     <th>Total</th>
                                 </tr>
@@ -180,8 +179,8 @@ function loadOrderDetails(orderId) {
             const itemsTable = document.querySelector('#orderItemsTable tbody');
             itemsTable.innerHTML = order.order_items.map(item => {
                 let row = `<tr>
+              
                     <td>${item.name}</td>
-                    <td>${item.quantity}</td>
                     <td>${item.price} RWF</td>
                     <td>${item.total} RWF</td>
                 </tr>`;

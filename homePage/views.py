@@ -211,8 +211,8 @@ def orderDetailApi(request, order_id):
     for item in order.orderitem_set.all():
       
         order_items.append({
-            'name': item.item.name if item.item else item.item_name,
-            'quantity': item.quantity,
+            'name': str(item.item_name),
+            # 'quantity': item.quantity,
             'price': str(item.item_price),
             'total': str(item.price),
     
@@ -1225,7 +1225,6 @@ def cancelled_orders(request):
 @login_required
 @transaction.atomic
 def generate_invoice_by_table(request):
-  
     if request.method != 'POST':
         return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)
 
@@ -1235,61 +1234,78 @@ def generate_invoice_by_table(request):
 
         if not table_id:
             return JsonResponse({"success": False, "message": "Table ID is missing."}, status=400)
-        today = date.today()
-        counter, _ = DailyOrderCounter.objects.get_or_create(date=today)
-        counter.counter += 1
-        counter.save()
-        display_id = f"{today.strftime('%Y%m%d')}-{counter.counter:03d}"
-        # Securely fetch all uninvoiced items for this table.
-        items_to_invoice = OrderItem.objects.select_for_update().filter(
-            order__table_id=table_id,
-            invoice__isnull=True,
-            order__inHold=False,
-            order__order_status__name__in=['printed']
-        )
 
-        if not items_to_invoice.exists():
-            return JsonResponse({"success": False, "message": "No uninvoiced items found for this table."}, status=404)
-        
-        # 1. Get the unique IDs of all parent orders that were affected.
-        affected_order_ids = set(items_to_invoice.values_list('order_id', flat=True))
-  
-        
-        # Calculate total and create the invoice
-        total_amount = sum(item.price for item in items_to_invoice)
-        invoice = Invoice.objects.create(
-            table_id=table_id,
-            total_amount=total_amount,
-            created_at=timezone.now(),
-            created_by=request.user,
-            display_id=display_id
-        )
+        with transaction.atomic():
+            sid = transaction.savepoint()
+            
+            try:
+                # All your database operations here
+                today = date.today()
+                counter, _ = DailyOrderCounter.objects.get_or_create(date=today)
+                counter.counter += 1
+                counter.save()
+                display_id = f"{today.strftime('%Y%m%d')}-{counter.counter:03d}"
+                
+                items_to_invoice = OrderItem.objects.select_for_update().filter(
+                    order__table_id=table_id,
+                    invoice__isnull=True,
+                    order__inHold=False,
+                    order__order_status__name__in=['printed']
+                )
 
-        # Link all found items to the new invoice
-        items_to_invoice.update(invoice=invoice)
-        
-        # 2. Get the 'completed' status object once.
-        try:
-            completed_status = OrderStatus.objects.get(name='completed')
-        except OrderStatus.DoesNotExist:
-            return JsonResponse({"success": False, "message": "System error: 'completed' status not found."}, status=500)
+                if not items_to_invoice.exists():
+                    transaction.savepoint_rollback(sid)
+                    return JsonResponse({"success": False, "message": "No uninvoiced items found for this table."}, status=404)
+                
+                affected_order_ids = set(items_to_invoice.values_list('order_id', flat=True))
+                total_amount = sum(item.price for item in items_to_invoice)
+                
+                invoice = Invoice.objects.create(
+                    table_id=table_id,
+                    total_amount=total_amount,
+                    created_at=timezone.now(),
+                    created_by=request.user,
+                    display_id=display_id
+                )
 
-        # 3. Loop through each affected order and check its status.
-        for order_id in affected_order_ids:
-            # Since we just invoiced ALL remaining items, every order involved is now complete.
-            # The check `if not OrderItem.objects.filter(...).exists()` will always be true here,
-            # but we keep it for logical consistency and safety.
-            if not OrderItem.objects.filter(order_id=order_id, invoice__isnull=True).exists():
-                Order.objects.filter(id=order_id).update(order_status=completed_status)
+                items_updated = items_to_invoice.update(invoice=invoice)
+                
+                # CRITICAL: If this fails, raise an exception to trigger rollback
+                try:
+                    completed_status = OrderStatus.objects.get(name='completed')
+                except OrderStatus.DoesNotExist:
+                    # Don't return JsonResponse here - raise an exception instead 
+                    transaction.savepoint_rollback(sid)
+                    raise ValueError("System error: 'completed' status not found.")
+                
+                orders_updated = 0
+                for order_id in affected_order_ids:
+                    if not OrderItem.objects.filter(order_id=order_id, invoice__isnull=True).exists():
+                        updated_count = Order.objects.filter(id=order_id).update(order_status=completed_status)
+                        orders_updated += updated_count
 
-        return JsonResponse({
-            "success": True,
-            "message": f"Invoice generated successfully for {items_to_invoice.count()} items.",
-            "invoice_id": invoice.id,
-        })
+                transaction.savepoint_commit(sid)
+                
+                return JsonResponse({
+                    "success": True,
+                    "message": f"Invoice generated successfully for {items_updated} items.",
+                    "invoice_id": invoice.id,
+                    "orders_completed": orders_updated
+                })
 
+            except Exception as inner_e:
+                transaction.savepoint_rollback(sid)
+                raise inner_e  # Re-raise to trigger outer transaction rollback
+
+    except ValueError as ve:
+        return JsonResponse({"success": False, "message": str(ve)}, status=500)
     except Exception as e:
-        return JsonResponse({"success": False, "message": str(e)}, status=500)
+        return JsonResponse({"success": False, "message": f"An error occurred: {str(e)}"}, status=500)
+
+
+
+
+
 
 
 @transaction.atomic
@@ -1297,7 +1313,7 @@ def generateInvoiceByItem(request):
     
     if request.method != 'POST':
         return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)
-
+    
     try:
         data = json.loads(request.body)
         item_ids = data.get('item_ids', [])
@@ -1305,56 +1321,62 @@ def generateInvoiceByItem(request):
         
         if not item_ids:
             return JsonResponse({"success": False, "message": "No items selected."}, status=400)
-
-        # Fetch the specific items to be invoiced
-        items_to_invoice = OrderItem.objects.select_for_update().filter(id__in=item_ids, invoice__isnull=True)
-        today = date.today()
-        counter, _ = DailyOrderCounter.objects.get_or_create(date=today)
-        counter.counter += 1
-        counter.save()
-        display_id = f"{today.strftime('%Y%m%d')}-{counter.counter:03d}"
-        if not items_to_invoice.exists():
-            return JsonResponse({"success": False, "message": "Selected items are already invoiced or do not exist."}, status=404)
-          # 1. Get the unique IDs of all parent orders that were affected.
-        affected_order_ids = set(items_to_invoice.values_list('order_id', flat=True))
+        with transaction.atomic():
+            sid = transaction.savepoint()
+            # Fetch the specific items to be invoiced
+            items_to_invoice = OrderItem.objects.select_for_update().filter(id__in=item_ids, invoice__isnull=True, order__inHold=False, order__order_status__name__in=['printed'], order__table_id=table_id)
+  
+            today = date.today()
+            counter, _ = DailyOrderCounter.objects.get_or_create(date=today)
+            counter.counter += 1
+            counter.save()
+            display_id = f"{today.strftime('%Y%m%d')}-{counter.counter:03d}"
+            if not items_to_invoice.exists():
+                transaction.savepoint_rollback(sid)
+                return JsonResponse({"success": False, "message": "Selected items are already invoiced or do not exist."}, status=404)
+            # 1. Get the unique IDs of all parent orders that were affected.
+            affected_order_ids = set(items_to_invoice.values_list('order_id', flat=True))
    
-        # Calculate total and create the invoice
-        total_amount = sum(item.price for item in items_to_invoice)
-        invoice = Invoice.objects.create(
-            table_id=items_to_invoice.first().order.table.id, # Get table_id from an item
-            total_amount=total_amount,
-            created_at=timezone.now(),
-            created_by=request.user,
-            display_id=display_id
-        )
+            # Calculate total and create the invoice
+            total_amount = sum(item.price for item in items_to_invoice)
+            invoice = Invoice.objects.create(
+                table_id=items_to_invoice.first().order.table.id, # Get table_id from an item
+                total_amount=total_amount,
+                created_at=timezone.now(),
+                created_by=request.user,
+                display_id=display_id
+            )
         
-        # Link the items to the new invoice
-        items_to_invoice.update(invoice=invoice)
+            # Link the items to the new invoice
+            items_to_invoice.update(invoice=invoice)
 
       
-        # 2. Get the 'completed' status object once.
-        try:
-            completed_status = OrderStatus.objects.get(name='completed')
-        except OrderStatus.DoesNotExist:
-            # This is a critical configuration error, so we stop the transaction.
-            return JsonResponse({"success": False, "message": "System error: 'completed' status not found."}, status=500)
+            # 2. Get the 'completed' status object once.
+            try:
+                completed_status = OrderStatus.objects.get(name='completed')
+            except OrderStatus.DoesNotExist:
+                # This is a critical configuration error, so we stop the transaction.
+                transaction.savepoint_rollback(sid)
+                return JsonResponse({"success": False, "message": "System error: 'completed' status not found."}, status=500)
 
         # 3. Loop through each affected order and check its status.
-        for order_id in affected_order_ids:
-            # Check if the order has any OTHER items that are still uninvoiced.
-            is_fully_invoiced = not OrderItem.objects.filter(order_id=order_id, invoice__isnull=True).exists()
+            for order_id in affected_order_ids:
+                # Check if the order has any OTHER items that are still uninvoiced.
+                is_fully_invoiced = not OrderItem.objects.filter(order_id=order_id, invoice__isnull=True).exists()
     
-            if is_fully_invoiced:
-                # If all items for this order are now invoiced, update its status.
-                Order.objects.filter(id=order_id).update(order_status=completed_status)
+                if is_fully_invoiced:
+                    # If all items for this order are now invoiced, update its status.
+                    Order.objects.filter(id=order_id).update(order_status=completed_status)
     
-        return JsonResponse({
-            "success": True,
-            "message": f"Invoice generated successfully for {len(item_ids)} items.",
-            "invoice_id": invoice.id,
+            transaction.savepoint_commit(sid)
+            return JsonResponse({
+                "success": True,
+                "message": f"Invoice generated successfully for {len(item_ids)} items.",
+                "invoice_id": invoice.id,
         })
 
     except Exception as e:
+        transaction.savepoint_rollback(sid)
         return JsonResponse({"success": False, "message": str(e)}, status=500)
 
 
