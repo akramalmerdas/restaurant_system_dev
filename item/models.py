@@ -358,7 +358,7 @@ class Payment(models.Model):
     PAYMENT_METHODS = [
         ("CASH", "Cash"),
         ("BANK", "Bank Transfer"),
-        ("MOBILE", "Mobile Money"),
+        ("MOMO", "Momo"),
         ("CARD", "Card"), # Added 'CARD' method as it was in HTML but not in model
         ("OTHER", "Other")
     ]

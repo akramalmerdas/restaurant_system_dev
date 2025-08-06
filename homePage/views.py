@@ -10,7 +10,7 @@ import json
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.db.models import Sum ,Count, Avg,Prefetch,OuterRef, Subquery
+from django.db.models import Sum ,Count, Avg,Prefetch,OuterRef, Subquery,DecimalField,F,Value
 from django.middleware.csrf import get_token
 from django.contrib.auth.decorators import login_required
 from datetime import datetime ,date, time
@@ -23,6 +23,7 @@ from django.shortcuts import render, get_object_or_404
 from django.db import transaction
 from django.core.paginator import Paginator
 from collections import defaultdict
+from django.db.models.functions import Coalesce
 
 @login_required
 def index(request):
@@ -1532,6 +1533,7 @@ def process_payment(request, invoice_id):
     try:
         # 1. Parse and validate incoming JSON data
         try:
+            print('this is the data '+str(request.body))
             data = json.loads(request.body)
             amount = Decimal(str(data.get("amount")))
             method = data.get("method")
@@ -1818,6 +1820,81 @@ def sales_report(request):
 
     return render(request, 'sales_report.html', context)
 
+
+
+
+
+@login_required
+def payment_report(request):
+    """
+    Provides a detailed report of invoices with payment methods broken down
+    into columns, including a grand total summary row.
+    """
+    today = timezone.now().date()
+    start_date = today.replace(day=1)
+    end_date = today
+
+    if request.method == "GET":
+        start_date_str = request.GET.get("start_date")
+        end_date_str = request.GET.get("end_date")
+        
+        if start_date_str:
+            try:
+                start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+            except ValueError: pass
+                
+        if end_date_str:
+            try:
+                end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+            except ValueError: pass
+
+    start_datetime = timezone.make_aware(datetime.combine(start_date, time.min))
+    end_datetime = timezone.make_aware(datetime.combine(end_date, time.max))
+
+    # --- Core Logic ---
+
+    # Base queryset of invoices that have payments in the selected date range
+    invoices_with_payments = Invoice.objects.filter(
+        payments__created_at__range=[start_datetime, end_datetime]
+    ).distinct()
+
+    # Subqueries for each payment method (Card removed)
+    cash_subquery = Payment.objects.filter(invoice=OuterRef('pk'), method='CASH').values('invoice').annotate(total=Sum('amount')).values('total')
+    bank_subquery = Payment.objects.filter(invoice=OuterRef('pk'), method='CARD').values('invoice').annotate(total=Sum('amount')).values('total')
+    momo_subquery = Payment.objects.filter(invoice=OuterRef('pk'), method='MOMO').values('invoice').annotate(total=Sum('amount')).values('total')
+
+    # Annotate the main invoice query with the calculated values
+    invoices_report = invoices_with_payments.annotate(
+        cash_total=Coalesce(Subquery(cash_subquery), Value(0), output_field=DecimalField()),
+        bank_total=Coalesce(Subquery(bank_subquery), Value(0), output_field=DecimalField()),
+        momo_total=Coalesce(Subquery(momo_subquery), Value(0), output_field=DecimalField()),
+    ).annotate(
+        total_paid=F('cash_total') + F('bank_total') + F('momo_total')
+    ).order_by('-created_at')
+
+    # --- NEW: Calculate Grand Totals ---
+    # Perform the aggregation on the entire filtered queryset before pagination
+    grand_totals = invoices_report.aggregate(
+        total_billed=Sum('total_amount'),
+        total_paid=Sum('total_paid'),
+        total_cash=Sum('cash_total'),
+        total_bank=Sum('bank_total'),
+        total_momo=Sum('momo_total'),
+    )
+
+    # Apply pagination to the detailed list
+    paginator = Paginator(invoices_report, 25)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'grand_totals': grand_totals, # Pass the totals to the template
+        'start_date_str': start_date.strftime('%Y-%m-%d') if start_date else '',
+        'end_date_str': end_date.strftime('%Y-%m-%d') if end_date else '',
+    }
+
+    return render(request, 'payment_report.html', context)
 
 ############################# waiter report ##############################################
 @login_required

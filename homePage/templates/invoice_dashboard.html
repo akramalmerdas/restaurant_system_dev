@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     {% load static %}
-    {% include 'includes/invoice_payment_modal.html' %}
-    {% include 'includes/invoice_unpaid.html' %}
+  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice Dashboard - Mocha Cafe</title>
@@ -308,5 +307,7 @@
     <script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
     <script type="module" src="{% static 'js/invoice.js' %}"></script>
     <script type="module" src="{% static 'js/notifications.js' %}"></script>
+    {% include 'includes/invoice_payment_modal.html' %}
+    {% include 'includes/invoice_unpaid.html' %}
 </body>
 </html>

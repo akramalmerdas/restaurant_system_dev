@@ -1,0 +1,138 @@
+{% load query_params %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Payment Breakdown</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        body { background-color: #f8f9fa; }
+        .dashboard-card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1 );
+            margin-top: 2rem;
+            border: none;
+        }
+        .table thead th {
+            background-color: #198754;
+            color: white;
+        }
+        .table tfoot th {
+            background-color: #f8f9fa;
+            font-size: 1.1em;
+        }
+        .table td, .table th {
+            vertical-align: middle;
+        }
+        .amount-cell {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            text-align: right;
+        }
+        .zero-amount {
+            color: #adb5bd;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container my-5">
+    
+    <div class="header">
+        <h2>Invoice Payment Breakdown</h2>
+        <p class="text-muted">A report showing how each invoice was paid, with grand totals for the period.</p>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="card dashboard-card">
+        <div class="card-body">
+            <h5 class="card-title">Filter by Payment Date</h5>
+            <form method="get" class="mb-4">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-5">
+                        <label for="startDate" class="form-label">From Date</label>
+                        <input type="date" name="start_date" id="startDate" class="form-control" value="{{ start_date_str|default:'' }}">
+                    </div>
+                    <div class="col-md-5">
+                        <label for="endDate" class="form-label">To Date</label>
+                        <input type="date" name="end_date" id="endDate" class="form-control" value="{{ end_date_str|default:'' }}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-funnel"></i> Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Invoices Breakdown Table -->
+    <div class="card dashboard-card">
+        <div class="card-body">
+            <h5 class="card-title">Invoice Details</h5>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Invoice ID</th>
+                            <th class="text-end">Total Billed</th>
+                            <th class="text-end">Total Paid</th>
+                            <th class="text-end">Cash</th>
+                            <th class="text-end">Card</th>
+                            <th class="text-end">Mobile Money</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for invoice in page_obj %}
+                        <tr>
+                            <td><strong>{{ invoice.display_id }}</strong></td>
+                            <td class="amount-cell">{{ invoice.total_amount|floatformat:2 }}</td>
+                            <td class="amount-cell text-success">{{ invoice.total_paid|floatformat:2 }}</td>
+                            <td class="amount-cell {% if invoice.cash_total == 0 %}zero-amount{% endif %}">{{ invoice.cash_total|floatformat:2 }}</td>
+                            <td class="amount-cell {% if invoice.bank_total == 0 %}zero-amount{% endif %}">{{ invoice.bank_total|floatformat:2 }}</td>
+                            <td class="amount-cell {% if invoice.momo_total == 0 %}zero-amount{% endif %}">{{ invoice.momo_total|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-5">
+                                <p><i class="bi bi-receipt" style="font-size: 2rem;"></i></p>
+                                No paid invoices found for the selected period.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <!-- NEW: Table Footer with Grand Totals -->
+                    <tfoot>
+                        <tr>
+                            <th>Grand Totals</th>
+                            <th class="amount-cell">{{ grand_totals.total_billed|floatformat:2|default:"0.00" }}</th>
+                            <th class="amount-cell text-success">{{ grand_totals.total_paid|floatformat:2|default:"0.00" }}</th>
+                            <th class="amount-cell">{{ grand_totals.total_cash|floatformat:2|default:"0.00" }}</th>
+                            <th class="amount-cell">{{ grand_totals.total_bank|floatformat:2|default:"0.00" }}</th>
+                            <th class="amount-cell">{{ grand_totals.total_momo|floatformat:2|default:"0.00" }}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation" class="mt-4 d-flex justify-content-center">
+        <!-- (Your existing compact pagination code goes here) -->
+    </nav>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

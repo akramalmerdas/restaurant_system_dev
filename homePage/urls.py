@@ -36,6 +36,7 @@ urlpatterns =[
     path('mark-unpaid/', views.mark_unpaid, name='mark_unpaid'),
     path('print_invoice/<int:invoice_id>/', views.print_invoice_view, name='print_invoice'),  
     path('sales_report/', views.sales_report, name='sales_report'),
+    path('payment_report/', views.payment_report, name='payment_report'),
     path('staff_report/', views.staff_report, name='staff_report'),
     path('tables/', views.table_dashboard, name='table_dashboard'),
     path('tables/<int:table_id>/update/', views.update_table_status, name='update_table_status'),
