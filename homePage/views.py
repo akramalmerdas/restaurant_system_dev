@@ -1854,14 +1854,31 @@ def payment_report(request):
     # --- Core Logic ---
 
     # Base queryset of invoices that have payments in the selected date range
+    # This now correctly filters invoices by their creation date
     invoices_with_payments = Invoice.objects.filter(
-        payments__created_at__range=[start_datetime, end_datetime]
+        created_at__range=[start_datetime, end_datetime],
+        inHold=False
     ).distinct()
 
-    # Subqueries for each payment method (Card removed)
-    cash_subquery = Payment.objects.filter(invoice=OuterRef('pk'), method='CASH').values('invoice').annotate(total=Sum('amount')).values('total')
-    bank_subquery = Payment.objects.filter(invoice=OuterRef('pk'), method='CARD').values('invoice').annotate(total=Sum('amount')).values('total')
-    momo_subquery = Payment.objects.filter(invoice=OuterRef('pk'), method='MOMO').values('invoice').annotate(total=Sum('amount')).values('total')
+    # Subqueries for each payment method
+    # FIX: Add created_at filtering to subqueries to only include payments within the report period
+    cash_subquery = Payment.objects.filter(
+        invoice=OuterRef("pk"), 
+        method="CASH", 
+        created_at__range=[start_datetime, end_datetime]
+    ).values("invoice").annotate(total=Sum("amount")).values("total")
+    
+    bank_subquery = Payment.objects.filter(
+        invoice=OuterRef("pk"), 
+        method="CARD", 
+        created_at__range=[start_datetime, end_datetime]
+    ).values("invoice").annotate(total=Sum("amount")).values("total")
+    
+    momo_subquery = Payment.objects.filter(
+        invoice=OuterRef("pk"), 
+        method="MOMO", 
+        created_at__range=[start_datetime, end_datetime]
+    ).values("invoice").annotate(total=Sum("amount")).values("total")
 
     # Annotate the main invoice query with the calculated values
     invoices_report = invoices_with_payments.annotate(
@@ -1869,32 +1886,32 @@ def payment_report(request):
         bank_total=Coalesce(Subquery(bank_subquery), Value(0), output_field=DecimalField()),
         momo_total=Coalesce(Subquery(momo_subquery), Value(0), output_field=DecimalField()),
     ).annotate(
-        total_paid=F('cash_total') + F('bank_total') + F('momo_total')
-    ).order_by('-created_at')
+        total_paid=F("cash_total") + F("bank_total") + F("momo_total")
+    ).order_by("-created_at")
 
     # --- NEW: Calculate Grand Totals ---
     # Perform the aggregation on the entire filtered queryset before pagination
     grand_totals = invoices_report.aggregate(
-        total_billed=Sum('total_amount'),
-        total_paid=Sum('total_paid'),
-        total_cash=Sum('cash_total'),
-        total_bank=Sum('bank_total'),
-        total_momo=Sum('momo_total'),
+        total_billed=Sum("total_amount"),
+        total_paid=Sum("total_paid"),
+        total_cash=Sum("cash_total"),
+        total_bank=Sum("bank_total"),
+        total_momo=Sum("momo_total"),
     )
 
     # Apply pagination to the detailed list
     paginator = Paginator(invoices_report, 25)
-    page_number = request.GET.get('page')
+    page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
     context = {
-        'page_obj': page_obj,
-        'grand_totals': grand_totals, # Pass the totals to the template
-        'start_date_str': start_date.strftime('%Y-%m-%d') if start_date else '',
-        'end_date_str': end_date.strftime('%Y-%m-%d') if end_date else '',
+        "page_obj": page_obj,
+        "grand_totals": grand_totals, # Pass the totals to the template
+        "start_date_str": start_date.strftime("%Y-%m-%d") if start_date else "",
+        "end_date_str": end_date.strftime("%Y-%m-%d") if end_date else "",
     }
 
-    return render(request, 'payment_report.html', context)
+    return render(request, "payment_report.html", context)
 
 ############################# waiter report ##############################################
 @login_required

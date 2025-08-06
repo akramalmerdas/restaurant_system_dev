@@ -39,6 +39,10 @@
             color: #adb5bd;
             font-weight: normal;
         }
+        /* Style for the new unpaid column */
+        .unpaid-cell {
+            color: #dc3545; /* Red for emphasis */
+        }
     </style>
 </head>
 <body>
@@ -53,7 +57,7 @@
     <!-- Filter Form -->
     <div class="card dashboard-card">
         <div class="card-body">
-            <h5 class="card-title">Filter by Payment Date</h5>
+            <h5 class="card-title">Filter by Invoice Date</h5>
             <form method="get" class="mb-4">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-5">
@@ -85,6 +89,7 @@
                             <th>Invoice ID</th>
                             <th class="text-end">Total Billed</th>
                             <th class="text-end">Total Paid</th>
+                      
                             <th class="text-end">Cash</th>
                             <th class="text-end">Card</th>
                             <th class="text-end">Mobile Money</th>
@@ -96,25 +101,26 @@
                             <td><strong>{{ invoice.display_id }}</strong></td>
                             <td class="amount-cell">{{ invoice.total_amount|floatformat:2 }}</td>
                             <td class="amount-cell text-success">{{ invoice.total_paid|floatformat:2 }}</td>
+                            
                             <td class="amount-cell {% if invoice.cash_total == 0 %}zero-amount{% endif %}">{{ invoice.cash_total|floatformat:2 }}</td>
                             <td class="amount-cell {% if invoice.bank_total == 0 %}zero-amount{% endif %}">{{ invoice.bank_total|floatformat:2 }}</td>
                             <td class="amount-cell {% if invoice.momo_total == 0 %}zero-amount{% endif %}">{{ invoice.momo_total|floatformat:2 }}</td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-5">
+                            <td colspan="7" class="text-center text-muted py-5">
                                 <p><i class="bi bi-receipt" style="font-size: 2rem;"></i></p>
-                                No paid invoices found for the selected period.
+                                No invoices found for the selected period.
                             </td>
                         </tr>
                         {% endfor %}
                     </tbody>
-                    <!-- NEW: Table Footer with Grand Totals -->
                     <tfoot>
                         <tr>
                             <th>Grand Totals</th>
                             <th class="amount-cell">{{ grand_totals.total_billed|floatformat:2|default:"0.00" }}</th>
                             <th class="amount-cell text-success">{{ grand_totals.total_paid|floatformat:2|default:"0.00" }}</th>
+                            
                             <th class="amount-cell">{{ grand_totals.total_cash|floatformat:2|default:"0.00" }}</th>
                             <th class="amount-cell">{{ grand_totals.total_bank|floatformat:2|default:"0.00" }}</th>
                             <th class="amount-cell">{{ grand_totals.total_momo|floatformat:2|default:"0.00" }}</th>
