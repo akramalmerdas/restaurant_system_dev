@@ -22,7 +22,7 @@ from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, get_object_or_404
 from django.db import transaction
 from django.core.paginator import Paginator
-from collections import defaultdict
+
 from django.db.models.functions import Coalesce
 
 @login_required
@@ -1078,7 +1078,9 @@ def print_order_view(request, order_id):
     if request.method == "POST":
         try:
             printed_status = OrderStatus.objects.get(name="printed")
-            order.order_status = printed_status
+            pending_status = OrderStatus.objects.get(name="pending")
+            if order.order_status == pending_status:
+              order.order_status = printed_status
             order.printed_at = timezone.now()
             order.save()
             return JsonResponse({"success": True, "message": "Print confirmed."})

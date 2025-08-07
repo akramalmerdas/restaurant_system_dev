@@ -114,31 +114,32 @@
   
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const orderId = "{{ order_id }}";
-      const csrfToken = "{{ csrf_token }}";
+ document.addEventListener("DOMContentLoaded", function () {
+    const orderId = "{{ order_id }}";
+    const csrfToken = "{{ csrf_token }}";
 
-      window.print();
+    window.print();
 
-      window.onafterprint = function () {
-        fetch("", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken
-          },
-          body: JSON.stringify({ confirmed: true })
-        }).then(response => {
-          if (!response.ok) {
-            console.error("Print confirmation failed.");
-          }
-          if (response.ok) {
-         
-            // window.location.href = `/admin_dashboard/`;
-          }
-        }).catch(error => console.error("Error:", error));
-      };
-    });
+    window.onafterprint = function () {
+      fetch("", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken
+        },
+        body: JSON.stringify({ confirmed: true })
+      }).then(response => {
+        if (!response.ok) {
+          console.error("Print confirmation failed.");
+        }
+        // After handling the response (success or not), close the tab
+        window.close();
+      }).catch(error => {
+        console.error("Error:", error);
+        window.close();  // Even if there's an error, close the tab
+      });
+    };
+  });
   </script>
 </body>
 </html>
