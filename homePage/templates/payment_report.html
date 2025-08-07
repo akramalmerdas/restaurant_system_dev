@@ -39,7 +39,6 @@
             color: #adb5bd;
             font-weight: normal;
         }
-        /* Style for the new unpaid column */
         .unpaid-cell {
             color: #dc3545; /* Red for emphasis */
         }
@@ -89,7 +88,7 @@
                             <th>Invoice ID</th>
                             <th class="text-end">Total Billed</th>
                             <th class="text-end">Total Paid</th>
-                      
+                            <th class="text-end">Unpaid</th>
                             <th class="text-end">Cash</th>
                             <th class="text-end">Card</th>
                             <th class="text-end">Mobile Money</th>
@@ -101,7 +100,9 @@
                             <td><strong>{{ invoice.display_id }}</strong></td>
                             <td class="amount-cell">{{ invoice.total_amount|floatformat:2 }}</td>
                             <td class="amount-cell text-success">{{ invoice.total_paid|floatformat:2 }}</td>
-                            
+                            <td class="amount-cell {% if invoice.unpaid_amount > 0 %}unpaid-cell{% endif %} {% if invoice.unpaid_amount == 0 %}zero-amount{% endif %}">
+                                {{ invoice.unpaid_amount|floatformat:2 }}
+                            </td>
                             <td class="amount-cell {% if invoice.cash_total == 0 %}zero-amount{% endif %}">{{ invoice.cash_total|floatformat:2 }}</td>
                             <td class="amount-cell {% if invoice.bank_total == 0 %}zero-amount{% endif %}">{{ invoice.bank_total|floatformat:2 }}</td>
                             <td class="amount-cell {% if invoice.momo_total == 0 %}zero-amount{% endif %}">{{ invoice.momo_total|floatformat:2 }}</td>
@@ -120,7 +121,7 @@
                             <th>Grand Totals</th>
                             <th class="amount-cell">{{ grand_totals.total_billed|floatformat:2|default:"0.00" }}</th>
                             <th class="amount-cell text-success">{{ grand_totals.total_paid|floatformat:2|default:"0.00" }}</th>
-                            
+                            <th class="amount-cell unpaid-cell">{{ grand_totals.total_unpaid|floatformat:2|default:"0.00" }}</th>
                             <th class="amount-cell">{{ grand_totals.total_cash|floatformat:2|default:"0.00" }}</th>
                             <th class="amount-cell">{{ grand_totals.total_bank|floatformat:2|default:"0.00" }}</th>
                             <th class="amount-cell">{{ grand_totals.total_momo|floatformat:2|default:"0.00" }}</th>
@@ -133,7 +134,62 @@
 
     <!-- Pagination Controls -->
     <nav aria-label="Page navigation" class="mt-4 d-flex justify-content-center">
-        <!-- (Your existing compact pagination code goes here) -->
+        <div class="btn-group" role="group">
+
+            <!-- First Page Link -->
+            {% if page_obj.has_previous %}
+                <a href="?{% url_replace page=1 %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-chevron-bar-left"></i> First
+                </a>
+            {% else %}
+                <!-- This is now a disabled button, not a link -->
+                <button type="button" class="btn btn-outline-secondary" disabled>
+                    <i class="bi bi-chevron-bar-left"></i> First
+                </button>
+            {% endif %}
+    
+            <!-- Previous Page Link -->
+            {% if page_obj.has_previous %}
+                <a href="?{% url_replace page=page_obj.previous_page_number %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-chevron-left"></i> Previous
+                </a>
+            {% else %}
+                <!-- This is now a disabled button, not a link -->
+                <button type="button" class="btn btn-outline-secondary" disabled>
+                    <i class="bi bi-chevron-left"></i> Previous
+                </button>
+            {% endif %}
+    
+            <!-- Current Page Indicator -->
+            <button type="button" class="btn btn-primary" disabled>
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </button>
+    
+            <!-- Next Page Link -->
+            {% if page_obj.has_next %}
+                <a href="?{% url_replace page=page_obj.next_page_number %}" class="btn btn-outline-secondary">
+                    Next <i class="bi bi-chevron-right"></i>
+                </a>
+            {% else %}
+                <!-- This is now a disabled button, not a link -->
+                <button type="button" class="btn btn-outline-secondary" disabled>
+                    Next <i class="bi bi-chevron-right"></i>
+                </button>
+            {% endif %}
+    
+            <!-- Last Page Link -->
+            {% if page_obj.has_next %}
+                <a href="?{% url_replace page=page_obj.paginator.num_pages %}" class="btn btn-outline-secondary">
+                    Last <i class="bi bi-chevron-bar-right"></i>
+                </a>
+            {% else %}
+                <!-- This is now a disabled button, not a link -->
+                <button type="button" class="btn btn-outline-secondary" disabled>
+                    Last <i class="bi bi-chevron-bar-right"></i>
+                </button>
+            {% endif %}
+    
+        </div>
     </nav>
 
 </div>
