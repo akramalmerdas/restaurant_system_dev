@@ -1867,9 +1867,9 @@ def payment_report(request):
     # Subqueries for each payment method. 
     # IMPORTANT: These subqueries should NOT be date-filtered here.
     # They need to calculate the total paid amount for each invoice shown in the report.
-    cash_subquery = Payment.objects.filter(invoice=OuterRef("pk"), method="CASH").values("invoice").annotate(total=Sum("amount")).values("total")
-    bank_subquery = Payment.objects.filter(invoice=OuterRef("pk"), method="CARD").values("invoice").annotate(total=Sum("amount")).values("total")
-    momo_subquery = Payment.objects.filter(invoice=OuterRef("pk"), method="MOMO").values("invoice").annotate(total=Sum("amount")).values("total")
+    cash_subquery = Payment.objects.filter(invoice=OuterRef("pk"), method="CASH",inHold=False).values("invoice").annotate(total=Sum("amount")).values("total")
+    bank_subquery = Payment.objects.filter(invoice=OuterRef("pk"), method="CARD",inHold=False).values("invoice").annotate(total=Sum("amount")).values("total")
+    momo_subquery = Payment.objects.filter(invoice=OuterRef("pk"), method="MOMO",inHold=False).values("invoice").annotate(total=Sum("amount")).values("total")
 
     # Annotate the main invoice query with the calculated values
     invoices_report = invoices_in_report.annotate(

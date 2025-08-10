@@ -36,24 +36,29 @@ class ItemDashboardView(LoginRequiredMixin,ListView):
         context['search_query'] = self.request.GET.get('search', '')
         return context
 
+
 class ItemCreateView(LoginRequiredMixin,CreateView):
+    
     model = Item
     form_class = ItemForm
     template_name = 'item/item_form.html'
     success_url = reverse_lazy('item:item_dashboard')
 
     def form_valid(self, form):
+        print('the form is valid')
         if self.request.user.is_authenticated:
             form.instance.created_by = self.request.user
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
+        print('here we entered the item create view')
         context = super().get_context_data(**kwargs)
         context['view_title'] = 'Create New Item'
         context['extras'] = Extra.objects.all()
         return context
 
 class ItemUpdateView(UpdateView):
+    
     model = Item
     form_class = ItemForm
     template_name = 'item/item_form.html'
@@ -61,9 +66,11 @@ class ItemUpdateView(UpdateView):
     context_object_name = 'item'
 
     def form_valid(self, form):
+        print('the form is valid')
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
+        print('here we entered the item update view')
         context = super().get_context_data(**kwargs)
         context['view_title'] = f'Update Item: {self.object.name}'
         context['extras'] = Extra.objects.all()

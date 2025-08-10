@@ -110,6 +110,7 @@
         <p><strong>Date:</strong> {{ invoice.created_at|date:"Y-m-d H:i" }}</p>
         <p><strong>Table:</strong> {{ invoice.table.number }}</p>
         <p><strong>Status:</strong> {{ invoice.is_paid|yesno:"Paid,Unpaid" }}</p>
+        <p><strong>created by:</strong> {{ invoice.created_by.username }}</p>
     </div>
 
     <table>
