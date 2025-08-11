@@ -207,23 +207,22 @@ def orderDetails(request):
 ################################### order Details api ###
 def orderDetailApi(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    
     order_items = []
     for item in order.orderitem_set.all():
       
         order_items.append({
+            'id': item.id,
             'name': str(item.item_name),
-            # 'quantity': item.quantity,
             'price': str(item.item_price),
             'total': str(item.price),
     
         })
-        
+    
     data = {
         'id': order.id,
         'table_number': order.table_number,
         'total_amount': str(order.total_amount),
-        'deleted_by': order.deleted_by.get_full_name() if order.deleted_by else 'System',
+        'deleted_by': str(order.deleted_by) if order.deleted_by else 'System',
         'deleted_reason': order.deleted_reason,
         'deleted_at': order.deleted_at.isoformat() if order.deleted_at else None,
         'ordered_at': order.ordered_at.isoformat(),
@@ -1017,23 +1016,33 @@ def update_order_status(request, order_id):
 ############################### cancel order view ###################################################
 @login_required
 def cancelled_orders(request):
+    print('here we enterd tj view ')
     # Get filter parameters
     table_number = request.GET.get('table_number')
     date = request.GET.get('date')
     
     # Start with base queryset
-    cancelled_orders = Order.objects.filter(inHold=True).select_related(
+    cancelled_orders_queryset = Order.objects.filter(inHold=True).select_related(
         'customer', 'deleted_by', 'table'
     ).order_by('-deleted_at')
     
     # Apply filters if provided
     if table_number:
-        cancelled_orders = cancelled_orders.filter(table__number=table_number)
+        cancelled_orders_queryset = cancelled_orders_queryset.filter(table__number=table_number)
     
     if date:
-        print('this is the dateeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee '+date)
-        cancelled_orders = cancelled_orders.filter(deleted_at__date=date)
+        cancelled_orders_queryset = cancelled_orders_queryset.filter(deleted_at__date=date)
     
+    # Calculate statistics for cancelled orders
+    total_cancelled_orders = cancelled_orders_queryset.count()
+    total_cancelled_amount = cancelled_orders_queryset.aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+    avg_cancellation_amount = cancelled_orders_queryset.aggregate(Avg('total_amount'))['total_amount__avg'] or 0
+
+    # Pagination
+    paginator = Paginator(cancelled_orders_queryset, 25) # Show 25 orders per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     # Get all tables for the filter dropdown
     tables = Table.objects.all().values_list('number', flat=True).distinct()
     
@@ -1044,27 +1053,22 @@ def cancelled_orders(request):
     
     # Prepare context for template rendering
     context = {
-        'cancelled_orders': cancelled_orders,
-        'tables': tables,
+        'cancelled_orders': page_obj, # Pass the paginated object
+        'tables': tables, 
         'order_dates': order_dates,
         'selected_table': table_number,
         'selected_date': date,
-        'page_title': 'Cancelled Orders'
+        'page_title': 'Cancelled Orders',
+        'total_cancelled_orders': total_cancelled_orders,
+        'total_cancelled_amount': total_cancelled_amount,
+        'avg_cancellation_amount': avg_cancellation_amount,
+        'page_obj': page_obj, # This is already passed as 'cancelled_orders', but keeping for clarity in template
     }
     
-    # Check if it's an AJAX request
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.GET.get('ajax'):
-        data = [{
-            'id': order.id,
-            'table_number': order.table_number,
-            'total_amount': str(order.total_amount),
-            'deleted_by': order.deleted_by.get_full_name() if order.deleted_by else 'System',
-            'deleted_reason': order.deleted_reason,
-            'deleted_at': order.deleted_at.isoformat() if order.deleted_at else None,
-            'ordered_at': order.ordered_at.isoformat(),
-            'deleted_by': order.deleted_by.get_full_name() if order.deleted_by else 'System',
-        } for order in cancelled_orders]
-        return JsonResponse(data, safe=False)
+    # Check if it's an AJAX request (not modified for this task)
+    # if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.GET.get('ajax'):
+    #     data = [{...}]
+    #     return JsonResponse(data, safe=False)
     
     # Return HTML for regular requests
     return render(request, 'deleted_orders.html', context)
@@ -1115,57 +1119,7 @@ def print_order_view(request, order_id):
     })
 
     
-@login_required
-def cancelled_orders(request):
-    # Get filter parameters
-    table_number = request.GET.get('table_number')
-    date = request.GET.get('date')
-    
-    # Start with base queryset
-    cancelled_orders = Order.objects.filter(inHold=True).select_related(
-        'customer', 'deleted_by', 'table'
-    ).order_by('-deleted_at')
-    
-    # Apply filters if provided
-    if table_number:
-        cancelled_orders = cancelled_orders.filter(table__number=table_number)
-    
-    if date:
-        cancelled_orders = cancelled_orders.filter(deleted_at__date=date)
-    
-    # Get all tables for the filter dropdown
-    tables = Table.objects.all().values_list('number', flat=True).distinct()
-    
-    # Get unique dates for the date filter
-    order_dates = Order.objects.filter(inHold=True).exclude(
-        deleted_at__isnull=True
-    ).dates('deleted_at', 'day').distinct()
-    
-    context = {
-        'cancelled_orders': cancelled_orders,
-        'tables': tables,
-        'order_dates': order_dates,
-        'selected_table': table_number,
-        'selected_date': date,
-        'page_title': 'Cancelled Orders'
-    }
-    
-    # Return JSON if it's an AJAX request
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        data = [{
-            'id': order.id,
-            'customer_name': order.customer.name if order.customer else 'Walk-in',
-            'table_number': order.table_number,
-            'total_amount': str(order.total_amount),
-            'deleted_by': order.deleted_by.get_full_name() if order.deleted_by else 'System',
-            'deleted_reason': order.deleted_reason,
-            'deleted_at': order.deleted_at.isoformat() if order.deleted_at else None,
-            'ordered_at': order.ordered_at.isoformat()
-        } for order in cancelled_orders]
-        return JsonResponse(data, safe=False)
-    
-    # Return HTML for regular requests
-    return render(request, 'deleted_orders.html', context)
+
 
 
 

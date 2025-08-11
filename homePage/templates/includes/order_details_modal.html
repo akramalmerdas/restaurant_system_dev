@@ -49,6 +49,7 @@
                         <table class="table table-sm" id="orderItemsTable">
                             <thead>
                                 <tr>
+                                    <th>Item ID</th>
                                     <th>Item</th>
                                     <th>Price</th>
                                     <th>Total</th>
@@ -117,10 +118,17 @@
     font-family: inherit;
     margin-bottom: 0.5rem;
 }
+#orderItemsTable th:first-child,
+#orderItemsTable td:first-child {
+    display: table-cell !important;
+    width: 80px; /* adjust as needed */
+    white-space: nowrap;
+}
 </style>
 
 <script>
 // Initialize modal instance once
+
 const orderDetailsModal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
 
 // Function to reset modal content
@@ -136,7 +144,7 @@ function resetModal() {
     document.getElementById('cancellationReason').textContent = '';
     document.querySelector('#orderItemsTable tbody').innerHTML = '';
     document.body.classList.remove('modal-open');
-    
+
     // Remove any existing backdrops
     const backdrops = document.getElementsByClassName('modal-backdrop');
     while (backdrops.length > 0) {
@@ -154,48 +162,52 @@ document.querySelectorAll('[data-bs-dismiss="modal"]').forEach(button => {
 
 // This function will be called from the main page to load order details
 function loadOrderDetails(orderId) {
-    resetModal();  // Reset before loading new data
-    
+    resetModal(); // Reset before loading new data
+
     // Show loading indicator
     document.getElementById('modalOrderId').textContent = 'Loading...';
-    
+
     fetch(`/order_details_api/${orderId}/`)
         .then(response => response.json())
         .then(order => {
             // Populate modal with real data
-            document.getElementById('modalOrderId').textContent = order.id;
+            document.getElementById('modalOrderId').textContent = order.id || '';
             document.getElementById('tableNumber').textContent = order.table_number || 'Take Away';
             document.getElementById('orderType').textContent = order.table_number ? 'Dine-in' : 'Take Away';
-            document.getElementById('orderDate').textContent = new Date(order.ordered_at).toLocaleString();
-            document.getElementById('cancellationDate').textContent = order.deleted_at ? 
-                new Date(order.deleted_at).toLocaleString() : 'N/A';
-            document.getElementById('cancelledBy').textContent = order.deleted_by || 'System';
-            document.getElementById('orderTotal').textContent = `${order.total_amount} RWF`;
-            document.getElementById('orderTotalFooter').textContent = `${order.total_amount} RWF`;
-            document.getElementById('cancellationReason').textContent = 
-                order.deleted_reason || 'No reason provided';
+            document.getElementById('orderDate').textContent = order.ordered_at ? new Date(order.ordered_at).toLocaleString() : '';
+            document.getElementById('cancellationDate').textContent = order.deleted_at ? new Date(order.deleted_at).toLocaleString() : 'N/A';
+            document.getElementById('cancelledBy').textContent = order.deleted_by || 'N/A';
+            document.getElementById('orderTotal').textContent = order.total_amount ? `${order.total_amount} RWF` : '';
+            document.getElementById('orderTotalFooter').textContent = order.total_amount ? `${order.total_amount} RWF` : '';
+            document.getElementById('cancellationReason').textContent = order.deleted_reason || 'No reason provided';
 
-            // Populate order items
+            // Populate order items (SAFE & CONSISTENT HTML)
             const itemsTable = document.querySelector('#orderItemsTable tbody');
             itemsTable.innerHTML = order.order_items.map(item => {
-                let row = `<tr>
-              
-                    <td>${item.name}</td>
-                    <td>${item.price} RWF</td>
-                    <td>${item.total} RWF</td>
-                </tr>`;
-                
+                let mainRow = `
+                    <tr>
+                        <td>${item.id || ''}</td>
+                        <td>${item.name || ''}</td>
+                        <td>${item.price ? item.price + ' RWF' : ''}</td>
+                        <td>${item.total ? item.total + ' RWF' : ''}</td>
+                    </tr>
+                `;
+
+                let customizationRow = '';
                 if (item.customizations) {
-                    row += `<tr class="customization-row">
-                        <td colspan="4" class="small text-muted">
-                            <i class="bi bi-pencil-fill me-1"></i> 
-                            ${item.customizations}
-                        </td>
-                    </tr>`;
+                    customizationRow = `
+                        <tr class="customization-row">
+                            <td colspan="4" class="small text-muted">
+                                <i class="bi bi-pencil-fill me-1"></i> 
+                                ${item.customizations}
+                            </td>
+                        </tr>
+                    `;
                 }
-                return row;
+
+                return mainRow + customizationRow;
             }).join('');
-            
+
             // Show the modal
             orderDetailsModal.show();
         })
@@ -205,4 +217,5 @@ function loadOrderDetails(orderId) {
             resetModal();
         });
 }
+
 </script>
