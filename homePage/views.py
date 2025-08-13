@@ -2,7 +2,7 @@ from decimal import Decimal
 from django.utils import timezone
 from django.utils.timezone import now
 from django.shortcuts import redirect, render , get_object_or_404
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse,HttpResponseForbidden
 from django.urls import reverse
 from item.models import Item ,Order,OrderItem,Extra,OrderItemExtra,OrderStatus,Customer,Table,Invoice,Staff,Payment,UnpaidReasonLog,DailyOrderCounter
 from django.views.decorators.csrf import csrf_exempt
@@ -1697,68 +1697,67 @@ def print_invoice_view(request, invoice_id):
 
 @login_required
 def sales_report(request):
-    # Get today's date properly
+    try:
+        staff = Staff.objects.get(user=request.user)
+        if staff.role.lower() != "admin":  # Adjust role check if needed
+            return HttpResponseForbidden("You are not authorized to view this page.")
+    except Staff.DoesNotExist:
+        return HttpResponseForbidden("You are not authorized to view this page.")
+
+    # --- Date setup ---
     today = timezone.now().date()
-    start_date = today.replace(day=1)  # Start of current month
+    start_date = today.replace(day=1)
     end_date = today
 
-    # Process date parameters from GET request
     if request.method == "GET":
         start_date_str = request.GET.get("start_date")
         end_date_str = request.GET.get("end_date")
-        
+
         if start_date_str:
             try:
                 start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
             except ValueError:
-                pass  # Keep default if invalid format
-                
+                pass
+
         if end_date_str:
             try:
                 end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
             except ValueError:
-                pass  # Keep default if invalid format
+                pass
 
-    # Convert dates to datetime objects for proper filtering
     start_datetime = timezone.make_aware(datetime.combine(start_date, time.min))
     end_datetime = timezone.make_aware(datetime.combine(end_date, time.max))
 
-    # Filter invoices within the date range
+    # --- Data Queries ---
     invoices = Invoice.objects.filter(
         created_at__range=[start_datetime, end_datetime]
     ).exclude(inHold=True)
 
-    # Calculate sales summary from invoices
     total_sales = invoices.aggregate(total=Sum('total_amount'))['total'] or Decimal(0)
     num_orders = invoices.count()
     avg_order_value = invoices.aggregate(avg_value=Avg('total_amount'))['avg_value'] or Decimal(0)
 
-    # Get item sales data
     item_sales = (
-        OrderItem.objects.filter(
-            invoice__in=invoices
-        ).values('item__name')
+        OrderItem.objects.filter(invoice__in=invoices)
+        .values('item__name')
         .annotate(
             total_items_sold=Count('id'),
             total_revenue=Sum('price')
-        ).order_by('-total_items_sold')
+        )
+        .order_by('-total_items_sold')
     )
 
-    # --- Corrected Logic: Payment Breakdown ---
-    # Filter payments within the selected date range
     payments_in_range = Payment.objects.filter(
-        created_at__range=[start_datetime, end_datetime], # <-- THE FIX IS HERE
+        created_at__range=[start_datetime, end_datetime],
         inHold=False
     )
 
-    # Aggregate payment totals by method from the correctly filtered payments
     payment_method_summary = (
         payments_in_range.values('method')
         .annotate(total=Sum('amount'))
         .order_by('-total')
     )
 
-    # Prepare data for the pie chart
     payment_labels = [p['method'] for p in payment_method_summary]
     payment_data = [float(p['total']) for p in payment_method_summary]
 

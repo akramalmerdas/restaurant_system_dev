@@ -41,6 +41,7 @@ class Staff(models.Model):
         ('chef', 'Chef'),
         ('waiter', 'Waiter'), 
         ('manager', 'Manager'),
+        ('admin', 'Admin'),
         ('cashier', 'Cashier'),
         ('cleaner', 'Cleaner'),
         ('barista', 'Barista'),
