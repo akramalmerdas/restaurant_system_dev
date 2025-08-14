@@ -140,6 +140,7 @@ document.getElementById('modal-notes-hidden').value = notes;
 //   });
 // }
 //////////////////////////////////////// confirm order waiter edition /////////////
+
 const confirmButton = document.getElementById('confirm-order-btn');
 if (confirmButton){
   
@@ -152,7 +153,7 @@ if (confirmButton){
                    method: 'POST',
                    headers: {
                        'Content-Type': 'application/json',
-                       'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token if required
+                       'X-CSRFToken': getCookie('csrftoken')  // Include CSRF token if required
                    },
                    body: JSON.stringify({ items: JSON.parse(sessionStorage.getItem('order')) })  // Fetch order from sessionStorage
                });

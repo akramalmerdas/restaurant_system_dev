@@ -28,19 +28,9 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # The SECRET_KEY is now loaded from an environment variable for security.
 # A default value is provided for development, but it's crucial to set a unique,
 # secret key in the production environment.
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-m^bxmvnm8-o8-6kmpsu1_zchz-#_=m=!j6)*370$t40tqvdijk')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG is set to False by default for production.
-# It can be enabled for development by setting the DEBUG environment variable to "True".
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
-
-
-# ALLOWED_HOSTS should be a list of strings representing the host/domain names
-# that this Django site can serve. This is a security measure to prevent
-# HTTP Host header attacks.
-# In production, this should be set to the actual domain of the site.
-ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',')
 
 
 # Application definition

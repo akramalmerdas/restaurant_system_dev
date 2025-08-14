@@ -16,7 +16,7 @@ class SecurityTests(TestCase):
         self.admin_member = Staff.objects.create(user=self.admin_user, role='admin')
 
         # Create a client
-        self.client = Client()
+        self.client = Client(enforce_csrf_checks=True)
 
         # Create an order for testing deletion
         self.table = Table.objects.create(number='T1')
