@@ -11,22 +11,36 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import os 
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env file
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-m^bxmvnm8-o8-6kmpsu1_zchz-#_=m=!j6)*370$t40tqvdijk'
+# The SECRET_KEY is now loaded from an environment variable for security.
+# A default value is provided for development, but it's crucial to set a unique,
+# secret key in the production environment.
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-m^bxmvnm8-o8-6kmpsu1_zchz-#_=m=!j6)*370$t40tqvdijk')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG is set to False by default for production.
+# It can be enabled for development by setting the DEBUG environment variable to "True".
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
-ALLOWED_HOSTS = ['192.168.1.149', '127.0.0.1', '192.168.1.146','localhost','192.168.1.150','0.0.0.0']
+
+# ALLOWED_HOSTS should be a list of strings representing the host/domain names
+# that this Django site can serve. This is a security measure to prevent
+# HTTP Host header attacks.
+# In production, this should be set to the actual domain of the site.
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
 
 # Application definition
@@ -97,19 +111,30 @@ TEMPLATES = [
 WSGI_APPLICATION = 'MochaCafe.wsgi.application'
 
 
+import sys
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# Database configuration is now loaded from environment variables for security.
+# In a production environment, these variables must be set.
 DATABASES = {
    'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mocha_db',
-        'USER': 'mocha',
-        'PASSWORD': 'Mocha@123R',  # whatever you set for the mocha user
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME', 'mocha_db'),
+        'USER': os.getenv('DB_USER', 'mocha'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'Mocha@123R'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
+
+# Use SQLite for testing
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 
 
 # Password validation
@@ -130,22 +155,21 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-SECURE_BROWSER_XSS_FILTER = True
+# This header is deprecated and no longer recommended by modern browsers.
+# Content Security Policy (CSP) is the recommended replacement.
+# SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
-# Check if we are running in production
-if not DEBUG:  # Production settings
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = 31536000
+# Security settings for production environments.
+# These are enabled when DEBUG is False.
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+
+if not DEBUG:  # Production-specific settings
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-else:  # Development settings
-    SECURE_SSL_REDIRECT = False  # Disable HTTPS redirect
-    SESSION_COOKIE_SECURE = False
-    CSRF_COOKIE_SECURE = False
 # Authentication settings
 LOGIN_URL = '/login/'  
 # Internationalization

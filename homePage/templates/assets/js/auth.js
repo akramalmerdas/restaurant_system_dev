@@ -1,3 +1,44 @@
+// Function to get the CSRF token from the cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
+// Add CSRF token to all AJAX requests that are not 'GET', 'HEAD', 'OPTIONS', 'TRACE'
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+// Override fetch to include the CSRF token
+const originalFetch = window.fetch;
+window.fetch = function (url, options) {
+    options = options || {};
+    // Only add the token for non-safe methods
+    if (!csrfSafeMethod(options.method)) {
+        options.headers = options.headers || {};
+        // Only add the token if it's not already present
+        if (!options.headers['X-CSRFToken']) {
+            options.headers['X-CSRFToken'] = csrftoken;
+        }
+    }
+    return originalFetch(url, options);
+};
+
+
 document.addEventListener('DOMContentLoaded', function() {
     initializeForms(); // Initialize all forms when the DOM is fully loaded
     
@@ -27,14 +68,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             password: formData.get('password')
                         }),
                         headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                            'Content-Type': 'application/json'
                         }
                     });
 
                     if (response.ok) {
-                
-                        window.location.href = data.redirect_url;
+                        // The server should redirect, but we can also do it client-side if needed
+                        window.location.href = '/admin_dashboard'; // Or wherever the user should go
                     } else {
                         const data = await response.json();
                         alert(data.message || 'Login failed. Please check your credentials.');
@@ -47,6 +87,80 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (loadingElement) {
                         loadingElement.style.display = 'none';
                     }
+                }
+            }
+        });
+    }
+
+    const signupForm = document.getElementById('signup-form');
+    if(signupForm) {
+        signupForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const formData = new FormData(this); // Create a FormData object from the form
+            const loadingElement = document.querySelector('.loading'); // Select the loading element
+
+            // Show the loading indicator
+            if (loadingElement) {
+                loadingElement.style.display = 'block'; // Show loading
+            }
+
+            // Validate the form
+            const isValid = validateForm(this); // Validate the form
+
+            if (isValid) {
+                const password = formData.get('password');
+                const confirmPassword = formData.get('confirm_password');
+
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match!');
+                    showError(document.querySelector('input[name="confirm_password"]'), 'Passwords do not match');
+                    if (loadingElement) {
+                        loadingElement.style.display = 'none'; // Hide loading
+                    }
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/signup/', { // Send data to the signup endpoint
+                        method: 'POST',
+                        body: JSON.stringify({
+                            name: formData.get('name'),
+                            email: formData.get('email'),
+                            phone_number: formData.get('phone_number'),
+                            address: formData.get('address'),
+                            password: password
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        alert(result.message);
+                        this.reset();
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 500); // Display success message
+                    } else {
+                        const error = await response.json();
+                        alert('Signup failed: ' + error.message); // Display error message
+                        showError(document.querySelector('input[name="email"]'), error.message); // Show error next to email input
+                    }
+                } catch (error) {
+                    console.error('Error during signup:', error);
+                    alert('An unexpected error occurred. Please try again.'); // Handle network or other errors
+                } finally {
+                    // Hide the loading indicator
+                    if (loadingElement) {
+                        loadingElement.style.display = 'none'; // Hide loading
+                    }
+                }
+            } else {
+                // Hide the loading indicator if validation fails
+                if (loadingElement) {
+                    loadingElement.style.display = 'none'; // Hide loading
                 }
             }
         });
@@ -76,14 +190,6 @@ function validateForm(form) {
             }
         }
     });
-    
-    const thisForm = form;
-    const loadingElement = thisForm.querySelector('.loading');
-    if (loadingElement) {
-        loadingElement.classList.remove('d-block'); // Hide loading element if it exists
-    } else {
-        console.warn('Loading element not found'); // Log a warning if the loading element is not found
-    }
     
     return isValid; // Return the overall validity of the form
 }
@@ -123,73 +229,3 @@ function initializeForms() {
         });
     });
 }
-
-document.getElementById('signup-form').addEventListener('submit', async function(event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    const formData = new FormData(this); // Create a FormData object from the form
-    const loadingElement = document.querySelector('.loading'); // Select the loading element
-
-    // Show the loading indicator
-    if (loadingElement) {
-        loadingElement.style.display = 'block'; // Show loading
-    }
-
-    // Validate the form
-    const isValid = validateForm(this); // Validate the form
-
-    if (isValid) {
-        const password = formData.get('password');
-        const confirmPassword = formData.get('confirm_password');
-        
-        if (password !== confirmPassword) {
-            alert('Passwords do not match!');
-            showError(document.querySelector('input[name="confirm_password"]'), 'Passwords do not match');
-            return;
-        }
-
-        try {
-            const response = await fetch('/signup/', { // Send data to the signup endpoint
-                method: 'POST',
-                body: JSON.stringify({
-                    name: formData.get('name'),
-                    email: formData.get('email'),
-                    phone_number: formData.get('phone_number'),
-                    address: formData.get('address'),
-                    password: password,
-                    confirmPassword: confirmPassword
-                }),
-                headers: {
-                    'Content-Type': 'application/json', // Set the content type to JSON
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value // Add CSRF token
-                }
-            });
-         
-            if (response.ok) {
-                const result = await response.json();
-                alert(result.message);
-                this.reset();
-                setTimeout(() => {
-          window.location.href = '/';
-               }, 500); // Display success message
-            } else {
-                const error = await response.json();
-                alert('Signup failed: ' + error.message); // Display error message
-                showError(document.querySelector('input[name="email"]'), error.message); // Show error next to email input
-            }
-        } catch (error) {
-            console.error('Error during signup:', error);
-            alert('An unexpected error occurred. Please try again.'); // Handle network or other errors
-        } finally {
-            // Hide the loading indicator
-            if (loadingElement) {
-                loadingElement.style.display = 'none'; // Hide loading
-            }
-        }
-    } else {
-        // Hide the loading indicator if validation fails
-        if (loadingElement) {
-            loadingElement.style.display = 'none'; // Hide loading
-        }
-    }
-});

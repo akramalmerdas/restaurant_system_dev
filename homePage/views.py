@@ -24,6 +24,8 @@ from django.db import transaction
 from django.core.paginator import Paginator
 
 from django.db.models.functions import Coalesce
+from .decorators import staff_member_required, admin_required
+
 
 @login_required
 def index(request):
@@ -251,7 +253,6 @@ def orderList(request):
 
 
 
-@csrf_exempt
 def addToOrder(request): 
     if request.method == "POST":
         # Parse incoming data
@@ -349,7 +350,6 @@ def delete_order_item(request, item_id):
 
 ######################### update order ######################################
 
-@csrf_exempt
 def updateOrderItem(request):
     if request.method == "POST":
         item_id = request.POST.get('item_id')
@@ -529,7 +529,6 @@ def emptyOrder(request):
 
 #     return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)
 #######################################submit order waiter edition #############################################
-@csrf_exempt
 @transaction.atomic # Use a transaction to ensure the whole order saves or none of it does
 def submitOrder(request):
     if request.method != "POST":
@@ -820,7 +819,7 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 ################################################ dashboard view 
-@login_required
+@staff_member_required
 def adminDashboard(request):
     # Fetch all tables
     tables = Table.objects.all().order_by('id')
@@ -872,7 +871,6 @@ def customer_home(request):
 
 
 ############################ customer signup ########################################
-@csrf_exempt
 def signup(request):
 
     if request.method == 'POST':
@@ -942,7 +940,7 @@ def customerProfile(request):
     return render(request, 'customer_profile.html', {'customer': customer, 'orders': orders})
 
 ############################################## delete orders ########################################
-@login_required
+@staff_member_required
 def deleteOrder(request, order_id):
     if request.method == 'POST':
         try:
@@ -979,6 +977,7 @@ def deleteOrder(request, order_id):
 
 
 ############################################ update order statues ######################################
+@staff_member_required
 def update_order_status(request, order_id):
     if request.method == "POST":
         try:
@@ -1014,7 +1013,7 @@ def update_order_status(request, order_id):
         return JsonResponse({"success": False, "error": "Invalid request method."})
     
 ############################### cancel order view ###################################################
-@login_required
+@staff_member_required
 def cancelled_orders(request):
     print('here we enterd tj view ')
     # Get filter parameters
@@ -1075,6 +1074,7 @@ def cancelled_orders(request):
     
     ################################### print order view ######################################
 
+@staff_member_required
 def print_order_view(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     csrf_token = get_token(request)
@@ -1179,7 +1179,7 @@ def print_order_view(request, order_id):
 #   else: 
 #     return JsonResponse({"success": False, "message": "Invalid request method."}, status=400)
 
-@login_required
+@staff_member_required
 @transaction.atomic
 def generate_invoice_by_table(request):
     if request.method != 'POST':
@@ -1265,6 +1265,7 @@ def generate_invoice_by_table(request):
 
 
 
+@staff_member_required
 @transaction.atomic
 def generateInvoiceByItem(request):
     
@@ -1337,7 +1338,7 @@ def generateInvoiceByItem(request):
         return JsonResponse({"success": False, "message": str(e)}, status=500)
 
 
-@login_required
+@staff_member_required
 def invoice_dashboard(request):
     if request.method != "GET":
         return JsonResponse({
@@ -1408,7 +1409,7 @@ def invoice_dashboard(request):
     except Exception as e:
         return JsonResponse({"success": False, "message": f"An error occurred: {str(e)}"}, status=500)
 
-@login_required
+@staff_member_required
 def view_invoice(request, invoice_id):
     """
     Fetches an invoice and all its related orders, items, and extras efficiently
@@ -1431,7 +1432,7 @@ def view_invoice(request, invoice_id):
     
     return render(request, 'invoice.html', context)
 
-@login_required
+@staff_member_required
 def view_invoiceA4(request, invoice_id):
     """
     Fetches an invoice, then groups its items by type and extras,
@@ -1480,7 +1481,7 @@ def view_invoiceA4(request, invoice_id):
 
     
 @require_http_methods(["POST"])
-@login_required
+@staff_member_required
 def process_payment(request, invoice_id):
     """
     API endpoint to process a payment for a given invoice.
@@ -1567,8 +1568,7 @@ def process_payment(request, invoice_id):
         return JsonResponse({"success": False, "error": f"An unexpected error occurred: {str(e)}"}, status=500)
 
 
-@csrf_exempt
-@login_required
+@staff_member_required
 def mark_unpaid(request):
     if request.method == 'POST':
         try:
@@ -1607,7 +1607,7 @@ def mark_unpaid(request):
     return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
 @require_http_methods(["POST"])
-@login_required
+@staff_member_required
 def update_invoice_status(request, invoice_id):
     try:
         data = json.loads(request.body)
@@ -1647,6 +1647,7 @@ def update_invoice_status(request, invoice_id):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
+@staff_member_required
 def print_invoice_view(request, invoice_id):
     """
     Fetches an invoice, then groups its items by type and extras,
@@ -1695,14 +1696,8 @@ def print_invoice_view(request, invoice_id):
     return render(request, 'print_invoice.html', context)
 
 
-@login_required
+@admin_required
 def sales_report(request):
-    try:
-        staff = Staff.objects.get(user=request.user)
-        if staff.role.lower() != "admin":  # Adjust role check if needed
-            return HttpResponseForbidden("You are not authorized to view this page.")
-    except Staff.DoesNotExist:
-        return HttpResponseForbidden("You are not authorized to view this page.")
 
     # --- Date setup ---
     today = timezone.now().date()
@@ -1779,7 +1774,7 @@ def sales_report(request):
 
 
 
-@login_required
+@admin_required
 def payment_report(request):
     """
     Provides a detailed report of invoices with payment methods broken down
@@ -1874,7 +1869,7 @@ def payment_report(request):
 
     return render(request, "payment_report.html", context)
 ############################# waiter report ##############################################
-@login_required
+@admin_required
 def staff_report(request):
     # Default date range to the current month
     today = timezone.now().date()
@@ -1938,7 +1933,7 @@ def staff_report(request):
 
     return render(request, 'staff_report.html', context)
 
-@login_required
+@staff_member_required
 def table_dashboard(request):
     """View for managing restaurant tables"""
     if request.method == "POST":
@@ -1979,7 +1974,7 @@ def tableLanding(request):
     return render(request, 'tables_landing_page.html', {'tables_json': tables_json})
 
  ################################change table ########################################################   
-@login_required
+@staff_member_required
 def update_table_status(request, table_id):
     """Update table status via AJAX"""
     if request.method == "POST":
@@ -1994,7 +1989,7 @@ def update_table_status(request, table_id):
             pass
     return JsonResponse({'status': 'error'}, status=400)
 
-@login_required
+@staff_member_required
 def delete_table(request, table_id):
     """Delete a table"""
     if request.method == "POST":
@@ -2006,7 +2001,7 @@ def delete_table(request, table_id):
             pass
     return JsonResponse({'status': 'error'}, status=400)
 
-@login_required
+@staff_member_required
 def edit_table(request, table_id):
     if request.method == 'POST':
         try:
@@ -2031,7 +2026,7 @@ def edit_table(request, table_id):
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
     return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
 
-@login_required
+@staff_member_required
 def get_table_history(request, table_id):
     print('here we entered the table history view ')
     try:
@@ -2057,6 +2052,7 @@ def get_table_history(request, table_id):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 ############################## grt order by table waiter edition ########################
+@staff_member_required
 def getOrderByTable(request, table_id):
     """
     This view fetches all uninvoiced orders for a specific table,
@@ -2147,8 +2143,7 @@ def getOrderByTable(request, table_id):
 
 
 ######################### move order to another table #########################
-@login_required
-
+@staff_member_required
 def moveTable(request):
     print('we enterd the move table function')
     if request.method != 'POST':
