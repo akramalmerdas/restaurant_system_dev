@@ -50,3 +50,5 @@ htmlcov/
 __pycache__/
 *.pyc
 run_server.bat
+.env
+
