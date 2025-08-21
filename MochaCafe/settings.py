@@ -29,8 +29,8 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # A default value is provided for development, but it's crucial to set a unique,
 # secret key in the production environment.
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
-DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
-ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',')
+DEBUG = True
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     'notifications',
     'django_extensions',
     'channels',
-   
     # Third-party apps
     'crispy_forms',
     'crispy_bootstrap5',
@@ -91,7 +90,7 @@ ROOT_URLCONF = 'MochaCafe.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -177,7 +176,6 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'homePage','templates', 'assets'),
-    os.path.join(BASE_DIR, 'item', 'templates','static'),
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')

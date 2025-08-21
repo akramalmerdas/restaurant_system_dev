@@ -7,16 +7,15 @@ from reservations.models import Table
 def index(request):
     # Fetch table_id from the query parameter
     table_number = request.GET.get('table_id')
-    # table = None
+    table = None
 
     # If table_id is provided, fetch the table object
     if table_number:
         try:
-
+            table = Table.objects.get(number=table_number)
             request.session['table_number'] = table_number
-
         except Table.DoesNotExist:
-            table_number = None  # Handle invalid table_id gracefully
+            table = None  # Handle invalid table_id gracefully
 
     # Fetch menu items as usual
     lunchItems = Item.objects.filter(category__id=3)
@@ -51,6 +50,6 @@ def index(request):
         'sandwiches': sandwiches,
         'pots': pots,
         'bowls': bowls,
-        'user': user
-      #  'table': table,  # Include the table in the context
+        'user': user,
+        'table': table,
     })

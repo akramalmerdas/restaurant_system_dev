@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Staff Model
 class Staff(models.Model):
     ROLE_CHOICES = [
         ('chef', 'Chef'),
@@ -13,23 +12,21 @@ class Staff(models.Model):
         ('barista', 'Barista'),
     ]
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)  # Link to the User model
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=50, choices=ROLE_CHOICES)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     hire_date = models.DateField(auto_now_add=True)
     salary = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     loan = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    is_active = models.BooleanField(default=True)  # Track employment status
+    is_active = models.BooleanField(default=True)
     inHold = models.BooleanField(default=False)
 
     def __str__(self):
         full_name = self.user.get_full_name()
         return f"{full_name or self.user.username} - {self.role.capitalize()}"
 
-
-# Customer Model
 class Customer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)  # Link to the User model
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     address = models.TextField(null=True, blank=True)
     phone_number = models.CharField(max_length=20)
     loyalty_points = models.IntegerField(default=0)
