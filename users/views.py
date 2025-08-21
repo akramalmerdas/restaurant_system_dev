@@ -9,13 +9,14 @@ from .models import Customer, Staff
 from orders.models import Order
 
 def login_view(request):
+    print('Login view reached')
     if request.method == "POST":
         try:
-            username = request.POST.get('email') or json.loads(request.body).get('email')
+            username = request.POST.get('username') or json.loads(request.body).get('username')
             password = request.POST.get('password') or json.loads(request.body).get('password')
             username = username.strip()
             if not username or not password:
-                messages.error(request, "Both email and password are required.")
+                messages.error(request, "Both username and password are required.")
                 return render(request, 'login.html')
             user = authenticate(request, username=username, password=password)
             if user is not None:
@@ -30,7 +31,7 @@ def login_view(request):
                 else:
                     return redirect('core:index')
             else:
-                messages.error(request, "Invalid email or password.")
+                messages.error(request, "Invalid username or password.")
                 return render(request, 'login.html')
         except json.JSONDecodeError:
             messages.error(request, "Invalid request format.")
