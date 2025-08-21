@@ -156,7 +156,7 @@ if not DEBUG:  # Production-specific settings
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 # Authentication settings
-LOGIN_URL = '/login/'  
+LOGIN_URL = '/users/login/'
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
