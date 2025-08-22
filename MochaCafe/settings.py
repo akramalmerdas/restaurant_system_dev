@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'inventory',
     'reports',
     'notifications',
+   
     'django_extensions',
     'channels',
     # Third-party apps
