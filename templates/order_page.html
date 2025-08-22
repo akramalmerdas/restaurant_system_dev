@@ -40,13 +40,13 @@
                     <li><a class="nav-link scrollto" href="/#menu">Menu</a></li>
                     {% if user.is_authenticated %}
                         {% if user.staff %}
-                            <li><a class="nav-link scrollto" href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+                            <li><a class="nav-link scrollto" href="{% url 'orders:admin_dashboard' %}">Dashboard</a></li>
                         {% elif user.customer %}
-                            <li><a class="nav-link scrollto" href="{% url 'customer_profile' %}">Profile</a></li>
+                            <li><a class="nav-link scrollto" href="{% url 'users:customer_profile' %}">Profile</a></li>
                         {% endif %}
-                        <li><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+                         <li><a class="nav-link" href="{% url 'users:logout' %}">Logout</a></li>
                     {% else %}
-                        <li><a class="nav-link scrollto" href="{% url 'login' %}">Login</a></li>
+                         <li><a class="nav-link scrollto" href="{% url 'users:login' %}">Login</a></li>
                     {% endif %}
                 </ul>
             </nav>
