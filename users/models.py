@@ -12,7 +12,7 @@ class Staff(models.Model):
         ('barista', 'Barista'),
     ]
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, related_name='new_staff_profile', on_delete=models.CASCADE)
     role = models.CharField(max_length=50, choices=ROLE_CHOICES)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     hire_date = models.DateField(auto_now_add=True)
@@ -26,7 +26,7 @@ class Staff(models.Model):
         return f"{full_name or self.user.username} - {self.role.capitalize()}"
 
 class Customer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, related_name='new_customer_profile', on_delete=models.CASCADE)
     address = models.TextField(null=True, blank=True)
     phone_number = models.CharField(max_length=20)
     loyalty_points = models.IntegerField(default=0)

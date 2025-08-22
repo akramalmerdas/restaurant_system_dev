@@ -14,7 +14,7 @@ class Invoice(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_by = models.ForeignKey(User, related_name='new_invoices_created', on_delete=models.SET_NULL, null=True)
     is_paid = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=INVOICE_STATUS_CHOICES, default="pending")
     inHold = models.BooleanField(default=False)
@@ -65,7 +65,7 @@ class Payment(models.Model):
     transaction_id = models.CharField(max_length=100, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    processed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    processed_by = models.ForeignKey(User, related_name='new_payments_processed', on_delete=models.SET_NULL, null=True)
     inHold = models.BooleanField(default=False)
 
     class Meta:
@@ -85,6 +85,6 @@ class Payment(models.Model):
 
 class UnpaidReasonLog(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(User, related_name='new_unpaid_logs', on_delete=models.SET_NULL, null=True)
     reason = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
