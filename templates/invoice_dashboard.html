@@ -65,9 +65,9 @@
                     <li><a class="nav-link" href="/">Home</a></li>
                     <li><a class="nav-link" href="/#menu">Menu</a></li>
                     {% if user.is_authenticated %}
-                        <li><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+                        <li><a class="nav-link" href="{% url 'users:logout' %}">Logout</a></li>
                     {% else %}
-                        <li><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                        <li><a class="nav-link" href="{% url 'users:login' %}">Login</a></li>
                     {% endif %}
                 </ul>
             </nav>
@@ -85,7 +85,7 @@
                         <p class="text-muted">Manage and track all invoices</p>
                     </div>
                     <div>
-                        <a href="/admin_dashboard/" class="btn btn-home me-2">
+                        <a href="{% url 'orders:admin_dashboard' %}" class="btn btn-home me-2">
                             <i class="bi bi-speedometer2"></i> Admin Dashboard
                         </a>
                         <a href="/" class="btn btn-home">
@@ -144,7 +144,7 @@
                                     <button type="submit" class="btn btn-primary">
                                         <i class="bi bi-funnel"></i> Apply Filters
                                     </button>
-                                    <a href="{% url 'invoice_dashboard' %}" class="btn btn-outline-secondary">
+                                    <a href="{% url 'payments:invoice_dashboard' %}" class="btn btn-outline-secondary">
                                         <i class="bi bi-arrow-counterclockwise"></i> Reset
                                     </a>
                                 </div>
@@ -189,7 +189,7 @@
                                     </td>
                                     <td>
                                         <div class="action-buttons">
-                                            <a href="{% url 'view_invoice_A4' invoice.id %}" class="btn btn-action btn-view">
+                                            <a href="{% url 'payments:view_invoice_A4' invoice.id %}" class="btn btn-action btn-view">
                                                 <i class="bi bi-eye"></i> View
                                             </a>
                                             <a href="#" class="btn btn-action btn-print" data-invoice-id="{{ invoice.id }}">

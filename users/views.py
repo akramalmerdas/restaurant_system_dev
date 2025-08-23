@@ -21,18 +21,14 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                
                 if hasattr(user, 'staff'):
                     staff = Staff.objects.get(user=user)
-                    if not staff.inHold:
+                    if staff.is_active and not staff.inHold:
                         if staff.role == 'waiter':
-                          
                             return redirect('reservations:table_landing_page')
                         else:
-                           
                             return redirect('orders:admin_dashboard')
                 else:
-                    print('this is the unsigned user')
                     return redirect('core:index')
             else:
                 messages.error(request, "Invalid username or password.")
