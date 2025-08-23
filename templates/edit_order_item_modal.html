@@ -66,7 +66,7 @@
 <div class="modal fade" id="editOrderItemModal" tabindex="-1" aria-labelledby="editOrderItemModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form id="edit-order-item-form" method="POST" action="{% url 'update_order_item' %}">
+      <form id="edit-order-item-form" method="POST" action="{% url 'orders:update_order_item' %}">
         {% csrf_token %}
         <div class="modal-header">
        
