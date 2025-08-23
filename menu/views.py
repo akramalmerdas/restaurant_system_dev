@@ -41,7 +41,7 @@ class ItemCreateView(StaffRequiredMixin, CreateView):
     model = Item
     form_class = ItemForm
     template_name = 'item/item_form.html'
-    success_url = reverse_lazy('item:item_dashboard')
+    success_url = reverse_lazy('menu:item_dashboard')
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -58,7 +58,7 @@ class ItemUpdateView(StaffRequiredMixin, UpdateView):
     model = Item
     form_class = ItemForm
     template_name = 'item/item_form.html'
-    success_url = reverse_lazy('item:item_dashboard')
+    success_url = reverse_lazy('menu:item_dashboard')
     context_object_name = 'item'
 
     def get_context_data(self, **kwargs):
@@ -76,7 +76,7 @@ def item_delete_view(request, pk):
         item.inHold = True
         item.save()
         messages.success(request, f'Item "{item.name}" has been deleted successfully.')
-        return redirect(reverse('item:item_dashboard'))
+        return redirect(reverse('menu:item_dashboard'))
 
     # Render a confirmation page for GET requests
     return render(request, 'item/item_confirm_delete.html', {'item': item})

@@ -5,7 +5,7 @@ from django.utils.timezone import now
 import django
 
 django.setup()
-from item.models import Order, OrderStatus
+from orders.models import Order, OrderStatus
 
 from escpos.printer import Usb
 

@@ -11,11 +11,11 @@ def staff_member_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
         if not request.user.is_authenticated:
             messages.warning(request, "You need to log in to access this page.")
-            return redirect('login')
+            return redirect('users:login')
 
         if not hasattr(request.user, 'staff'):
             messages.error(request, "You are not authorized to access this page.")
-            return redirect('index') # Or a custom 'unauthorized' page
+            return redirect('core:index') # Or a custom 'unauthorized' page
 
         return view_func(request, *args, **kwargs)
     return _wrapped_view
@@ -28,16 +28,16 @@ def admin_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
         if not request.user.is_authenticated:
             messages.warning(request, "You need to log in to access this page.")
-            return redirect('login')
+            return redirect('users:login')
 
         if not hasattr(request.user, 'staff'):
             messages.error(request, "You are not authorized to access this page.")
-            return redirect('index')
+            return redirect('core:index')
 
         staff = request.user.staff
         if staff.role.lower() not in ['admin', 'manager']:
             messages.error(request, "You do not have the required permissions to access this page.")
-            return redirect('admin_dashboard') # Redirect to a safe page for staff
+            return redirect('orders:admin_dashboard') # Redirect to a safe page for staff
 
         return view_func(request, *args, **kwargs)
     return _wrapped_view
@@ -54,5 +54,5 @@ class StaffRequiredMixin(AccessMixin):
             return self.handle_no_permission()
         if not hasattr(request.user, 'staff'):
             messages.error(request, "You are not authorized to access this page.")
-            return redirect('index')
+            return redirect('core:index')
         return super().dispatch(request, *args, **kwargs)

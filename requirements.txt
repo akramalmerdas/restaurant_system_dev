@@ -72,3 +72,4 @@ urllib3==2.3.0
 zope.interface==7.2
 python-dotenv==1.1.1
 psycopg2-binary==2.9.10
+whitenoise==6.7.0
