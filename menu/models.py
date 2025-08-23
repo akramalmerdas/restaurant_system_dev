@@ -19,7 +19,7 @@ class Item(models.Model):
     availability = models.CharField(default='All Week', max_length=100)
     inHold = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now, null=True, blank=True)
-    created_by = models.ForeignKey(User, related_name='new_menu_items', on_delete=models.CASCADE, default=1)
+    created_by = models.ForeignKey(User, related_name='items', on_delete=models.CASCADE, default=1)
     extras = models.ManyToManyField('Extra', blank=True, related_name='items')
 
     def __str__(self):

@@ -98,37 +98,37 @@
                         </div>
                         <ul class="nav flex-column">
                             <li class="nav-item">
-                                <a class="nav-link text-white" href="/admin_dashboard/">
+                                <a class="nav-link text-white" href="{% url 'orders:admin_dashboard' %}">
                                     <i class="bi bi-speedometer2"></i>
                                     Dashboard
                                 </a>
                             </li>
                                 <li class="nav-item">
-                               <a href="/invoices/" class="nav-link text-white">
+                               <a href="{% url 'payments:invoice_dashboard' %}" class="nav-link text-white">
                                 <i class="bi bi-box-arrow-right"></i> Manage Invoices
                             </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white" href="{% url 'cancelled_orders' %}">
+                                <a class="nav-link text-white" href="{% url 'orders:cancelled_orders' %}">
                                     <i class="bi bi-trash"></i>
                                     Cancelled Orders
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white" href="/tables/">
+                                <a class="nav-link text-white" href="{% url 'reservations:table_dashboard' %}">
                                     <i class="bi bi-table"></i>
                                     Tables
                                 </a>
                             </li>
                           {% if request.user.is_authenticated and request.user.staff.role == "admin" %}
 <li class="nav-item">
-    <a class="nav-link text-white" href="/sales_report/">
+    <a class="nav-link text-white" href="{% url 'reports:sales_report' %}">
         <i class="bi bi-graph-up"></i>
         Sales Reports
     </a>
 </li>
  <li class="nav-item">
-                                <a class="nav-link text-white" href="/staff_report/">
+                                <a class="nav-link text-white" href="{% url 'reports:staff_report' %}">
                                     <i class="bi bi-graph-up"></i>
                                     Staff Reports
                                 </a>
@@ -149,7 +149,7 @@
 {% endif %}
                            
                             <li class="nav-item">
-                                <a class="nav-link text-white" href="/table_landing/" target="_blank">
+                                <a class="nav-link text-white" href="{% url 'reservations:table_landing_page' %}" target="_blank">
                                     <i class="bi bi-box"></i>
                                     Menu Items
                                 </a>
@@ -160,12 +160,12 @@
                             </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/item_dashboard/" class="nav-link text-white">
+                                <a href="{% url 'menu:item_dashboard' %}" class="nav-link text-white">
                                  <i class="bi bi-box-arrow-right"></i>Item Dashboard
                              </a>
                              </li>
                             <li class="nav-item mt-4">
-                                <a class="nav-link text-white" href="{% url 'logout' %}">
+                                <a class="nav-link text-white" href="{% url 'users:logout' %}">
                                     <i class="bi bi-box-arrow-right"></i>
                                     Logout
                                 </a>
@@ -337,7 +337,7 @@
                                 </div>
                                 <div class="card-body">
                                     <p class="text-muted">Manage staff roles, permissions, and account details.</p>
-                                    <a href="/manage_staff/" class="btn btn-action btn-view w-100">
+                                    <a href="#" class="btn btn-action btn-view w-100">
                                         <i class="bi bi-person-gear"></i> Manage Staff
                                     </a>
                                 </div>
@@ -350,7 +350,7 @@
                                 </div>
                                 <div class="card-body">
                                     <p class="text-muted">View sales analytics, customer insights, and generate reports.</p>
-                                    <a href="/sales_report/" class="btn btn-action btn-view w-100">
+                                    <a href="{% url 'reports:sales_report' %}" class="btn btn-action btn-view w-100">
                                         <i class="bi bi-file-earmark-text"></i> View Reports
                                     </a>
                                 </div>
@@ -363,7 +363,7 @@
                                 </div>
                                 <div class="card-body">
                                     <p class="text-muted">Configure system settings, notifications, and preferences.</p>
-                                    <a href="/settings/" class="btn btn-action btn-view w-100">
+                                    <a href="#" class="btn btn-action btn-view w-100">
                                         <i class="bi bi-sliders"></i> Settings
                                     </a>
                                 </div>

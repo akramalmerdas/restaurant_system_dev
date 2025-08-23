@@ -36,7 +36,7 @@ class Order(models.Model):
     inHold = models.BooleanField(default=False)
     table = models.ForeignKey('reservations.Table', on_delete=models.SET_NULL, null=True, blank=True)
     table_number = models.CharField(default='Take Away', max_length=50)
-    deleted_by = models.ForeignKey(User, related_name='new_deleted_orders', on_delete=models.SET_NULL, null=True, blank=True)
+    deleted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     deleted_reason = models.TextField(null=True, blank=True)
     waiter = models.ForeignKey('users.Staff', on_delete=models.SET_NULL, null=True, blank=True, related_name='orders_taken')
     display_id = models.CharField(max_length=20, blank=True, null=True)
