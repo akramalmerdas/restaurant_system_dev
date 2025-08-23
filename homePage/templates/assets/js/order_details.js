@@ -149,7 +149,8 @@ if (confirmButton){
         try {
           //    await printOrder();  
        
-               const response = await fetch('/submit_order/', {
+               const submitUrl = document.getElementById('confirm-order-btn').dataset.submitUrl;
+               const response = await fetch(submitUrl, {
                    method: 'POST',
                    headers: {
                        'Content-Type': 'application/json',

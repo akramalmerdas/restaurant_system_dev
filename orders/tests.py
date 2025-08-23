@@ -2,6 +2,7 @@ import json
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
+from bs4 import BeautifulSoup
 from menu.models import Item, Category
 from orders.models import Order, OrderItem, OrderStatus
 from reservations.models import Table
@@ -36,9 +37,9 @@ class OrderCRUDTests(TestCase):
 
     def test_submit_order_view(self):
         """
-        Test submitting an order from the session.
+        Test submitting an order from the session by simulating a user journey.
         """
-        # First, add an item to the order session
+        # 1. Add an item to the order session
         add_to_order_data = {
             'item_id': self.item.id,
             'quantity': 1,
@@ -47,17 +48,26 @@ class OrderCRUDTests(TestCase):
         }
         self.client.post(reverse('orders:add_to_order'), json.dumps(add_to_order_data), content_type='application/json')
 
-        # Set table number in session, as submitOrder view requires it
+        # 2. Get the order page to extract the submit URL
+        response = self.client.get(reverse('orders:orderDetails'))
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        submit_button = soup.find('a', {'id': 'confirm-order-btn'})
+        self.assertIsNotNone(submit_button)
+        submit_url = submit_button['data-submit-url']
+        self.assertEqual(submit_url, reverse('orders:submit_order'))
+
+        # 3. Set table number in session, as submitOrder view requires it
         session = self.client.session
         session['table_number'] = self.table.number
         session.save()
 
-        # Now, submit the order
-        response = self.client.post(reverse('orders:submit_order'))
+        # 4. Post to the extracted URL to submit the order
+        response = self.client.post(submit_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['status'], 'success')
 
-        # Check that the order was created in the database
+        # 5. Check that the order was created in the database
         self.assertTrue(Order.objects.exists())
         order = Order.objects.first()
         self.assertEqual(order.orderitem_set.count(), 1)
