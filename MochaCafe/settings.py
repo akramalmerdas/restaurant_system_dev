@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     'inventory',
     'reports',
     'notifications',
-   
     'django_extensions',
     'channels',
     # Third-party apps
@@ -115,27 +114,11 @@ import sys
 # Database configuration is now loaded from environment variables for security.
 # In a production environment, these variables must be set.
 DATABASES = {
-   'default': {
-         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ['DB_NAME'],
-        'USER': os.environ['DB_USER'],
-        'PASSWORD': os.environ['DB_PASSWORD'],
-        'HOST': os.environ['DB_HOST'],
-        'PORT': os.environ['DB_PORT'],
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-# Use SQLite for testing
-if 'test' in sys.argv:
-  DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ['DB_NAME'],
-        'USER': os.environ['DB_USER'],
-        'PASSWORD': os.environ['DB_PASSWORD'],
-        'HOST': os.environ['DB_HOST'],
-        'PORT': os.environ['DB_PORT'],
-    }
-
 
 
 
