@@ -9,6 +9,8 @@ from users.models import Staff
 from core.decorators import admin_required
 from django.db.models.functions import Coalesce
 from django.core.paginator import Paginator
+from django.db.models import OuterRef
+
 
 @admin_required
 def sales_report(request):
