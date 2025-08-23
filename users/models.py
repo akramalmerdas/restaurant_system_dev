@@ -12,7 +12,7 @@ class Staff(models.Model):
         ('barista', 'Barista'),
     ]
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE,related_name='staff')
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=50, choices=ROLE_CHOICES)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     hire_date = models.DateField(auto_now_add=True)

@@ -43,9 +43,9 @@
                     <li><a class="nav-link" href="/">Home</a></li>
                     <li><a class="nav-link" href="/#menu">Menu</a></li>
                     {% if user.is_authenticated %}
-                        <li><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+                        <li><a class="nav-link" href="{% url 'users:logout' %}">Logout</a></li>
                     {% else %}
-                        <li><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                        <li><a class="nav-link" href="{% url 'users:login' %}">Login</a></li>
                     {% endif %}
                 </ul>
             </nav>
@@ -61,7 +61,7 @@
                         <p class="text-muted">Manage restaurant tables and seating</p>
                     </div>
                     <div>
-                        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary me-2">
+                        <a href="{% url 'orders:admin_dashboard' %}" class="btn btn-secondary me-2">
                             <i class="bi bi-speedometer2"></i> Admin Dashboard
                         </a>
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTableModal">
@@ -147,7 +147,10 @@
                             </thead>
                             <tbody>
                                 {% for table in tables %}
-                                <tr data-table-id="{{ table.id }}">
+                                <tr data-table-id="{{ table.id }}"
+                                    data-edit-url-template="{% url 'reservations:edit_table' 0 %}"
+                                    data-history-url-template="{% url 'reservations:get_table_history' 0 %}"
+                                    data-delete-url-template="{% url 'reservations:delete_table' 0 %}">
                                     <td class="fw-bold table-number">{{ table.number }}</td>
                                     <td>{{ table.capacity }} persons</td>
                                     <td>
@@ -160,7 +163,7 @@
                                     </td>
                                     <td>
                                         {% if table.current_order %}
-                                            <a href="{% url 'order_view' table.current_order.id %}">#{{ table.current_order.id }}</a>
+                                            <a href="{% url 'orders:orderView' table.current_order.id %}">#{{ table.current_order.id }}</a>
                                         {% else %}
                                             -
                                         {% endif %}
@@ -300,8 +303,10 @@
             const form = document.getElementById('editTableForm');
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; 
-            fetch(`/tables/${tableId}/edit/`, {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const urlTemplate = document.querySelector(`tr[data-table-id="${tableId}"]`).dataset.editUrlTemplate;
+            const url = urlTemplate.replace('0', tableId);
+            fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -333,7 +338,9 @@
         }
 
         function viewTableHistory(tableId) {
-            fetch(`/tables/${tableId}/history/`)
+            const urlTemplate = document.querySelector(`tr[data-table-id="${tableId}"]`).dataset.historyUrlTemplate;
+            const url = urlTemplate.replace('0', tableId);
+            fetch(url)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -403,8 +410,10 @@
 
         function deleteTable(tableId) {
             if (confirm('Are you sure you want to delete this table?')) {
-                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; 
-                fetch(`/tables/${tableId}/delete/`, {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const urlTemplate = document.querySelector(`tr[data-table-id="${tableId}"]`).dataset.deleteUrlTemplate;
+                const url = urlTemplate.replace('0', tableId);
+                fetch(url, {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': csrfToken
