@@ -23,7 +23,7 @@
                     <li><a href="/#menu">Menu</a></li>
                     <li><a href="/profile">Profile</a></li>
                     <li><a href="/logout">Logout</a></li>
-                    <li><a href="/admin_dashboard/" onclick="window.location.reload(true)">Dashboard</a></li>
+                    <li><a href="{% url 'orders:admin_dashboard' %}" onclick="window.location.reload(true)">Dashboard</a></li>
                 </ul>
             </nav>
         </div>

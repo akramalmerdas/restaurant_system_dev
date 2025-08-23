@@ -886,7 +886,7 @@
 
   </main><!-- End #main -->
 {% if request.session.order and request.session.order|length > 0 %}
-<a href="{% url 'orderDetails' %}" class="floating-cart-btn" title="View Cart">
+<a href=" {% url 'orders:orderDetails' %}" class="floating-cart-btn" title="View Cart">
   <i class="bi bi-cart"></i>
   <span class="cart-badge">{{ request.session.order|length }}</span>
 </a>
@@ -974,7 +974,7 @@ async function addItemToOrder(itemId, addToOrderUrl) {
         // Get the CSRF token from the cookie (a helper function is recommended).
         const csrfToken = getCookie('csrftoken'); 
 
-        const response = await fetch('/add_to_order/', {
+        const response = await fetch('/orders/add_to_order/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

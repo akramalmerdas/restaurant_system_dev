@@ -127,7 +127,7 @@ function generateTables() {
 
 function setTableNumber(tableNumber) {
     const buttons = document.querySelectorAll('.btn-order');
-
+    console.log('here we enterd the set tables function');
     buttons.forEach(btn => {
         if (btn.innerHTML.includes(`Table ${tableNumber}`)) {
             btn.disabled = true;
@@ -143,7 +143,7 @@ function setTableNumber(tableNumber) {
         formData.append('csrfmiddlewaretoken', csrfToken);
     }
 
-    fetch('/set_table/', {
+    fetch('/reservations/set_table/', {
         method: 'POST',
         body: formData,
         headers: {
