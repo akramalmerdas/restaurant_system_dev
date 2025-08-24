@@ -41,7 +41,7 @@ window.fetch = function (url, options) {
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeForms(); // Initialize all forms when the DOM is fully loaded
-    
+
     // Add login form event listener
     const loginForm = document.querySelector('.login-form');
     if (loginForm) {
@@ -169,41 +169,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function validateForm(form) {
     let isValid = true;
-    
+
     // Get all required inputs
     const requiredInputs = form.querySelectorAll('[required]');
-    
+
     requiredInputs.forEach(input => {
         if (!input.value.trim()) { // Check if the input is empty
             isValid = false; // Set isValid to false if any required field is empty
             showError(input, 'This field is required'); // Show an error message
         } else {
             removeError(input); // If the input is filled, remove any existing error message
-            
+
             // Additional validation for email
             if (input.type === 'email') {
                 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regular expression for validating email
                 if (!emailPattern.test(input.value)) { // Test the input value against the email pattern
                     isValid = false; // Set isValid to false if the email format is invalid
                     showError(input, 'Please enter a valid email address'); // Show an error message
-                }   
+                }
             }
         }
     });
-    
+
     return isValid; // Return the overall validity of the form
 }
 
 function showError(input, message) {
     const formGroup = input.closest('.form-group');
     let errorDiv = formGroup.querySelector('.error-message');
-    
+
     if (!errorDiv) {
         errorDiv = document.createElement('div');
         errorDiv.className = 'error-message text-danger mt-1';
         formGroup.appendChild(errorDiv);
     }
-    
+
     errorDiv.textContent = message;
     input.classList.add('is-invalid');
 }
@@ -211,7 +211,7 @@ function showError(input, message) {
 function removeError(input) {
     const formGroup = input.closest('.form-group');
     const errorDiv = formGroup.querySelector('.error-message');
-    
+
     if (errorDiv) {
         errorDiv.remove();
     }
@@ -220,7 +220,7 @@ function removeError(input) {
 
 function initializeForms() {
     const forms = document.querySelectorAll('form'); // Select all forms on the page
-    
+
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
             if (!validateForm(form)) { // Validate the form before submission

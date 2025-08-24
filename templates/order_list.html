@@ -34,7 +34,7 @@
         </ul>
 
                 <!-- Button to go to the order detail page -->
-                <a href="{% url 'orderView' order.id %}" class="btn btn-primary">View Details</a>
+                <a href="{% url 'orders:orderView' order.id %}" class="btn btn-primary">View Details</a>
             </li>
         {% endfor %}
     </ul>

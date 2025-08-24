@@ -362,7 +362,7 @@
   <main id="main">
     <section class="meal-container">
       <div class="container">
-        <a href="{% url 'index' %}" class="back-link">
+        <a href="{% url 'core:index' %}" class="back-link">
           <i class="bi bi-arrow-left"></i> Back to Menu
         </a>
         
@@ -386,7 +386,7 @@
                   <div class="meal-details">
                     <nav aria-label="breadcrumb">
                       <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Menu</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'core:index' %}">Menu</a></li>
                         <li class="breadcrumb-item active">{{ item.name }}</li>
                       </ol>
                     </nav>
@@ -425,7 +425,7 @@
                             <h3 id="totalPrice">{{ item.price }} RWF</h3>
                           </div>
                           <button id="addButton" class="btn btn-primary" 
-                            data-url="{% url 'add_to_order' %}" 
+                            data-url="{% url 'orders:add_to_order' %}"
                             data-item-id="{{ item.id }}">
                             <i class="bi bi-cart-plus"></i> Add to Order
                           </button>

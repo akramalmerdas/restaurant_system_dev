@@ -92,6 +92,7 @@ function showOrderNotification(data) {
     const customerName = data.customer || 'Customer';
     const totalAmount = data.total ? `$${data.total}` : 'N/A';
     
+    const orderViewUrl = document.body.dataset.orderViewUrl;
     notification.innerHTML = `
         <div class="toast-header bg-success text-white">
             <strong class="me-auto">New Order Received</strong>
@@ -101,7 +102,7 @@ function showOrderNotification(data) {
         <div class="toast-body">
             <p><strong>Order #${data.order_id}</strong> from ${customerName}</p>
             <p>Total: ${totalAmount}</p>
-            <a href="/order_view/${data.order_id}/" class="btn btn-sm btn-primary view-order">View Order</a>
+            <a href="${orderViewUrl.replace('0', data.order_id)}" class="btn btn-sm btn-primary view-order">View Order</a>
         </div>
     `;
     
@@ -158,7 +159,8 @@ function createDesktopNotification(data) {
         
         notification.onclick = function() {
             window.focus();
-            window.location.href = `/order_view/${data.order_id}/`;
+            const orderViewUrl = document.body.dataset.orderViewUrl;
+            window.location.href = orderViewUrl.replace('0', data.order_id);
             stopNotificationSound();
             this.close();
         };

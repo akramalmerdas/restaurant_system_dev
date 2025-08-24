@@ -23,7 +23,7 @@
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <link href="{% static 'css/table_dashboard.css' %}" rel="stylesheet">
 </head>
-<body>
+<body data-order-view-url="{% url 'orders:orderView' 0 %}">
     <!-- ======= Top Bar ======= -->
     <section id="topbar" class="d-flex align-items-center fixed-top">
         <div class="container-fluid container-xl d-flex align-items-center justify-content-center justify-content-lg-start">
@@ -350,9 +350,10 @@
                     modal.className = 'modal fade';
                     modal.id = 'historyModal';
                     
+                    const orderViewUrl = document.body.dataset.orderViewUrl;
                     let historyHtml = data.history.map(record => `
                         <tr>
-                            <td><a href="/orders/${record.order_id}">#${record.order_id}</a></td>
+                            <td><a href="${orderViewUrl.replace('0', record.order_id)}">#${record.order_id}</a></td>
                             <td>${record.status}</td>
                             <td>${record.items_count} items</td>
                             <td>${record.total.toFixed(2)} RWF</td>

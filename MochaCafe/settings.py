@@ -135,6 +135,14 @@ if 'test' in sys.argv:
             'BACKEND': 'channels.layers.InMemoryChannelLayer',
         },
     }
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 
 
 
@@ -191,6 +199,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
     os.path.join(BASE_DIR, 'homePage','templates', 'assets'),
 ]
 

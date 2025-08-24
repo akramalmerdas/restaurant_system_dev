@@ -76,7 +76,7 @@
 }
     </style>
 </head>
-<body>
+<body data-order-view-url="{% url 'orders:orderView' 0 %}">
     <!-- ======= Top Bar ======= -->
     <section id="topbar" class="d-flex align-items-center fixed-top">
         <div class="container-fluid container-xl d-flex align-items-center justify-content-center justify-content-lg-start">
@@ -263,7 +263,7 @@
                                             </td>
                                             <td>
                                                 <div class="action-buttons">
-                                                    <a href="/order_view/{{ order.id }}/" class="btn btn-action btn-view">
+                                                    <a href="{% url 'orders:orderView' order.id %}" class="btn btn-action btn-view">
                                                         <i class="bi bi-eye"></i> View
                                                     </a>
                                                     <a href="#" class="btn btn-action btn-print-order" data-order-id="{{ order.id }}">

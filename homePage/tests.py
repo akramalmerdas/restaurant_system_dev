@@ -5,6 +5,53 @@ from users.models import Staff
 from orders.models import Order, OrderStatus
 from reservations.models import Table
 
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.contrib.auth.models import User
+from users.models import Staff
+from orders.models import Order, OrderStatus
+from reservations.models import Table
+
+class NavigationTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='staffuser', password='password', is_staff=True)
+        self.staff = Staff.objects.create(user=self.user, role='admin')
+        self.client.login(username='staffuser', password='password')
+
+    def test_index_page(self):
+        response = self.client.get(reverse('core:index'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_login_page(self):
+        self.client.logout()
+        response = self.client.get(reverse('users:login'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_customer_signup_page(self):
+        self.client.logout()
+        response = self.client.get(reverse('users:customer_signup'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_item_dashboard_page(self):
+        response = self.client.get(reverse('menu:item_dashboard'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_dashboard_page(self):
+        response = self.client.get(reverse('orders:admin_dashboard'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_table_dashboard_page(self):
+        response = self.client.get(reverse('reservations:table_dashboard'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_invoice_dashboard_page(self):
+        response = self.client.get(reverse('payments:invoice_dashboard'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_sales_report_page(self):
+        response = self.client.get(reverse('reports:sales_report'))
+        self.assertEqual(response.status_code, 200)
+
 class SecurityTests(TestCase):
 
     def setUp(self):

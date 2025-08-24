@@ -19,10 +19,10 @@
             <a href="/" class="logo">Mocha Cafe</a>
             <nav>
                 <ul class="nav-links">
-                    <li><a href="/">Home</a></li>
+                    <li><a href="{% url 'core:index' %}">Home</a></li>
                     <li><a href="/#menu">Menu</a></li>
-                    <li><a href="/profile">Profile</a></li>
-                    <li><a href="/logout">Logout</a></li>
+                    <li><a href="{% url 'users:customer_profile' %}">Profile</a></li>
+                    <li><a href="{% url 'users:logout' %}">Logout</a></li>
                     <li><a href="{% url 'orders:admin_dashboard' %}" onclick="window.location.reload(true)">Dashboard</a></li>
                 </ul>
             </nav>

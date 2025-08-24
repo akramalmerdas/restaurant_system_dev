@@ -55,7 +55,7 @@ function generateInvoice() {
             alert(body.message || 'Invoice generated successfully!');
             // Redirect to a fresh page after success
             setTimeout(() => {
-                window.location.href = '/table_landing/';
+                window.location.href = document.body.dataset.tableLandingUrl || '/reservations/table_landing/';
             }, 500);
         } else {
             // Display the specific error message from the server
@@ -131,7 +131,7 @@ function generateInvoiceByItem() {
                 if (data.success) {
                     alert(`Invoice generated successfully for ${itemIds.length} items!`);
                     setTimeout(() => {
-                        window.location.href = '/table_landing/'; // Or wherever you need to redirect
+                        window.location.href = document.body.dataset.tableLandingUrl || '/reservations/table_landing/'; // Or wherever you need to redirect
                     }, 500);
                 } else {
                     alert('Error: ' + (data.message || 'Unknown error'));

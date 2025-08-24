@@ -172,7 +172,7 @@ if (confirmButton){
                       window.location.href = response.redirect_url;
                   } else {
                       // Fallback if no URL provided
-                      window.location.href = '/table_landing/';
+                      window.location.href = document.body.dataset.tableLandingUrl || '/reservations/table_landing/';
                   }
                  }, 500);
                    },
