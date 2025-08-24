@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
           if (confirmed) {
               const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // CSRF token
        
-              fetch(`/delete_order/${orderId}/`, {
+              fetch(`/orders/delete_order/${orderId}/`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",

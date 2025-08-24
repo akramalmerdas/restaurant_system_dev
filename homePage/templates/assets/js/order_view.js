@@ -152,9 +152,10 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Please provide a reason for cancellation');
             return;
         }
+        console.log('here we enterd the delete order function');
   
         // Send the deletion request
-        fetch(`/delete_order/${order_id}/`, {
+        fetch(`/orders/delete_order/${order_id}/`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -169,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 // Close the modal and refresh the page or update the UI
                 deleteOrderModal.hide();
-                window.location.href = '/admin_dashboard/';
+                window.location.href = document.body.dataset.adminDashboardUrl;
                // Or update the specific row in the table
             } else {
                 alert('Failed to cancel order: ' + (data.error || 'Unknown error'));
