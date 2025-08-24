@@ -143,6 +143,7 @@ if 'test' in sys.argv:
             "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
         },
     }
+    MIDDLEWARE.remove('whitenoise.middleware.WhiteNoiseMiddleware')
 
 
 
@@ -200,7 +201,6 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
-    os.path.join(BASE_DIR, 'homePage','templates', 'assets'),
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')

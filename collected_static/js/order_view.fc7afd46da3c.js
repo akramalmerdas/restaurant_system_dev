@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Open the print view in a new tab
-            const printWindow = window.open(`/print_order_view/${orderId}/`, '_blank');
+            const printUrl = `/orders/print_order_view/${orderId}/`;
+            const printWindow = window.open(printUrl, '_blank');
 
             // Optional: Bring focus to the new tab
             if (printWindow) {

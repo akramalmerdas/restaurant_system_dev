@@ -52,6 +52,44 @@ class NavigationTests(TestCase):
         response = self.client.get(reverse('reports:sales_report'))
         self.assertEqual(response.status_code, 200)
 
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.contrib.auth.models import User
+from users.models import Staff
+from orders.models import Order, OrderStatus
+from reservations.models import Table
+from bs4 import BeautifulSoup
+
+class LinkCheckerTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='staffuser', password='password', is_staff=True, is_superuser=True)
+        self.staff = Staff.objects.create(user=self.user, role='admin')
+        self.client.login(username='staffuser', password='password')
+
+    def test_all_links_on_main_pages(self):
+        """
+        Crawl main pages and check for broken links.
+        """
+        pages_to_check = [
+            reverse('core:index'),
+            reverse('menu:item_dashboard'),
+            reverse('orders:admin_dashboard'),
+            reverse('reservations:table_dashboard'),
+            reverse('payments:invoice_dashboard'),
+            reverse('reports:sales_report'),
+        ]
+
+        for page_url in pages_to_check:
+            response = self.client.get(page_url)
+            self.assertEqual(response.status_code, 200)
+            soup = BeautifulSoup(response.content, 'html.parser')
+            links = soup.find_all('a', href=True)
+            for link in links:
+                href = link['href']
+                if href.startswith('/') and not href.startswith('//') and not href.startswith('/static/'):
+                    link_response = self.client.get(href)
+                    self.assertNotEqual(link_response.status_code, 404, f"Broken link on {page_url}: {href}")
+
 class SecurityTests(TestCase):
 
     def setUp(self):

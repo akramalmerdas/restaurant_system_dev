@@ -89,7 +89,8 @@
                                                 data-quantity="{{ item.quantity }}"
                                                 data-extras="{{ item.extras }}"
                                                 data-item-name="{{ item.name }}"
-                                                data-row="{{ item.row }}">
+                                                data-row="{{ item.row }}"
+                                                data-delete-item-url="{% url 'orders:delete_order_item' 0 %}">
                                             <i class="fas fa-edit"></i> Edit
                                         </button>
                                     </td>

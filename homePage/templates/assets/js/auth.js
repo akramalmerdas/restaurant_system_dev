@@ -61,7 +61,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (isValid) {
                 try {
-                    const response = await fetch('/login/', {
+                    const loginUrl = document.body.dataset.loginUrl;
+                    const adminDashboardUrl = document.body.dataset.adminDashboardUrl;
+                    const response = await fetch(loginUrl, {
                         method: 'POST',
                         body: JSON.stringify({
                             email: formData.get('email'),
@@ -74,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (response.ok) {
                         // The server should redirect, but we can also do it client-side if needed
-                        window.location.href = '/admin_dashboard'; // Or wherever the user should go
+                        window.location.href = adminDashboardUrl; // Or wherever the user should go
                     } else {
                         const data = await response.json();
                         alert(data.message || 'Login failed. Please check your credentials.');
@@ -122,7 +124,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 try {
-                    const response = await fetch('/signup/', { // Send data to the signup endpoint
+                    const signupUrl = document.body.dataset.signupUrl;
+                    const indexUrl = document.body.dataset.indexUrl;
+                    const response = await fetch(signupUrl, { // Send data to the signup endpoint
                         method: 'POST',
                         body: JSON.stringify({
                             name: formData.get('name'),
@@ -141,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         alert(result.message);
                         this.reset();
                         setTimeout(() => {
-                            window.location.href = '/';
+                            window.location.href = indexUrl;
                         }, 500); // Display success message
                     } else {
                         const error = await response.json();

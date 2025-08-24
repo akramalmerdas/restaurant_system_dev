@@ -11,7 +11,7 @@ from item.models import Order, OrderStatus
 
 class PrintOrders:
     def __init__(self):
-        self.base_url = "http://localhost:8000/print_order_view/"  # Adjust if needed
+        self.base_url = "http://localhost:8000/orders/print_order_view/"  # Adjust if needed
 
     def fetch_orders(self):
         """Fetch all orders with 'readytoprint' status."""

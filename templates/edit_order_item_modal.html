@@ -169,8 +169,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (deleteBtn) {
         deleteBtn.addEventListener('click', function() {
             const row = document.getElementById('modal-row').value;
+            const deleteUrl = document.querySelector(`button[data-row="${row}"]`).dataset.deleteItemUrl;
             if (confirm('Are you sure you want to remove this item from your order?')) {
-                window.location.href = `/order_details/delete_item/${row}/`;
+                window.location.href = deleteUrl.replace('0', row);
             }
         });
     }
