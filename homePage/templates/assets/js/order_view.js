@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 // Close the modal and refresh the page or update the UI
                 deleteOrderModal.hide();
-                window.location.href = document.body.dataset.adminDashboardUrl;
+                window.location.href = '/orders/admin_dashboard/';
                // Or update the specific row in the table
             } else {
                 alert('Failed to cancel order: ' + (data.error || 'Unknown error'));
