@@ -37,7 +37,7 @@ function connectToNotifications() {
         };
 
         socket.onmessage = function(e) {
-            console.log('Message received:', e.data);
+            console.log('Message received from WebSocket:', e.data);
             try {
                 const data = JSON.parse(e.data);
                 if (data.type === 'new_order') {
