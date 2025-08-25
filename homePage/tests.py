@@ -64,12 +64,12 @@ class LinkCheckerTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='staffuser', password='password', is_staff=True, is_superuser=True)
         self.staff = Staff.objects.create(user=self.user, role='admin')
-        self.client.login(username='staffuser', password='password')
 
     def test_all_links_on_main_pages(self):
         """
         Crawl main pages and check for broken links.
         """
+        self.client.login(username='staffuser', password='password')
         pages_to_check = [
             reverse('core:index'),
             reverse('menu:item_dashboard'),
@@ -80,7 +80,9 @@ class LinkCheckerTests(TestCase):
         ]
 
         for page_url in pages_to_check:
-            response = self.client.get(page_url)
+            client = Client()
+            client.login(username='staffuser', password='password')
+            response = client.get(page_url)
             self.assertEqual(response.status_code, 200)
             soup = BeautifulSoup(response.content, 'html.parser')
             links = soup.find_all('a', href=True)

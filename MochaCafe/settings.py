@@ -28,7 +28,7 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # The SECRET_KEY is now loaded from an environment variable for security.
 # A default value is provided for development, but it's crucial to set a unique,
 # secret key in the production environment.
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'a-default-secret-key-for-development')
 DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1']
 
@@ -113,22 +113,12 @@ import sys
 
 # Database configuration is now loaded from environment variables for security.
 # In a production environment, these variables must be set.
-DATABASES = {
-   'default': {
-         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ['DB_NAME'],
-        'USER': os.environ['DB_USER'],
-        'PASSWORD': os.environ['DB_PASSWORD'],
-        'HOST': os.environ['DB_HOST'],
-        'PORT': os.environ['DB_PORT'],
-    }
-}
-
+DATABASES = {}
 # Use SQLite for testing
-if 'test' in sys.argv:
+if 'test' in sys.argv or 'collectstatic' in sys.argv or os.environ.get('USE_SQLITE'):
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
     CHANNEL_LAYERS = {
         'default': {
@@ -144,6 +134,15 @@ if 'test' in sys.argv:
         },
     }
     MIDDLEWARE.remove('whitenoise.middleware.WhiteNoiseMiddleware')
+else:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ['DB_NAME'],
+        'USER': os.environ['DB_USER'],
+        'PASSWORD': os.environ['DB_PASSWORD'],
+        'HOST': os.environ['DB_HOST'],
+        'PORT': os.environ['DB_PORT'],
+    }
 
 
 
@@ -216,14 +215,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Add these lines for Crispy Forms configuration
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
-STORAGES = {
-      "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+if 'test' in sys.argv or 'collectstatic' in sys.argv:
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+else:
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -417,11 +417,12 @@ if (addButton){
     };
   
     try {
+        const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
+                'X-CSRFToken': csrfToken
             },
             body: JSON.stringify(data)
         });
@@ -466,9 +467,9 @@ if (addButton){
 }
 
 ///////////////////////////////////////printing from the fromt end 
-async function printOrder() {
+async function printOrder(url) {
   try {
-    const response = await fetch('/print_order/'); // Fetch order details from your endpoint
+    const response = await fetch(url); // Fetch order details from your endpoint
     const data = await response.json();
 
     if (response.ok) {
@@ -672,6 +673,19 @@ function getStatusClass(status) {
             return 'bg-secondary';
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const printButtons = document.querySelectorAll('.btn-print-order');
+    if (printButtons) {
+        printButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.dataset.printUrl;
+                printOrder(url);
+            });
+        });
+    }
+});
 
 
 

@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from menu.models import Item
 from reservations.models import Table
 
-@login_required
 def index(request):
     # Fetch table_id from the query parameter
     table_number = request.GET.get('table_id')
@@ -32,7 +31,6 @@ def index(request):
     sandwiches = Item.objects.filter(category__id=7)
     pots = Item.objects.filter(category__id=4)
     bowls = Item.objects.filter(category__id=5)
-    user = request.user
 
     # Pass the table object to the template
     return render(request, 'index.html', {
@@ -50,6 +48,5 @@ def index(request):
         'sandwiches': sandwiches,
         'pots': pots,
         'bowls': bowls,
-        'user': user,
         'table': table,
     })
