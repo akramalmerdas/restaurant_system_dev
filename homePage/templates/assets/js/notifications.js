@@ -43,7 +43,7 @@ function connectToNotifications() {
                 const data = JSON.parse(e.data);
                 if (data.type === 'new_order') {
                     showOrderNotification(data);
-                    if (window.location.pathname.includes('admin_dashboard')) {
+                    if (window.location.pathname.includes('admin_dashboard') || window.location.pathname.includes('invoice_dashboard')) {
                         updateOrderList();
                     }
                 }
