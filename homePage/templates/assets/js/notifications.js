@@ -236,8 +236,7 @@ function showSoundPermissionPrompt() {
     if (isPyWebViewMode) return;
 
     // Only show the prompt once per session
-    if (soundPermissionRequested) return;
-    soundPermissionRequested = true;
+    if (document.getElementById('sound-permission-prompt')) return;
 
     console.log('Showing sound permission prompt');
 
