@@ -50,7 +50,8 @@
       data-mark-unpaid-url="{% url 'payments:mark_unpaid' %}"
       data-generate-invoice-by-table-url-template="{% url 'payments:generate_invoice_table' %}"
       data-invoice-dashboard-url="{% url 'payments:invoice_dashboard' %}"
-      data-print-invoice-url-template="{% url 'payments:print_invoice' 0 %}">
+      data-print-invoice-url-template="{% url 'payments:print_invoice' 0 %}"
+      data-websocket-url="wss://{{ request.get_host }}/ws/notifications/">
     <!-- ======= Top Bar ======= -->
     <section id="topbar" class="d-flex align-items-center fixed-top">
         <div class="container-fluid container-xl d-flex align-items-center justify-content-center justify-content-lg-start">
@@ -311,7 +312,7 @@
     <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
     <script type="module" src="{% static 'js/invoice.js' %}"></script>
-    <script type="module" src="{% static 'js/notifications.js' %}"></script>
+    <script src="{% static 'js/notifications.js' %}"></script>
     {% include 'includes/invoice_payment_modal.html' %}
     {% include 'includes/invoice_unpaid.html' %}
 </body>
