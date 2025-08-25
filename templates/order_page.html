@@ -22,7 +22,9 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
    
 </head>
-<body data-table-landing-url="{% url 'reservations:table_landing_page' %}">
+<body data-table-landing-url="{% url 'reservations:table_landing_page' %}"
+      data-get-extras-url-template="{% url 'orders:get_extras' 0 %}"
+      data-empty-order-url="{% url 'orders:empty_order_item' %}">
     <script>
         document.addEventListener('DOMContentLoaded', function () {
           const tableSelect = document.getElementById('tableSelect');

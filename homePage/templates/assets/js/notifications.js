@@ -24,19 +24,18 @@ function checkPyWebViewMode() {
 
 // Connect to WebSocket for real-time notifications
 function connectToNotifications() {
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-    const wsUrl = `${wsProtocol}${window.location.host}/ws/notifications/`;
-    
+    const wsUrl = document.body.dataset.websocketUrl;
+
     console.log('Connecting to WebSocket:', wsUrl);
-    
+
     try {
         const socket = new WebSocket(wsUrl);
-        
+
         socket.onopen = function() {
             console.log('WebSocket connection established');
             reconnectAttempts = 0;
         };
-        
+
         socket.onmessage = function(e) {
             console.log('Message received:', e.data);
             try {
@@ -51,7 +50,7 @@ function connectToNotifications() {
                 console.error('Error processing message:', error);
             }
         };
-        
+
         socket.onclose = function() {
             console.log('WebSocket connection closed');
             reconnectAttempts++;
@@ -59,7 +58,7 @@ function connectToNotifications() {
             console.log(`Reconnecting in ${delay/1000} seconds...`);
             setTimeout(connectToNotifications, delay);
         };
-        
+
         socket.onerror = function(e) {
             console.error('WebSocket error:', e);
         };
@@ -71,12 +70,12 @@ function connectToNotifications() {
 // Show notification for new order
 function showOrderNotification(data) {
     console.log('Showing notification for order:', data);
-    
+
     if (!data || !data.order_id) {
         console.error('Invalid notification data');
         return;
     }
-    
+
     // Create toast notification
     const notification = document.createElement('div');
     notification.className = 'toast show notification-toast';
@@ -88,10 +87,10 @@ function showOrderNotification(data) {
     notification.style.width = '350px';
     notification.style.maxWidth = '100%';
     notification.style.zIndex = '9999';
-    
+
     const customerName = data.customer || 'Customer';
     const totalAmount = data.total ? `$${data.total}` : 'N/A';
-    
+
     const orderViewUrl = document.body.dataset.orderViewUrl;
     notification.innerHTML = `
         <div class="toast-header bg-success text-white">
@@ -105,27 +104,27 @@ function showOrderNotification(data) {
             <a href="${orderViewUrl.replace('0', data.order_id)}" class="btn btn-sm btn-primary view-order">View Order</a>
         </div>
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     // Add event listeners
     const closeButton = notification.querySelector('.close-notification');
     closeButton.addEventListener('click', () => {
         notification.remove();
         stopNotificationSound();
     });
-    
+
     const viewButton = notification.querySelector('.view-order');
     viewButton.addEventListener('click', () => {
         stopNotificationSound();
     });
-    
+
     // Show desktop notification if not in PyWebView mode
     // (PyWebView already handles this with its own window)
     if (!isPyWebViewMode) {
         showDesktopNotification(data);
     }
-    
+
     // Play notification sound
     playNotificationSound();
 }
@@ -136,7 +135,7 @@ function showDesktopNotification(data) {
         console.log("Browser doesn't support notifications");
         return;
     }
-    
+
     if (Notification.permission === "granted") {
         createDesktopNotification(data);
     } else if (Notification.permission !== "denied") {
@@ -153,10 +152,10 @@ function createDesktopNotification(data) {
     try {
         const notification = new Notification("New Order Received", {
             body: `Order #${data.order_id} from ${data.customer || 'Customer'}\nTotal: ${data.total ? '$'+data.total : 'N/A'}`,
-            icon: "/static/images/logo.png",
+            icon: document.body.dataset.logoUrl,
             requireInteraction: true
         });
-        
+
         notification.onclick = function() {
             window.focus();
             const orderViewUrl = document.body.dataset.orderViewUrl;
@@ -172,7 +171,7 @@ function createDesktopNotification(data) {
 // Play notification sound - handles both PyWebView and browser modes
 function playNotificationSound() {
     stopNotificationSound();
-    
+
     if (isPyWebViewMode) {
         // Use PyWebView API
         try {
@@ -191,18 +190,18 @@ function playNotificationSound() {
 // Play sound using browser Audio API (fallback)
 function playBrowserSound() {
     console.log('Using browser audio API');
-    const audio = new Audio('/static/sounds/ringtone.mp3');
+    const audio = new Audio(document.body.dataset.ringtoneUrl);
     audio.loop = true;
-    
+
     currentNotificationAudio = audio;
-    
+
     audio.play().then(() => {
         soundEnabled = true;
         localStorage.setItem('notificationSoundEnabled', 'true');
     }).catch(e => {
         console.error('Failed to play sound:', e);
         currentNotificationAudio = null;
-        
+
         if (!soundEnabled) {
             showSoundPermissionPrompt();
         }
@@ -234,13 +233,13 @@ function stopNotificationSound() {
 function showSoundPermissionPrompt() {
     // Don't show in PyWebView mode
     if (isPyWebViewMode) return;
-    
+
     // Only show the prompt once per session
     if (soundPermissionRequested) return;
     soundPermissionRequested = true;
-    
+
     console.log('Showing sound permission prompt');
-    
+
     // Create a prominent message
     const prompt = document.createElement('div');
     prompt.id = 'sound-permission-prompt';
@@ -254,15 +253,15 @@ function showSoundPermissionPrompt() {
     prompt.style.textAlign = 'center';
     prompt.style.zIndex = '9999';
     prompt.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-    
+
     prompt.innerHTML = `
-        <strong>Important:</strong> Order notification sounds are disabled. 
+        <strong>Important:</strong> Order notification sounds are disabled.
         <button class="btn btn-danger btn-sm mx-2">Click here to enable sounds</button>
         (required for order alerts)
     `;
-    
+
     document.body.prepend(prompt);
-    
+
     // Add click handler to the button
     const enableBtn = prompt.querySelector('button');
     enableBtn.addEventListener('click', (e) => {
@@ -275,21 +274,21 @@ function showSoundPermissionPrompt() {
 function enableNotificationSound() {
     // Don't need this in PyWebView mode
     if (isPyWebViewMode) return;
-    
+
     console.log('Enabling notification sound');
-    
-    const audio = new Audio('/static/sounds/ringtone.mp3');
+
+    const audio = new Audio(document.body.dataset.ringtoneUrl);
     audio.volume = 0.0;
-    
+
     audio.play().then(() => {
         soundEnabled = true;
         localStorage.setItem('notificationSoundEnabled', 'true');
-        
+
         const permissionPrompt = document.getElementById('sound-permission-prompt');
         if (permissionPrompt) {
             permissionPrompt.style.display = 'none';
         }
-        
+
         const btn = document.getElementById('enable-sound-btn');
         if (btn) {
             btn.textContent = 'Sound Enabled';
@@ -303,7 +302,7 @@ function enableNotificationSound() {
 
 // Update order list via AJAX
 function updateOrderList() {
-    fetch('/get_orders/')
+    fetch(document.body.dataset.getOrdersUrl)
         .then(response => {
             if (!response.ok) throw new Error('HTTP error ' + response.status);
             return response.json();
@@ -318,8 +317,9 @@ function updateOrderList() {
 // Update order list UI
 function updateOrderListUI(orders, container) {
     if (!orders || !orders.length) return;
-    
+
     let html = '';
+    const orderViewUrl = document.body.dataset.orderViewUrl;
     orders.forEach(order => {
         const statusClass = getStatusClass(order.status);
         html += `
@@ -334,12 +334,12 @@ function updateOrderListUI(orders, container) {
                     <p>Time: ${new Date(order.created_at).toLocaleString()}</p>
                 </div>
                 <div class="order-actions">
-                    <a href="/order_view/${order.id}/" class="btn btn-sm btn-primary view-order">View</a>
+                    <a href="${orderViewUrl.replace('0', order.id)}" class="btn btn-sm btn-primary view-order">View</a>
                 </div>
             </div>
         `;
     });
-    
+
     container.innerHTML = html;
 }
 
@@ -368,25 +368,25 @@ function testNotification() {
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Initializing notification system');
-    
+
     // Check if running in PyWebView mode
     checkPyWebViewMode();
-    
+
     // Connect to WebSocket
     connectToNotifications();
-    
+
     // In browser mode, check if sound was previously enabled
     if (!isPyWebViewMode && localStorage.getItem('notificationSoundEnabled') === 'true') {
         enableNotificationSound();
     }
-    
+
     // Set up sound enable button (browser mode only)
     if (!isPyWebViewMode) {
         const soundButton = document.getElementById('enable-sound-btn');
         if (soundButton) {
             soundButton.addEventListener('click', enableNotificationSound);
         }
-        
+
         // Add document-level click handler for sound enablement
         if (localStorage.getItem('notificationSoundEnabled') === 'true' && !soundEnabled) {
             const enableSoundOnce = function() {
@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.addEventListener('click', enableSoundOnce);
         }
     }
-    
+
     // Add test button if it exists
     const testButton = document.getElementById('test-notification-btn');
     if (testButton) {

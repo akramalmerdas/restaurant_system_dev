@@ -47,27 +47,27 @@
     <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
 
       <div class="logo me-auto">
-        <h1><a href="/">Mocha Cafe</a></h1>
+        <h1><a href="{% url 'core:index' %}">Mocha Cafe</a></h1>
         <!-- Uncomment below if you prefer to use an image logo -->
         <!-- <a href="index.html"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
       </div>
 
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
-          <li><a class="nav-link scrollto active" href="/#hero">Home</a></li>
-          <li><a class="nav-link scrollto" href="/#about">About</a></li>
-          <li><a class="nav-link scrollto" href="/#menu">Menu</a></li>
-          <li><a class="nav-link scrollto" href="/#specials">Specials</a></li>
-          <li><a class="nav-link scrollto" href="/#events">Events</a></li>
-          <li><a class="nav-link scrollto" href="/#chefs">Chefs</a></li>
-          <li><a class="nav-link scrollto" href="/#gallery">Gallery</a></li>
+          <li><a class="nav-link scrollto active" href="{% url 'core:index' %}#hero">Home</a></li>
+          <li><a class="nav-link scrollto" href="{% url 'core:index' %}#about">About</a></li>
+          <li><a class="nav-link scrollto" href="{% url 'core:index' %}#menu">Menu</a></li>
+          <li><a class="nav-link scrollto" href="{% url 'core:index' %}#specials">Specials</a></li>
+          <li><a class="nav-link scrollto" href="{% url 'core:index' %}#events">Events</a></li>
+          <li><a class="nav-link scrollto" href="{% url 'core:index' %}#chefs">Chefs</a></li>
+          <li><a class="nav-link scrollto" href="{% url 'core:index' %}#gallery">Gallery</a></li>
           <!-- Add other nav items like Contact, Admin links etc. -->
            <li><a class="nav-link scrollto" href="{% url 'menu:item_dashboard' %}">Item Dashboard</a></li> {# Link to item dashboard #}
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav><!-- .navbar -->
 
-      <a href="/#book-a-table" class="book-a-table-btn scrollto">Book a table</a>
+      <a href="{% url 'core:index' %}#book-a-table" class="book-a-table-btn scrollto">Book a table</a>
 
     </div>
   </header><!-- End Header -->

@@ -12,7 +12,12 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="{% static 'css/order_view.css' %}" rel="stylesheet">  
 </head>
-<body>
+<body data-print-order-view-url-template="{% url 'orders:print_order_view_url' 0 %}"
+      data-admin-dashboard-url="{% url 'orders:admin_dashboard' %}"
+      data-update-order-status-url-template="{% url 'orders:update_order_status' 0 %}"
+      data-delete-order-url-template="{% url 'orders:delete_order' 0 %}"
+      data-generate-invoice-by-order-url="{% url 'payments:generate_invoice_item' %}"
+      data-invoices-url="{% url 'payments:invoice_dashboard' %}">
     <!-- Header -->
     <header class="header" id="header">
         <div class="container">

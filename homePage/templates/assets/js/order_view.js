@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Open the print view in a new tab
-            const printUrl = `/orders/print_order_view/${orderId}/`;
+            const urlTemplate = document.body.dataset.printOrderViewUrlTemplate;
+            const printUrl = urlTemplate.replace('0', orderId);
             const printWindow = window.open(printUrl, '_blank');
 
             // Optional: Bring focus to the new tab
@@ -18,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 printWindow.focus();
             }
             setTimeout(() => {
-                window.location.href = '/admin_dashboard/';
+                window.location.href = document.body.dataset.adminDashboardUrl;
             }, 10000); 
             // Redirect the current page after opening the print window
            
@@ -39,7 +40,9 @@ document.addEventListener('DOMContentLoaded', function() {
             this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Updating...';
             
             // Send AJAX request to update status
-            fetch(`/update_order_status/${orderId}/`, {
+            const urlTemplate = document.body.dataset.updateOrderStatusUrlTemplate;
+            const url = urlTemplate.replace('0', orderId);
+            fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -155,7 +158,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('here we enterd the delete order function');
   
         // Send the deletion request
-        fetch(`/orders/delete_order/${order_id}/`, {
+        const urlTemplate = document.body.dataset.deleteOrderUrlTemplate;
+        const url = urlTemplate.replace('0', order_id);
+        fetch(url, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -170,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 // Close the modal and refresh the page or update the UI
                 deleteOrderModal.hide();
-                window.location.href = '/orders/admin_dashboard/';
+                window.location.href = document.body.dataset.adminDashboardUrl;
                // Or update the specific row in the table
             } else {
                 alert('Failed to cancel order: ' + (data.error || 'Unknown error'));
@@ -240,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             console.log('this is the data ' + data.toString());
             
-            fetch('/generate-invoice-by-order/', {
+            fetch(document.body.dataset.generateInvoiceByOrderUrl, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': getCookie('csrftoken'),
@@ -261,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     alert(`Invoice generated successfully for order ${orderId}!`);
                     setTimeout(() => {
-                        window.location.href = '/invoices/';
+                        window.location.href = document.body.dataset.invoicesUrl;
                     }, 500);
                 } else {
                     // Handle server-side success=false responses

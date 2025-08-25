@@ -358,7 +358,7 @@
   </style>
 </head>
 
-<body>
+<body data-get-extras-url-template="{% url 'orders:get_extras' 0 %}" data-menu-url="{% url 'core:index' %}#menu">
   <main id="main">
     <section class="meal-container">
       <div class="container">
@@ -484,4 +484,3 @@
   {% include "custom_success_dialog.html" %}
 </body>
 </html>
-

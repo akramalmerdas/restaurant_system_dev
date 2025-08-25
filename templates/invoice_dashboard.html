@@ -45,7 +45,12 @@
 }
 </style>
 </head>
-<body data-order-view-url="{% url 'orders:orderView' 0 %}">
+<body data-order-view-url="{% url 'orders:orderView' 0 %}"
+      data-process-payment-url-template="{% url 'payments:process_payment' 0 %}"
+      data-mark-unpaid-url="{% url 'payments:mark_unpaid' %}"
+      data-generate-invoice-by-table-url-template="{% url 'payments:generate_invoice_table' %}"
+      data-invoice-dashboard-url="{% url 'payments:invoice_dashboard' %}"
+      data-print-invoice-url-template="{% url 'payments:print_invoice' 0 %}">
     <!-- ======= Top Bar ======= -->
     <section id="topbar" class="d-flex align-items-center fixed-top">
         <div class="container-fluid container-xl d-flex align-items-center justify-content-center justify-content-lg-start">

@@ -143,7 +143,7 @@ function setTableNumber(tableNumber) {
         formData.append('csrfmiddlewaretoken', csrfToken);
     }
 
-    fetch('/reservations/set_table/', {
+    fetch(document.body.dataset.setTableNumberUrl, {
         method: 'POST',
         body: formData,
         headers: {
@@ -154,7 +154,7 @@ function setTableNumber(tableNumber) {
     .then(data => {
         if (data.status === 'success') {
             showNotification(`Table ${tableNumber} selected successfully!`, 'success');
-            window.location.href = '/#menu';
+            window.location.href = document.body.dataset.menuUrl;
         } else {
             showNotification('Error: ' + (data.message || 'Failed to select table'), 'error');
         }
@@ -207,8 +207,8 @@ function getOrderByTable(tableId) {
         alert("Invalid table ID");
         return;
     }
-
-    const url = `/get_order_by_table/${tableId}/`;
+    const urlTemplate = document.body.dataset.getOrderByTableUrlTemplate;
+    const url = urlTemplate.replace('0', tableId);
     // Open in a new tab (can change to modal or fetch later)
     window.location.href=url;
 }

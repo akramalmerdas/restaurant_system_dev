@@ -83,7 +83,7 @@ class PaymentHandler {
         const invoiceId = select.dataset.invoiceId;
         const selectedValue = select.value; // New value user picked
         this.currentInvoiceId = invoiceId; // Store current invoice ID
-    
+
         const totalAmount = parseFloat(select.dataset.totalAmount);
         let balanceDue = parseFloat(select.dataset.balanceDue || totalAmount);
 
@@ -108,18 +108,18 @@ class PaymentHandler {
             const markUnpaidModalElement = document.getElementById('markUnpaidModal');
             if (markUnpaidModalElement) {
                 const markUnpaidModal = new bootstrap.Modal(markUnpaidModalElement);
-            
+
                 // Set the invoice ID in the hidden input
                 document.getElementById('unpaidInvoiceId').value = invoiceId;
-            
+
                 // Reset modal inputs
                 document.getElementById('unpaidReason').value = '';
                 document.getElementById('confirmUnpaid').checked = false;
                 document.getElementById('unpaidReasonCount').textContent = '0';
-            
+
                 // Show modal
                 markUnpaidModal.show();
-            
+
                 // Optional: Store reference for future use
                 this.pendingInvoiceSelect = select;
             }
@@ -203,7 +203,7 @@ class PaymentHandler {
         const select = document.querySelector(`.status-select[data-invoice-id="${this.currentInvoiceId}"]`);
         // Get the latest balanceDue from the dataset, which should be updated by the backend response
         const balanceDue = parseFloat(select?.dataset.balanceDue || select?.dataset.totalAmount || 0);
-        
+
         if (amount > balanceDue) {
             showToast(`Payment amount cannot exceed remaining balance of ${balanceDue.toFixed(2)} RWF`, 'error');
             return;
@@ -212,7 +212,9 @@ class PaymentHandler {
         this.setLoadingState(true);
 
         try {
-            const response = await fetch(`/invoice/${this.currentInvoiceId}/pay/`, {
+            const urlTemplate = document.body.dataset.processPaymentUrlTemplate;
+            const url = urlTemplate.replace('0', this.currentInvoiceId);
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -272,9 +274,9 @@ class PaymentHandler {
             // The backend now sends the correct 'status' string, use that directly
             // Map 'paid' to '1' and 'pending'/'partial' to '0' for the select element
             if (data.status === 'paid') {
-                select.value = '1'; 
+                select.value = '1';
             } else if (data.status === 'partial' || data.status === 'pending') {
-                select.value = '0'; 
+                select.value = '0';
             }
             // Update the dataset.balanceDue with the latest value from the backend
             select.dataset.balanceDue = data.balance_due;
@@ -319,7 +321,7 @@ function updateStatusBadge(selectElement) {
 
 
 
-    // ////////// un paid form 
+    // ////////// un paid form
     const form = document.getElementById('markUnpaidForm');
     const modal = new bootstrap.Modal(document.getElementById('markUnpaidModal'));
     const submitBtn = document.getElementById('submitUnpaidBtn');
@@ -340,7 +342,8 @@ function updateStatusBadge(selectElement) {
         submitBtn.querySelector('.spinner-border').classList.remove('d-none');
         submitBtn.setAttribute('disabled', 'true');
 
-        fetch('/mark-unpaid/', {
+        const url = document.body.dataset.markUnpaidUrl;
+        fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -380,7 +383,7 @@ function updateStatusBadge(selectElement) {
 
 
 
-document.addEventListener("DOMContentLoaded", function() { 
+document.addEventListener("DOMContentLoaded", function() {
 let generateInvoiceButton = document.getElementById('generate-invoice-btn');
 if(generateInvoiceButton){
     generateInvoiceButton.addEventListener('click', function(event) {
@@ -388,7 +391,9 @@ if(generateInvoiceButton){
         const tableId = generateInvoiceButton.getAttribute('data-table-id');
         const selectedOrders = Array.from(document.querySelectorAll('input[name="order_select"]:checked'))
         .map(input => input.value);  // Get values of checked checkboxes
-          fetch(`/generate_invoice/${tableId}/`, {
+        const urlTemplate = document.body.dataset.generateInvoiceByTableUrlTemplate;
+        const url = urlTemplate.replace('0', tableId);
+          fetch(url, {
            method: 'POST',
            headers: {
           'Content-Type': 'application/json',
@@ -400,7 +405,7 @@ if(generateInvoiceButton){
         .then(data => {
             if (data.success) {
                 alert('Invoice created successfully! Invoice ID: ' + data.invoice_id);
-                window.location.href = `/invoices/`;
+                window.location.href = document.body.dataset.invoiceDashboardUrl;
                 // Optionally, update the UI to show the invoice details or redirect to the invoice page
             } else {
                 alert('Error: ' + data.message);
@@ -412,19 +417,21 @@ if(generateInvoiceButton){
         });
     });
 
-    } 
+    }
 
 });
 
 
 function printInvoice(invoiceId) {
     // Open the invoice in a new window for printing
-    const printWindow = window.open(`/print_invoice/${invoiceId}/`, '_blank');
-    
+    const urlTemplate = document.body.dataset.printInvoiceUrlTemplate;
+    const url = urlTemplate.replace('0', invoiceId);
+    const printWindow = window.open(url, '_blank');
+
     // This is a fallback in case the popup is blocked
     if (!printWindow || printWindow.closed || typeof printWindow.closed == 'undefined') {
         // If popup is blocked, redirect to the print page in the same window
-        window.location.href = `/print_invoice/${invoiceId}/`;
+        window.location.href = url;
     }
 }
 
@@ -433,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.btn-print').forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
-            const invoiceId = this.getAttribute('data-invoice-id') || 
+            const invoiceId = this.getAttribute('data-invoice-id') ||
                              this.closest('tr').querySelector('td:first-child').textContent.trim();
             printInvoice(invoiceId);
         });

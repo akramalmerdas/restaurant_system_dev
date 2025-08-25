@@ -3,7 +3,7 @@ import { showConfirmation } from "./custom_dialog.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     const invoiceBtn = document.getElementById('generateInvoiceBtn');
-    
+
     invoiceBtn.addEventListener('click', () => {
         // Your generateInvoice functionality here
         console.log('Invoice generation triggered');
@@ -13,12 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     const invoiceBtnByItem = document.getElementById('generateInvoiceBtnByItem');
-    
+
     invoiceBtnByItem.addEventListener('click', () => {
         // Your generateInvoice functionality here
         console.log('Invoice generation triggered');
         generateInvoiceByItem();
-    }); 
+    });
 });
 
 function generateInvoice() {
@@ -38,7 +38,7 @@ function generateInvoice() {
     showConfirmation("Do you want to generate the invoice for all the items in this table?", function(confirmed) {
           if (confirmed) {
        // 2. Call the NEW, secure endpoint.
-    fetch('/generate-invoice-by-table/', { // <-- Use the new URL
+    fetch(document.body.dataset.generateInvoiceByTableUrl, { // <-- Use the new URL
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ function generateInvoice() {
             alert(body.message || 'Invoice generated successfully!');
             // Redirect to a fresh page after success
             setTimeout(() => {
-                window.location.href = document.body.dataset.tableLandingUrl || '/reservations/table_landing/';
+                window.location.href = document.body.dataset.tableLandingUrl;
             }, 500);
         } else {
             // Display the specific error message from the server
@@ -65,14 +65,14 @@ function generateInvoice() {
     .catch(error => {
         console.error('Invoice Generation Error:', error);
         alert('A network or unexpected error occurred during invoice generation.');
-    });         
+    });
           } else {
               alert("Action canceled.");
               return;
           }
       });
 
-    
+
 }
 
 function generateInvoiceByItem() {
@@ -90,7 +90,7 @@ function generateInvoiceByItem() {
         alert('Error: Table ID is missing from the element.');
         return;
     }
-    
+
     // --- 2. Get all checked item checkboxes ---
     // This selector is still correct.
     const checkedCheckboxes = document.querySelectorAll('.item-checkbox:checked');
@@ -98,7 +98,7 @@ function generateInvoiceByItem() {
         alert('No items selected. Please select at least one item.');
         return;
     }
-    
+
     // --- 3. CORRECTED: Extract item IDs from the 'value' attribute ---
     // The 'value' attribute is the standard place to store the ID for an input.
     const itemIds = Array.from(checkedCheckboxes).map(checkbox => checkbox.value);
@@ -108,7 +108,7 @@ function generateInvoiceByItem() {
     // --- 4. The rest of your fetch logic is already correct ---
     showConfirmation("Do you want to generate the invoice for all the items in this table?", function(confirmed) {
         if (confirmed) {
-            fetch('/generate-invoice-by-item/', {
+            fetch(document.body.dataset.generateInvoiceByItemUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ function generateInvoiceByItem() {
                 if (data.success) {
                     alert(`Invoice generated successfully for ${itemIds.length} items!`);
                     setTimeout(() => {
-                        window.location.href = document.body.dataset.tableLandingUrl || '/reservations/table_landing/'; // Or wherever you need to redirect
+                        window.location.href = document.body.dataset.tableLandingUrl; // Or wherever you need to redirect
                     }, 500);
                 } else {
                     alert('Error: ' + (data.message || 'Unknown error'));
@@ -146,7 +146,7 @@ function generateInvoiceByItem() {
             return;
         }
     });
- 
+
 }
 
         function showNotification(message, type) {
@@ -159,9 +159,9 @@ function generateInvoiceByItem() {
                 ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             `;
-            
+
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 notification.remove();
             }, 5000);
@@ -189,7 +189,7 @@ function generateInvoiceByItem() {
                 const currentStatus = this.textContent.trim().toLowerCase();
                 let newStatus = '';
                 let newClass = '';
-                
+
                 switch(currentStatus) {
                     case 'pending':
                         newStatus = 'Preparing';
@@ -210,18 +210,17 @@ function generateInvoiceByItem() {
                     default:
                         return;
                 }
-                
+
                 this.className = `order-status ${newClass}`;
                 this.textContent = newStatus;
-                
+
                 showNotification(`Order status updated to ${newStatus}`, 'info');
             });
         });
-        
+
         // Auto-refresh page every 30 seconds to get updated order status
         setInterval(function() {
             if (document.querySelectorAll('.status-pending, .status-preparing').length > 0) {
                 location.reload();
             }
         }, 30000);
-        

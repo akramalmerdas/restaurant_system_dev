@@ -10,31 +10,31 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('modal-notes').value = notes.trim();
         var row = button.getAttribute('data-row') || '';
         document.getElementById('modal-row').value = row;
-     
+
         // Set the item name in the modal (plain JS)
         var nameSpan = document.querySelector('.modal-item-name');
         if (nameSpan) {
             nameSpan.textContent = itemName;
         }
-      
-    
-      
+
+
+
         // Parse extrasRaw into an array of objects with id field s
         let extras = [];
         if (extrasRaw && extrasRaw !== "None") {
             try {
                 // Try to parse as JSON if possible
                 extras = JSON.parse(extrasRaw);
-               
+
                 // If it's an array of ids, convert to array of objects
                 if (Array.isArray(extras) && typeof extras[0] !== 'object') {
                     extras = extras.map(id => ({id: parseInt(id)}));
                 }
             } catch (e) {
-              
+
                 // Fallback: comma-separated string of ids
                 extras = extrasRaw.split(',').map(id => ({id: parseInt(id)}));
-              
+
             }
         }
 
@@ -58,7 +58,9 @@ document.getElementById('modal-item-id').value = orderItem.item_id;
 document.getElementById('modal-quantity').value = orderItem.quantity;
 
 // Fetch extras for this item
-fetch(`/get-extras/${orderItem.item_id}/`)
+const urlTemplate = document.body.dataset.getExtrasUrlTemplate;
+const url = urlTemplate.replace('0', orderItem.item_id);
+fetch(url)
 .then(response => response.json())
 .then(data => {
 
@@ -66,11 +68,11 @@ fetch(`/get-extras/${orderItem.item_id}/`)
   const extrasDiv = document.getElementById('modal-extras-checkboxes');
   extrasDiv.innerHTML = '';
   const selectedExtras = (orderItem.extras || []).map(e => e.id);
- 
+
   (data.extras || []).forEach(extra => {
-   
+
     const checked = selectedExtras.includes(extra.id) ? 'checked' : '';
-    
+
     extrasDiv.innerHTML += `
       <div class="form-check">
         <input class="form-check-input" type="checkbox" value="${extra.id}" id="extra-${extra.id}" ${checked}>
@@ -101,10 +103,10 @@ document.getElementById('modal-notes-hidden').value = notes;
 // if (confirmButton){
 //   confirmButton.addEventListener('click', async function() {
 
-  
+
 //     // Send a POST request to submit the order
 //     try {
-//    //    await printOrder();  
+//    //    await printOrder();
 
 //         const response = await fetch('/submit_order/', {
 //             method: 'POST',
@@ -114,7 +116,7 @@ document.getElementById('modal-notes-hidden').value = notes;
 //             },
 //             body: JSON.stringify({ items: JSON.parse(sessionStorage.getItem('order')) })  // Fetch order from sessionStorage
 //         });
-     
+
 //          if (response.ok) {
 //           console.log('the response is ok');
 //           showSuccessDialog({
@@ -122,13 +124,13 @@ document.getElementById('modal-notes-hidden').value = notes;
 //             message: 'the order was submitted successfully!',
 //             okButtonText: 'OK',
 //             onOk: function() {
-          
+
 //             setTimeout(() => {
 //               window.location.href = '/';
 //           }, 500);
 //             },
 //             // autoHideDelay: 10000 // Optional: auto-hide after 2 seconds
-//         });   
+//         });
 //         }
 //          else {
 //             alert('Failed to submit the order. Please try again later.');
@@ -143,12 +145,12 @@ document.getElementById('modal-notes-hidden').value = notes;
 
 const confirmButton = document.getElementById('confirm-order-btn');
 if (confirmButton){
-  
+
   confirmButton.addEventListener('click', async function() {
- 
+
         try {
-          //    await printOrder();  
-       
+          //    await printOrder();
+
                const submitUrl = document.getElementById('confirm-order-btn').dataset.submitUrl;
                const response = await fetch(submitUrl, {
                    method: 'POST',
@@ -158,9 +160,9 @@ if (confirmButton){
                    },
                    body: JSON.stringify({ items: JSON.parse(sessionStorage.getItem('order')) })  // Fetch order from sessionStorage
                });
-            
+
                 if (response.ok) {
-               
+
                  showSuccessDialog({
                    title: 'Success!',
                    message: 'the order was submitted successfully!',
@@ -172,12 +174,12 @@ if (confirmButton){
                       window.location.href = response.redirect_url;
                   } else {
                       // Fallback if no URL provided
-                      window.location.href = document.body.dataset.tableLandingUrl || '/reservations/table_landing/';
+                      window.location.href = document.body.dataset.tableLandingUrl;
                   }
                  }, 500);
                    },
                    // autoHideDelay: 10000 // Optional: auto-hide after 2 seconds
-               });   
+               });
                }
                 else {
                    alert('Failed to submit the order. Please try again later.');
@@ -186,9 +188,9 @@ if (confirmButton){
                console.error('Error:', error);
                alert('There was an error submitting your order.');
            }
-  
+
     // Send a POST request to submit the order
-    
+
   });
 }
 
@@ -199,13 +201,13 @@ if (emptyOrderButton){
     // This is just an example, you might need to adjust this based on your actual implementation
     // and how you want to clear the order inf
     emptyOrderButton.addEventListener('click', async function() {
-      
+
         function getCSRFToken() {
             return document.querySelector('[name=csrfmiddlewaretoken]').value;
           }
         if (confirm('Are you sure you want to empty your cart ?')) {
-           
-        await fetch('/order_detail/empty_order/', {
+
+        await fetch(document.body.dataset.emptyOrderUrl, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -216,9 +218,9 @@ if (emptyOrderButton){
               .then(data => {
                 alert(data.message);
               });
-              
+
         }
-   
+
          window.location.reload();
     });
 }

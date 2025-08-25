@@ -288,7 +288,9 @@ async function fetchExtras(menuItemId, price) {
   originalPrice = price;
 
   try {
-      const response = await fetch(`/get-extras/${menuItemId}/`);
+      const urlTemplate = document.body.dataset.getExtrasUrlTemplate;
+      const url = urlTemplate.replace('0', menuItemId);
+      const response = await fetch(url);
       const data = await response.json();
       const extraData = data.extras;
      
@@ -428,7 +430,7 @@ if (addButton){
         });
   
         if (response.ok) {
-          window.location.href = '/#menu';
+          window.location.href = document.body.dataset.menuUrl;
           // Replace alert with custom success dialog
           // showSuccessDialog({
           //     title: 'Success!',
@@ -637,7 +639,9 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateOrderStatus(orderId, status) {
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     
-    fetch(`/update_order_status/${orderId}/`, {
+    const urlTemplate = document.body.dataset.updateOrderStatusUrlTemplate;
+    const url = urlTemplate.replace('0', orderId);
+    fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -727,6 +731,3 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 });
-
-
-
