@@ -171,7 +171,9 @@ function createDesktopNotification(data) {
 
 // Play notification sound - handles both PyWebView and browser modes
 function playNotificationSound() {
-    stopNotificationSound();
+    if (currentNotificationAudio) {
+        return;
+    }
 
     if (isPyWebViewMode) {
         // Use PyWebView API
