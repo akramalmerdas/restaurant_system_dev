@@ -263,9 +263,8 @@ function showSoundPermissionPrompt() {
 
     document.body.prepend(prompt);
 
-    // Add click handler to the button
-    const enableBtn = prompt.querySelector('button');
-    enableBtn.addEventListener('click', (e) => {
+    // Add click handler to the entire prompt
+    prompt.addEventListener('click', (e) => {
         e.preventDefault();
         enableNotificationSound();
     });
