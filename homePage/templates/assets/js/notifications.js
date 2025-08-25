@@ -24,7 +24,8 @@ function checkPyWebViewMode() {
 
 // Connect to WebSocket for real-time notifications
 function connectToNotifications() {
-    const wsUrl = document.body.dataset.websocketUrl;
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    const wsUrl = `${wsProtocol}${window.location.host}/ws/notifications/`;
 
     console.log('Connecting to WebSocket:', wsUrl);
 
