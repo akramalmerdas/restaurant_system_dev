@@ -245,7 +245,7 @@ function showSoundPermissionPrompt() {
     const prompt = document.createElement('div');
     prompt.id = 'sound-permission-prompt';
     prompt.style.position = 'fixed';
-    prompt.style.top = '0';
+    prompt.style.bottom = '0';
     prompt.style.left = '0';
     prompt.style.right = '0';
     prompt.style.backgroundColor = '#f8d7da';
