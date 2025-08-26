@@ -51,7 +51,8 @@
       data-generate-invoice-by-table-url-template="{% url 'payments:generate_invoice_table' %}"
       data-invoice-dashboard-url="{% url 'payments:invoice_dashboard' %}"
       data-print-invoice-url-template="{% url 'payments:print_invoice' 0 %}"
-      data-websocket-url="wss://{{ request.get_host }}/ws/notifications/">
+      data-websocket-url="wss://{{ request.get_host }}/ws/notifications/"
+      data-ringtone-url="{% static 'sounds/ringtone.mp3' %}">
     <!-- ======= Top Bar ======= -->
     <section id="topbar" class="d-flex align-items-center fixed-top">
         <div class="container-fluid container-xl d-flex align-items-center justify-content-center justify-content-lg-start">
