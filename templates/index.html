@@ -7,7 +7,7 @@
   <meta charset="utf-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>{{ restaurant_config.name }}</title>
+  <title>Mocha Cafe</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -48,11 +48,11 @@
     <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
 
       <div class="logo me-auto">
-        {% if restaurant_config.logo %}
-        <a href="{% url 'core:index' %}"><img src="{{ restaurant_config.logo.url }}" alt="{{ restaurant_config.name }} Logo" class="img-fluid"></a>
-        {% else %}
-        <h1><a href="{% url 'core:index' %}">{{ restaurant_config.name }}</a></h1>
-        {% endif %}
+        <!-- <h1><a href="{% url 'core:index' %}">Mocha</a></h1> -->
+
+        <!-- Uncomment below if you prefer to use an image logo -->
+      <a href="{% url 'core:index' %}"><img src="{% static 'img/logo.png' %}" alt="" class="img-fluid"></a>
+      <!-- <h1 class="logo me-auto"><a href="{% url 'core:index' %}">Mocha Cafe</a></h1> -->
     </div>
       <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
         <i class="bi bi-phone d-flex align-items-center me-2"><span>+250 782 987 011</span></i>
@@ -129,8 +129,8 @@
           <div class="carousel-item active" style="background-image: url({% static 'img/slide/slide-1.webp' %});">
             <div class="carousel-container">
               <div class="carousel-content">
-                <h2 class="animate__animated animate__fadeInDown"><span>{{ restaurant_config.name|slice:":5" }}</span>{{ restaurant_config.name|slice:"5:" }}</h2>
-                <p class="animate__animated animate__fadeInUp">{{ restaurant_config.slogan }}</p>
+                <h2 class="animate__animated animate__fadeInDown"><span>Mocha</span>Cafe</h2>
+                <p class="animate__animated animate__fadeInUp">Memories of <span style="color:var(--color-orange-light) ;">joy</span> and <span style="color:var(--color-orange-light) ;">happiness</span></p>
                 <div>
                   <a href="#menu" class="btn-menu animate__animated animate__fadeInUp scrollto">Our Menu</a>
            <!--     <a href="#book-a-table" class="btn-book animate__animated animate__fadeInUp scrollto">Book a Table</a>-->
@@ -199,7 +199,7 @@
           <div class="col-lg-7 d-flex flex-column justify-content-center align-items-stretch">
 
             <div class="content">
-              <h3><span style="color:#d54b27;">{{ restaurant_config.name }}</span> <strong>not only a cafe</strong></h3>
+              <h3><span style="color:#d54b27;">Mocha Cafe</span> <strong>not only a cafe</strong></h3>
               <p>
                 Welcome to Mocha Cafe, a charming eatery located in Gacuriro. Our cafe offers a unique fusion of Yemeni, Arabic, and International cuisine, providing a diverse and delightful dining experience. Enjoy our cozy indoor seating or relax in our beautiful garden area, perfect for families. Whether you're craving traditional Yemeni Food, a hearty American breakfast, or an authentic Italian espresso, Mocha Cafe is your go-to destination for delicious meals and a welcoming atmosphere. Join us for an unforgettable culinary journey!
               </p>
@@ -218,7 +218,7 @@
       <div class="container">
 
         <div class="section-title">
-          <h2>Why choose <span>{{ restaurant_config.name }}</span></h2>
+          <h2>Why choose <span>Mocha Cafe</span></h2>
           <p> Our welcoming atmosphere, complete with cozy indoor seating and a serene garden area, provides an ideal setting for relaxing, working and socializing.</p>
         </div>
 
@@ -894,8 +894,8 @@
   <!-- ======= Footer ======= -->
   <footer id="footer">
     <div class="container">
-      <h3>{{ restaurant_config.name }}</h3>
-      <p>{{ restaurant_config.slogan }}</p>
+      <h3>Mocha Cafe</h3>
+      <p>Memories of joy and happiness.</p>
       <div class="social-links">
         <a href="https://www.instagram.com/p/CCh5q3SAd6B/?igshid=1bvk0v1yjttl6&img_index=1" class="facebook"><i class="bx bxl-facebook"></i></a>
         <a href="https://www.instagram.com/p/CCh5q3SAd6B/?igshid=1bvk0v1yjttl6&img_index=1" class="instagram"><i class="bx bxl-instagram"></i></a>
