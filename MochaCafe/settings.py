@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'notifications',
     'django_extensions',
     'channels',
+    'branding',
     # Third-party apps
     'crispy_forms',
     'crispy_bootstrap5',
@@ -98,6 +99,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'branding.context_processors.restaurant_config',
             ],
         },
     },

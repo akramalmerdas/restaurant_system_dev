@@ -10,7 +10,7 @@
 # General
 --------------------------------------------------------------*/
 :root {
-    --color-green-light: #18d26e;
+    --color-green-light: var(--secondary-color);
     --color-dark: #35322d;
     --color-darkest: #433f39;
     --color-medium-dark: #444444;
@@ -36,7 +36,7 @@
     --color-red: #ff0000;
     --color-orange: #d56127;
     --color-orange-medium: #ffa012;
-    --color-orange-light: #d54b27;
+    --color-orange-light: var(--primary-color);
    /* --color-orange-light: #ffb03b;*/
     --color-orange-lighter: #ffc064;
     --color-orange-lightest: #ffc56e;

@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>{% block title %}Mocha Cafe{% endblock %}</title> {# Default title, can be overridden by child templates #}
+  <title>{% block title %}{{ restaurant_config.name }}{% endblock %}</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -31,6 +31,12 @@
   <!-- Placeholder for page-specific CSS or meta tags -->
   {% endblock %}
 
+  <style>
+    :root {
+      --primary-color: {{ restaurant_config.primary_color }};
+      --secondary-color: {{ restaurant_config.secondary_color }};
+    }
+  </style>
 </head>
 <body>
 
@@ -47,9 +53,11 @@
     <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
 
       <div class="logo me-auto">
-        <h1><a href="{% url 'core:index' %}">Mocha Cafe</a></h1>
+        <h1><a href="{% url 'core:index' %}">{{ restaurant_config.name }}</a></h1>
         <!-- Uncomment below if you prefer to use an image logo -->
-        <!-- <a href="index.html"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+        {% if restaurant_config.logo %}
+        <a href="{% url 'core:index' %}"><img src="{{ restaurant_config.logo.url }}" alt="" class="img-fluid"></a>
+        {% endif %}
       </div>
 
       <nav id="navbar" class="navbar order-last order-lg-0">
@@ -83,8 +91,8 @@
   <!-- ======= Footer ======= -->
   <footer id="footer">
     <div class="container">
-      <h3>Mocha Cafe</h3>
-      <p>Et aut eum quis fuga eos sunt ipsa nihil. Labore corporis magni eligendi fuga maxime saepe commodi placeat.</p>
+      <h3>{{ restaurant_config.name }}</h3>
+      <p>{{ restaurant_config.slogan }}</p>
       <div class="social-links">
         <a href="#" class="twitter"><i class="bx bxl-twitter"></i></a>
         <a href="#" class="facebook"><i class="bx bxl-facebook"></i></a>
@@ -93,7 +101,7 @@
         <a href="#" class="linkedin"><i class="bx bxl-linkedin"></i></a>
       </div>
       <div class="copyright">
-        &copy; Copyright <strong><span>Mocha Cafe</span></strong>. All Rights Reserved
+        &copy; Copyright <strong><span>{{ restaurant_config.name }}</span></strong>. All Rights Reserved
       </div>
       <div class="credits">
         <!-- Licensing information: https://bootstrapmade.com/license/ -->

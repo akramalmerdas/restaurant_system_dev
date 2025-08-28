@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    {% load crispy_forms_tags %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branding Settings - Mocha Cafe</title>
+
+    <!-- Favicons -->
+    <link href="{% static 'img/favicon.png' %}" rel="icon">
+    <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,600,600i,700,700i|Satisfy|Comic+Neue:300,300i,400,400i,700,700i" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'vendor/animate.css/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/admin_dashboard.css' %}" rel="stylesheet">
+    <style>
+        /* Additional styles for sidebar integration */
+        .dashboard-section {
+            padding-top: 20px;
+        }
+        .sidebar {
+            background: #343a40;
+            color: white;
+            min-height: calc(100vh - 140px);
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 10px 15px;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar .nav-link i {
+            margin-right: 10px;
+        }
+        .main-content-area {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- ======= Top Bar ======= -->
+    <section id="topbar" class="d-flex align-items-center fixed-top">
+        <div class="container-fluid container-xl d-flex align-items-center justify-content-center justify-content-lg-start">
+            <i class="bi bi-phone d-flex align-items-center"><span>+250 782 987 011</span></i>
+            <i class="bi bi-clock ms-4 d-none d-lg-flex align-items-center"><span>Wed-Mon: 8:00 AM - 7:00 PM</span></i>
+        </div>
+    </section>
+
+    <section class="dashboard-section">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar Column -->
+                <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar">
+                    <div class="position-sticky pt-3">
+                        <div class="text-center py-4">
+                            <h3>Mocha Cafe</h3>
+                            <p class="text-white-50">Admin Dashboard</p>
+                            <hr class="mt-2 mb-4" style="border-color: rgba(255,255,255,0.1);">
+                        </div>
+                        <ul class="nav flex-column">
+                             <li class="nav-item">
+                                <a class="nav-link text-white" href="{% url 'orders:admin_dashboard' %}">
+                                    <i class="bi bi-speedometer2"></i>
+                                    Dashboard
+                                </a>
+                            </li>
+                                <li class="nav-item">
+                               <a href="{% url 'payments:invoice_dashboard' %}" class="nav-link text-white">
+                                <i class="bi bi-box-arrow-right"></i> Manage Invoices
+                            </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{% url 'orders:cancelled_orders' %}">
+                                    <i class="bi bi-trash"></i>
+                                    Cancelled Orders
+                                a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{% url 'reservations:table_dashboard' %}">
+                                    <i class="bi bi-table"></i>
+                                    Tables
+                                </a>
+                            </li>
+                          {% if request.user.is_authenticated and request.user.staff.role == "admin" %}
+<li class="nav-item">
+    <a class="nav-link text-white" href="{% url 'reports:sales_report' %}">
+        <i class="bi bi-graph-up"></i>
+        Sales Reports
+    </a>
+</li>
+ <li class="nav-item">
+                                <a class="nav-link text-white" href="{% url 'reports:staff_report' %}">
+                                    <i class="bi bi-graph-up"></i>
+                                    Staff Reports
+                                </a>
+                            </li>
+{% else %}
+<li class="nav-item">
+    <a class="nav-link text-white" href="#" onclick="alert('You are not authorized to view this page.'); return false;">
+        <i class="bi bi-graph-up"></i>
+        Sales Reports
+    </a>
+</li>
+ <li class="nav-item">
+                                <a class="nav-link text-white" onclick="alert('You are not authorized to view this page.'); return false;">
+                                    <i class="bi bi-graph-up"></i>
+                                    Staff Reports
+                                </a>
+                            </li>
+{% endif %}
+
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{% url 'reservations:table_landing_page' %}" target="_blank">
+                                    <i class="bi bi-box"></i>
+                                    Menu Items
+                                </a>
+                            </li>
+                              <li class="nav-item">
+                               <a href="/" class="nav-link text-white">
+                                <i class="bi bi-box-arrow-right"></i>  Back to Home
+                            </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'menu:item_dashboard' %}" class="nav-link text-white">
+                                 <i class="bi bi-box-arrow-right"></i>Item Dashboard
+                             </a>
+                             </li>
+                            <li class="nav-item mt-4">
+                                <a class="nav-link text-white" href="{% url 'users:logout' %}">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <!-- Main Content Column -->
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content-area">
+                    <div class="dashboard-header animate__animated animate__fadeIn">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h2 class="dashboard-title">Branding Settings</h2>
+                                <p class="text-muted">Manage your restaurant's branding</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Branding Form Section -->
+                    <div class="dashboard-card animate__animated animate__fadeInUp">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4><i class="bi bi-palette"></i> Branding Configuration</h4>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {{ form|crispy }}
+                                <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vendor JS Files -->
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
+    <script src="{% static 'vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+    <script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/php-email-form/validate.js' %}"></script>
+
+    <!-- Template Main JS File -->
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
