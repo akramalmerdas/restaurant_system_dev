@@ -26,6 +26,16 @@
   <link href="{% static 'vendor/glightbox/css/glightbox.min.css'%}" rel="stylesheet">
   <link href="{% static 'vendor/swiper/swiper-bundle.min.css'%}" rel="stylesheet">
 
+  <!-- Dynamic Branding Colors -->
+  {% if branding %}
+  <style>
+    :root {
+      --primary-color: {{ branding.primary_color }};
+      --secondary-color: {{ branding.secondary_color }};
+    }
+  </style>
+  {% endif %}
+
   <!-- Template Main CSS File -->
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
 
@@ -51,7 +61,13 @@
         <!-- <h1><a href="{% url 'core:index' %}">Mocha</a></h1> -->
 
         <!-- Uncomment below if you prefer to use an image logo -->
-      <a href="{% url 'core:index' %}"><img src="{% static 'img/logo.png' %}" alt="" class="img-fluid"></a>
+      <a href="{% url 'core:index' %}">
+        {% if branding.logo %}
+          <img src="{{ branding.logo.url }}" alt="{{ branding.name }} Logo" class="img-fluid">
+        {% else %}
+          <img src="{% static 'img/logo.png' %}" alt="" class="img-fluid">
+        {% endif %}
+      </a>
       <!-- <h1 class="logo me-auto"><a href="{% url 'core:index' %}">Mocha Cafe</a></h1> -->
     </div>
       <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
@@ -103,6 +119,9 @@
         
    
      <!--   <li><a class="nav-link scrollto" href="#chefs">Chefs</a></li>-->
+          {% if user.is_staff %}
+          <li><a class="nav-link scrollto" href="{% url 'edit_branding' %}">Customize</a></li>
+          {% endif %}
           <li><a class="nav-link scrollto" href="#gallery">Gallery</a></li>
           <!-- <li><a class="nav-link scrollto" href="#events">Events</a></li> -->
           <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
@@ -130,7 +149,7 @@
             <div class="carousel-container">
               <div class="carousel-content">
                 <h2 class="animate__animated animate__fadeInDown"><span>Mocha</span>Cafe</h2>
-                <p class="animate__animated animate__fadeInUp">Memories of <span style="color:var(--color-orange-light) ;">joy</span> and <span style="color:var(--color-orange-light) ;">happiness</span></p>
+                <p class="animate__animated animate__fadeInUp">{% if branding.slogan %}{{ branding.slogan }}{% else %}Memories of <span style="color:var(--color-orange-light) ;">joy</span> and <span style="color:var(--color-orange-light) ;">happiness</span>{% endif %}</p>
                 <div>
                   <a href="#menu" class="btn-menu animate__animated animate__fadeInUp scrollto">Our Menu</a>
            <!--     <a href="#book-a-table" class="btn-book animate__animated animate__fadeInUp scrollto">Book a Table</a>-->

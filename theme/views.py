@@ -1,3 +1,19 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from core.decorators import staff_member_required
+from django.contrib import messages
+from .models import Branding
+from .forms import BrandingForm
 
-# Create your views here.
+@staff_member_required
+def edit_branding(request):
+    branding = Branding.objects.first()
+    if request.method == 'POST':
+        form = BrandingForm(request.POST, request.FILES, instance=branding)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Branding updated successfully!')
+            return redirect('edit_branding')
+    else:
+        form = BrandingForm(instance=branding)
+
+    return render(request, 'theme/edit_branding.html', {'form': form})
