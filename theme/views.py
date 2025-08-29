@@ -6,7 +6,7 @@ from .forms import BrandingForm
 
 @staff_member_required
 def edit_branding(request):
-    branding = Branding.objects.first()
+    branding, created = Branding.objects.get_or_create(id=1, defaults={'name': 'Default'})
     if request.method == 'POST':
         form = BrandingForm(request.POST, request.FILES, instance=branding)
         if form.is_valid():
