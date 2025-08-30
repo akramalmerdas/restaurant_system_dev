@@ -7,7 +7,7 @@
   <meta charset="utf-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Mocha Cafe</title>
+  <title>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -30,8 +30,8 @@
   {% if branding %}
   <style>
     :root {
-      --primary-color: {{ branding.primary_color }};
-      --secondary-color: {{ branding.secondary_color }};
+      --color-orange-light: {{ branding.primary_color|default:"#d54b27" }};
+      --color-orange-medium: {{ branding.secondary_color|default:"#ffa012" }};
     }
   </style>
   {% endif %}
@@ -148,7 +148,7 @@
           <div class="carousel-item active" style="background-image: url({% static 'img/slide/slide-1.webp' %});">
             <div class="carousel-container">
               <div class="carousel-content">
-                <h2 class="animate__animated animate__fadeInDown"><span>Mocha</span>Cafe</h2>
+                <h2 class="animate__animated animate__fadeInDown"><span>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</span></h2>
                 <p class="animate__animated animate__fadeInUp">{% if branding.slogan %}{{ branding.slogan }}{% else %}Memories of <span style="color:var(--color-orange-light) ;">joy</span> and <span style="color:var(--color-orange-light) ;">happiness</span>{% endif %}</p>
                 <div>
                   <a href="#menu" class="btn-menu animate__animated animate__fadeInUp scrollto">Our Menu</a>
@@ -218,7 +218,7 @@
           <div class="col-lg-7 d-flex flex-column justify-content-center align-items-stretch">
 
             <div class="content">
-              <h3><span style="color:#d54b27;">Mocha Cafe</span> <strong>not only a cafe</strong></h3>
+              <h3><span style="color:#d54b27;">{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</span> <strong>not only a cafe</strong></h3>
               <p>
                 Welcome to Mocha Cafe, a charming eatery located in Gacuriro. Our cafe offers a unique fusion of Yemeni, Arabic, and International cuisine, providing a diverse and delightful dining experience. Enjoy our cozy indoor seating or relax in our beautiful garden area, perfect for families. Whether you're craving traditional Yemeni Food, a hearty American breakfast, or an authentic Italian espresso, Mocha Cafe is your go-to destination for delicious meals and a welcoming atmosphere. Join us for an unforgettable culinary journey!
               </p>
@@ -237,7 +237,7 @@
       <div class="container">
 
         <div class="section-title">
-          <h2>Why choose <span>Mocha Cafe</span></h2>
+          <h2>Why choose <span>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</span></h2>
           <p> Our welcoming atmosphere, complete with cozy indoor seating and a serene garden area, provides an ideal setting for relaxing, working and socializing.</p>
         </div>
 
@@ -913,8 +913,8 @@
   <!-- ======= Footer ======= -->
   <footer id="footer">
     <div class="container">
-      <h3>Mocha Cafe</h3>
-      <p>Memories of joy and happiness.</p>
+      <h3>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</h3>
+      <p>{% if branding.slogan %}{{ branding.slogan }}{% else %}Memories of joy and happiness.{% endif %}</p>
       <div class="social-links">
         <a href="https://www.instagram.com/p/CCh5q3SAd6B/?igshid=1bvk0v1yjttl6&img_index=1" class="facebook"><i class="bx bxl-facebook"></i></a>
         <a href="https://www.instagram.com/p/CCh5q3SAd6B/?igshid=1bvk0v1yjttl6&img_index=1" class="instagram"><i class="bx bxl-instagram"></i></a>
