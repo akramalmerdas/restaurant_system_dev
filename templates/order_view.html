@@ -5,7 +5,7 @@
     {% include 'includes/delete_order_modal.html' %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Detail - Mocha Cafe</title>
+    <title>Order Detail - {% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
@@ -21,7 +21,7 @@
     <!-- Header -->
     <header class="header" id="header">
         <div class="container">
-            <a href="/" class="logo">Mocha Cafe</a>
+            <a href="/" class="logo">{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</a>
             <nav>
                 <ul class="nav-links">
                     <li><a href="{% url 'core:index' %}">Home</a></li>

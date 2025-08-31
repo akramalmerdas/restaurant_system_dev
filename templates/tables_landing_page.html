@@ -5,7 +5,7 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mocha Cafe- Table Management</title>
+    <title>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}- Table Management</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="{% static 'css/tables_landing.css' %}" rel="stylesheet">
@@ -20,7 +20,7 @@
         <div class="d-flex justify-content-between align-items-center">
             <div class="brand">
                 <i class="fas fa-utensils"></i>
-                Mocha<span class="restro">Cafe</span>
+                {% if branding.name %}{{ branding.name }}{% else %}Mocha<span class="restro">Cafe</span>{% endif %}
             </div>
             <div class="time-display">
                 <i class="fas fa-clock me-2"></i>

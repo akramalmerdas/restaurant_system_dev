@@ -4,7 +4,7 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - Mocha Cafe</title>
+    <title>Sign Up - {% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</title>
 
     <!-- Favicons -->
     <link href={% static 'img/favicon.png' %} rel="icon">
@@ -125,7 +125,7 @@
         <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
             <div class="logo me-auto">
                 <h1><a href="{% url 'core:index' %}">Mocha</a></h1>
-                <a href="{% url 'core:index' %}"><img src="{% static 'img/logo.png' %}" alt="Mocha Cafe Logo" class="img-fluid"></a>
+                <a href="{% url 'core:index' %}"><img src="{% static 'img/logo.png' %}" alt="{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %} Logo" class="img-fluid"></a>
             </div>
         </div>
     </header>

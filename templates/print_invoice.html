@@ -95,12 +95,12 @@
 </head>
 <body>
     <div class="header">
-        <h1>Mocha Cafe</h1>
+        <h1>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</h1>
         <p>Invoice #{{ invoice.display_id }}</p>
     </div>
     <div class="logo-container">
         <!-- Make sure the path to your logo is correct -->
-        <img src="{% static 'img/logo.png' %}" alt="Mocha Cafe Logo">
+        <img src="{% if branding.logo %}{{ branding.logo.url }}{% else %}{% static 'img/logo.png' %}{% endif %}" alt="{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %} Logo">
     </div>
     <div class="header">
         <h1>Momo code 027247</h1>
@@ -166,7 +166,7 @@
         </div>
 
     <div class="footer">
-        <p>Thank you for visiting Mocha Cafe!</p>
+        <p>Thank you for visiting {% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}!</p>
         <p>Printed on {{ now|date:"Y-m-d H:i" }}</p>
     </div>
 

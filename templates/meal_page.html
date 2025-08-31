@@ -6,8 +6,8 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>{{ item.name }} - Mocha Cafe</title>
-  <meta content="Mocha Cafe - Order your favorite meals" name="description">
+  <title>{{ item.name }} - {% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</title>
+  <meta content="{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %} - Order your favorite meals" name="description">
   <meta content="cafe, restaurant, food, order" name="keywords">
 
   <!-- Favicons -->
@@ -454,7 +454,7 @@
   <!-- ======= Footer ======= -->
   <footer id="footer">
     <div class="container">
-      <h3>Mocha Cafe</h3>
+      <h3>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</h3>
       <p>Memories of joy and happiness.</p>
       <div class="social-links">
         <a href="https://www.instagram.com/p/CCh5q3SAd6B/?igshid=1bvk0v1yjttl6&img_index=1" class="facebook"><i class="bx bxl-facebook"></i></a>

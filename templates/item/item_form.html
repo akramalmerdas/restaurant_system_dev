@@ -3,7 +3,7 @@
 <head>
     {% load static %}
     <meta charset="UTF-8">
-    <title>Add / Edit Item - Mocha Cafe</title>
+    <title>Add / Edit Item - {% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,600,700|Satisfy" rel="stylesheet">
     <!-- Bootstrap CSS -->
@@ -23,7 +23,7 @@
     <div class="container-fluid px-0" style="background:#222;">
         <div class="container-xl d-flex align-items-center justify-content-between py-2">
             <div>
-                <span class="fs-3 fw-bold" style="font-family:'Satisfy',cursive;color:#fff;">Mocha Cafe</span>
+                <span class="fs-3 fw-bold" style="font-family:'Satisfy',cursive;color:#fff;">{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</span>
             </div>
             <div>
                 <a href="/" class="btn btn-link text-white me-2">Home</a>

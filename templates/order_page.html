@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Review - Mocha Cafe</title>
+    <title>Order Review - {% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</title>
     
     <!-- Vendor CSS Files -->
     <link href="{% static 'vendor/animate.css/animate.min.css' %}" rel="stylesheet">
@@ -35,7 +35,7 @@
       </script>
     <header id="header" class="fixed-top d-flex align-items-center">
         <div class="container-fluid container-xl d-flex align-items-center justify-content-lg-between">
-            <h1 class="logo me-auto me-lg-0"><a href="/">Mocha Cafe</a></h1>
+            <h1 class="logo me-auto me-lg-0"><a href="/">{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</a></h1>
             <nav id="navbar" class="navbar order-last order-lg-0">
                 <ul>
                     <li><a class="nav-link scrollto" href="/">Home</a></li>
