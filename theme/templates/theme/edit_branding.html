@@ -1,21 +1,153 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block title %}Customize Branding - {% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}{% endblock %}
+<head>
+  {% load static %}
 
-{% block content %}
-<main id="main">
-    <section class="container" style="padding-top: 120px;">
-        <h2>Edit Branding</h2>
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-success">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-        </form>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Customize Branding - {% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</title>
+
+  <!-- Favicons -->
+  <link href={% static 'img/favicon.png' %} rel="icon">
+  <link href={% static "img/apple-touch-icon.png" %} rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,600,600i,700,700i|Satisfy|Comic+Neue:300,300i,400,400i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .edit-branding-section {
+      padding: 120px 0 60px;
+      min-height: 100vh;
+    }
+    .edit-branding-card {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .edit-branding-header {
+      background: var(--color-orange-light, #d54b27);
+      color: #fff;
+      padding: 1rem 1.5rem;
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+      font-family: "Satisfy", sans-serif;
+      font-size: 1.5rem;
+    }
+    .edit-branding-body {
+      padding: 2rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-label {
+      font-weight: 600;
+      color: #444444;
+    }
+    .form-control {
+      height: 44px;
+      border-radius: 8px;
+      border: 1px solid #ced4da;
+    }
+    .btn-save {
+      background: var(--color-orange-light, #d54b27);
+      color: #fff;
+      padding: 10px 30px;
+      border: 0;
+      border-radius: 50px;
+      transition: 0.3s;
+    }
+    .btn-save:hover {
+      background: var(--color-orange-medium, #ffa012);
+    }
+  </style>
+</head>
+
+<body>
+  <header id="header" class="fixed-top d-flex align-items-center header-transparent">
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+      <div class="logo me-auto">
+        <h1><a href="{% url 'core:index' %}">{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</a></h1>
+      </div>
+      <nav id="navbar" class="navbar order-last order-lg-0">
+        <ul>
+          <li><a class="nav-link scrollto" href="{% url 'core:index' %}">Home</a></li>
+          {% if user.is_staff %}
+          <li><a class="nav-link scrollto" href="{% url 'orders:admin_dashboard' %}">Dashboard</a></li>
+          {% endif %}
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="edit-branding-section">
+      <div class="container">
+        <div class="edit-branding-card">
+          <div class="edit-branding-header">
+            Customize Your Website
+          </div>
+          <div class="edit-branding-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                  <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
+                  {{ form.name }}
+                </div>
+                <div class="form-group">
+                  <label for="{{ form.logo.id_for_label }}" class="form-label">{{ form.logo.label }}</label>
+                  {{ form.logo }}
+                </div>
+                <div class="form-group">
+                  <label for="{{ form.slogan.id_for_label }}" class="form-label">{{ form.slogan.label }}</label>
+                  {{ form.slogan }}
+                </div>
+                <div class="form-group">
+                  <label for="{{ form.primary_color.id_for_label }}" class="form-label">{{ form.primary_color.label }}</label>
+                  {{ form.primary_color }}
+                </div>
+                <div class="form-group">
+                  <label for="{{ form.secondary_color.id_for_label }}" class="form-label">{{ form.secondary_color.label }}</label>
+                  {{ form.secondary_color }}
+                </div>
+                <div class="text-center">
+                  <button type="submit" class="btn btn-save">Save Changes</button>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </section>
-</main>
-{% endblock %}
+  </main>
+
+  <footer id="footer">
+    <div class="container">
+      <h3>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</h3>
+      <div class="copyright">
+        &copy; Copyright <strong><span>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</span></strong>. All Rights Reserved
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
