@@ -1,0 +1,8 @@
+{% if branding %}
+<style>
+  :root {
+    --primary-color: {{ branding.primary_color|default:"#d54b27" }};
+    --secondary-color: {{ branding.secondary_color|default:"#ffa012" }};
+  }
+</style>
+{% endif %}

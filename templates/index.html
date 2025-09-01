@@ -27,14 +27,7 @@
   <link href="{% static 'vendor/swiper/swiper-bundle.min.css'%}" rel="stylesheet">
 
   <!-- Dynamic Branding Colors -->
-  {% if branding %}
-  <style>
-    :root {
-      --color-orange-light: {{ branding.primary_color|default:"#d54b27" }};
-      --color-orange-medium: {{ branding.secondary_color|default:"#ffa012" }};
-    }
-  </style>
-  {% endif %}
+  {% include 'includes/branding_styles.html' %}
 
   <!-- Template Main CSS File -->
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
@@ -65,7 +58,7 @@
         {% if branding.logo %}
           <img src="{{ branding.logo.url }}" alt="{{ branding.name }} Logo" class="img-fluid">
         {% else %}
-          <img src="{% static 'img/logo.png' %}" alt="" class="img-fluid">
+          <img src="{% static 'img/logo.png' %}" alt="Mocha Cafe Logo" class="img-fluid">
         {% endif %}
       </a>
       <!-- <h1 class="logo me-auto"><a href="{% url 'core:index' %}">Mocha Cafe</a></h1> -->

@@ -10,6 +10,9 @@
 # General
 --------------------------------------------------------------*/
 :root {
+    --primary-color: #d54b27;
+    --secondary-color: #ffa012;
+
     --color-green-light: #18d26e;
     --color-dark: #35322d;
     --color-darkest: #433f39;
@@ -35,9 +38,6 @@
     --color-very-light-background: #f8f9fa;
     --color-red: #ff0000;
     --color-orange: #d56127;
-    --color-orange-medium: #ffa012;
-    --color-orange-light: #d54b27;
-   /* --color-orange-light: #ffb03b;*/
     --color-orange-lighter: #ffc064;
     --color-orange-lightest: #ffc56e;
     --color-orange-pale: #ffcf88;
@@ -57,11 +57,11 @@ body {
 
 a {
   text-decoration: none;
-  color: var(--color-orange-light);
+  color: var(--primary-color);
 }
 
 a:hover {
-  color: var(--color-orange-lightest);
+  color: var(--secondary-color);
   text-decoration: none;
 }
 
@@ -84,7 +84,7 @@ h6 {
   right: 15px;
   bottom: 15px;
   z-index: 996;
-  background: var(--color-orange-light);
+  background: var(--primary-color);
   width: 40px;
   height: 40px;
   border-radius: 50px;
@@ -98,7 +98,7 @@ h6 {
 }
 
 .back-to-top:hover {
-  background: var(--color-orange-lighter);
+  background: var(--secondary-color);
   color: #fff;
 }
 
@@ -126,7 +126,7 @@ h6 {
 }
 
 #topbar i {
-  color: var(--color-orange-light);
+  color: var(--primary-color);
   line-height: 0;
 }
 
@@ -248,7 +248,7 @@ h6 {
 # Book a table button Menu
 --------------------------------------------------------------*/
 .book-a-table-btn {
-  background: var(--color-orange-light);
+  background: var(--primary-color);
   color: #fff;
   border-radius: 50px;
   margin: 0 0 0 20px;
@@ -261,7 +261,7 @@ h6 {
 }
 
 .book-a-table-btn:hover {
-  background: var(--color-orange-medium);
+  background: var(--secondary-color);
   color: #fff;
 }
 
@@ -320,7 +320,7 @@ h6 {
 .navbar .active,
 .navbar .active:focus,
 .navbar li:hover>a {
-  color: var(--color-orange-light);
+  color: var(--primary-color);
 }
 
 .navbar .dropdown ul {
@@ -357,7 +357,7 @@ h6 {
 .navbar .dropdown ul a:hover,
 .navbar .dropdown ul .active:hover,
 .navbar .dropdown ul li:hover>a {
-  color: var(--color-orange-light);
+  color: var(--primary-color);
 }
 
 .navbar .dropdown:hover>ul {
@@ -531,7 +531,7 @@ h6 {
 .navbar-mobile a:hover,
 .navbar-mobile .active,
 .navbar-mobile li:hover>a {
-  color: var(--color-orange-light);
+  color: var(--primary-color);
 }
 
 .navbar-mobile .getstarted,
@@ -566,7 +566,7 @@ h6 {
 .navbar-mobile .dropdown ul a:hover,
 .navbar-mobile .dropdown ul .active:hover,
 .navbar-mobile .dropdown ul li:hover>a {
-  color: var(--color-orange-light);
+  color: var(--primary-color);
 }
 
 .navbar-mobile .dropdown>.dropdown-active {
@@ -657,7 +657,7 @@ h6 {
 }
 
 #hero h2 span {
-  color: var(--color-orange-light);
+  color: var(--primary-color);
 }
 
 #hero p {
@@ -736,12 +736,12 @@ h6 {
   margin: 0 10px;
   animation-delay: 0.8s;
   color: #fff;
-  border: 2px solid var(--color-orange-light);
+  border: 2px solid var(--primary-color);
 }
 
 #hero .btn-menu:hover,
 #hero .btn-book:hover {
-  background: var(--color-orange-light);
+  background: var(--primary-color);
   color: #fff;
 }
 
@@ -786,7 +786,7 @@ section {
 }
 
 .section-title h2 span {
-  color: var(--color-orange-light);
+  color: var(--primary-color);
 }
 
 .section-title p {
@@ -906,7 +906,7 @@ section {
 
 .about .content ul i {
   font-size: 20px;
-  color: var(--color-orange-light);
+  color: var(--primary-color);
   position: absolute;
   left: 0;
   top: 2px;
@@ -927,7 +927,7 @@ section {
 .about .play-btn {
   width: 94px;
   height: 94px;
-  background: radial-gradient(var(--color-orange-light) 50%, rgba(255, 176, 59, 0.4) 52%);
+  background: radial-gradient(var(--primary-color) 50%, rgba(255, 176, 59, 0.4) 52%);
   border-radius: 50%;
   display: block;
   position: absolute;
@@ -970,7 +970,7 @@ section {
 }
 
 .about .play-btn:hover::after {
-    border-left: 15px solid var(--color-orange-light);
+    border-left: 15px solid var(--primary-color);
     transform: scale(20);
 }
 
@@ -1055,7 +1055,7 @@ section {
 }
 
 .why-us .box:hover {
-  background: var(--color-orange-light);
+  background: var(--primary-color);
   padding: 30px 30px 70px 30px;
   box-shadow: 10px 15px 30px rgba(0, 0, 0, 0.18);
 }
@@ -1088,14 +1088,14 @@ section {
   margin: 0 3px 10px 3px;
   transition: all ease-in-out 0.3s;
   background: #fff;
-  border: 2px solid var(--color-orange-light);
+  border: 2px solid var(--primary-color);
   border-radius: 50px;
 }
 
 .menu #menu-flters li:hover,
 .menu #menu-flters li.filter-active {
   color: #fff;
-  background: var(--color-orange-light);
+  background: var(--primary-color);
 }
 
 .menu #menu-flters li:last-child {
@@ -1136,7 +1136,7 @@ section {
   position: relative;
   z-index: 3;
   font-weight: 700;
-  color: var(--color-orange);
+  color: var(--primary-color);
 }
 
 .menu .menu-content span {
@@ -1179,7 +1179,7 @@ section {
     padding: 5px 10px;
     border-radius: 4px;
     background: rgba(255, 176, 59, 0.1);
-    color: var(--color-orange);
+  color: var(--primary-color);
     margin-top: 5px;
     display: inline-block;
   }
@@ -1275,13 +1275,13 @@ section {
 }
 
 .menu .menu-item-link:hover .item-name {
-    color: #ffb03b !important;
+    color: var(--primary-color) !important;
 }
 
 .menu .menu-content .price {
     font-size: 16px !important;
     font-weight: 600 !important;
-    color: #ffb03b !important;
+    color: var(--primary-color) !important;
     background: #ffffff !important;
     padding-left: 10px !important;
     position: relative !important;
@@ -1295,14 +1295,14 @@ section {
     margin-right: 20px !important;
     border-radius: 50% !important;
     overflow: hidden !important;
-    border: 3px solid #ffb03b !important;
+    border: 3px solid var(--primary-color) !important;
     box-shadow: 0 0 10px rgba(255, 176, 59, 0.2) !important;
     transition: all 0.3s ease !important;
 }
 
 .menu .menu-img-wrapper:hover {
     transform: scale(1.05) !important;
-    border-color: #ffa012 !important;
+    border-color: var(--secondary-color) !important;
 }
 
 .menu .menu-img {
@@ -1359,12 +1359,12 @@ section {
 }
 
 .specials .nav-link:hover {
-  color: var(--color-orange-light);
+  color: var(--primary-color);
 }
 
 .specials .nav-link.active {
-  color: var(--color-orange-light);
-  border-color: var(--color-orange-light);
+  color: var(--primary-color);
+  border-color: var(--primary-color);
 }
 
 .specials .tab-pane.active {
@@ -1394,7 +1394,7 @@ section {
 
   .specials .nav-link.active {
     color: #fff;
-    background: var(--color-orange-light);
+    background: var(--primary-color);
   }
 }
 
@@ -1443,7 +1443,7 @@ section {
 .events .event-item h3 {
   font-weight: 600;
   font-size: 26px;
-  color: var(--color-orange-light);
+  color: var(--primary-color);
 }
 
 .events .event-item .price {
@@ -1454,7 +1454,7 @@ section {
 }
 
 .events .event-item .price span {
-  border-bottom: 2px solid var(--color-orange-light);
+  border-bottom: 2px solid var(--primary-color);
 }
 
 .events .event-item ul {
@@ -1469,7 +1469,7 @@ section {
 .events .event-item ul i {
   font-size: 20px;
   padding-right: 4px;
-  color: var(--color-orange-light);
+  color: var(--primary-color);
 }
 
 .events .event-item p:last-child {
@@ -1489,7 +1489,7 @@ section {
 }
 
 .events .swiper-pagination .swiper-pagination-bullet-active {
-  background-color: var(--color-orange-light);
+  background-color: var(--primary-color);
 }
 
 /*--------------------------------------------------------------
@@ -1567,7 +1567,7 @@ section {
 }
 
 .book-a-table .php-email-form button[type=submit] {
-  background: var(--color-orange-light);
+  background: var(--primary-color);
   border: 0;
   padding: 10px 24px;
   color: #fff;
@@ -1576,7 +1576,7 @@ section {
 }
 
 .book-a-table .php-email-form button[type=submit]:hover {
-  background: var(--color-orange-medium);
+  background: var(--secondary-color);
 }
 
 /*--------------------------------------------------------------
@@ -1685,7 +1685,7 @@ section {
 }
 
 .chefs .member .social a:hover {
-  color: var(--color-orange-light);
+  color: var(--primary-color);
 }
 
 .chefs .member .social i {
@@ -1763,7 +1763,7 @@ section {
 }
 
 .testimonials .testimonial-item .stars {
-  color: var(--color-orange-light);
+  color: var(--primary-color);
   margin-bottom: 10px;
 }
 
@@ -1805,7 +1805,7 @@ section {
 }
 
 .testimonials .swiper-pagination .swiper-pagination-bullet-active {
-  background-color: var(--color-orange-light);
+  background-color: var(--primary-color);
 }
 
 @media (min-width: 992px) {
@@ -1828,7 +1828,7 @@ section {
 
 .contact .info i {
   font-size: 20px;
-  color: var(--color-orange-light);
+  color: var(--primary-color);
   float: left;
   width: 44px;
   height: 44px;
@@ -1857,7 +1857,7 @@ section {
 }
 
 .contact .info:hover i {
-  background: var(--color-orange-light);
+  background: var(--primary-color);
   color: #fff;
 }
 
@@ -1925,7 +1925,7 @@ section {
 }
 
 .contact .php-email-form button[type=submit] {
-  background: var(--color-orange-light);
+  background: var(--primary-color);
   border: 0;
   padding: 10px 24px;
   color: #fff;
@@ -1934,7 +1934,7 @@ section {
 }
 
 .contact .php-email-form button[type=submit]:hover {
-  background: var(--color-orange-medium);
+  background: var(--secondary-color);
 }
 
 @keyframes animate-loading {
@@ -1961,7 +1961,7 @@ section {
 #footer h3 {
   font-size: 36px;
   font-weight: 700;
-  color: var(--color-orange-light);
+  color: var(--primary-color);
   position: relative;
   padding: 0;
   margin: 0 0 15px 0;
@@ -1994,7 +1994,7 @@ section {
 }
 
 #footer .social-links a:hover {
-  background: var(--color-orange-light);
+  background: var(--primary-color);
 }
 
 #footer .copyright {
@@ -2221,7 +2221,7 @@ th:nth-child(1), td:nth-child(1) {
 }
 
 .floating-cart-btn:hover {
-  background: var(--color-orange-medium, #ffa012);
+  background: var(--secondary-color, #ffa012);
   color: #fff;
   box-shadow: 0 8px 24px rgba(0,0,0,0.22);
   transform: translateY(-4px) scale(1.05);

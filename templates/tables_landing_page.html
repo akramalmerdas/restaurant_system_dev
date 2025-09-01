@@ -6,12 +6,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}- Table Management</title>
+
+    <!-- Dynamic Branding Colors -->
+    {% include 'includes/branding_styles.html' %}
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="{% static 'css/tables_landing.css' %}" rel="stylesheet">
-  <style>
-
-    </style>
 </head>
 <body data-set-table-number-url="{% url 'reservations:set_table_number' %}"
       data-menu-url="{% url 'core:index' %}#menu"

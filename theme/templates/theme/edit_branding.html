@@ -20,60 +20,12 @@
   <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
   <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
 
+  <!-- Dynamic Branding Colors -->
+  {% include 'includes/branding_styles.html' %}
+
   <!-- Main CSS File -->
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
-
-  <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    .edit-branding-section {
-      padding: 120px 0 60px;
-      min-height: 100vh;
-    }
-    .edit-branding-card {
-      background: #fff;
-      border-radius: 15px;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    .edit-branding-header {
-      background: var(--color-orange-light, #d54b27);
-      color: #fff;
-      padding: 1rem 1.5rem;
-      border-top-left-radius: 15px;
-      border-top-right-radius: 15px;
-      font-family: "Satisfy", sans-serif;
-      font-size: 1.5rem;
-    }
-    .edit-branding-body {
-      padding: 2rem;
-    }
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-    .form-label {
-      font-weight: 600;
-      color: #444444;
-    }
-    .form-control {
-      height: 44px;
-      border-radius: 8px;
-      border: 1px solid #ced4da;
-    }
-    .btn-save {
-      background: var(--color-orange-light, #d54b27);
-      color: #fff;
-      padding: 10px 30px;
-      border: 0;
-      border-radius: 50px;
-      transition: 0.3s;
-    }
-    .btn-save:hover {
-      background: var(--color-orange-medium, #ffa012);
-    }
-  </style>
+  <link href="{% static 'css/edit_branding.css' %}" rel="stylesheet">
 </head>
 
 <body>
@@ -109,26 +61,18 @@
             {% endif %}
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="form-group">
-                  <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
-                  {{ form.name }}
-                </div>
-                <div class="form-group">
-                  <label for="{{ form.logo.id_for_label }}" class="form-label">{{ form.logo.label }}</label>
-                  {{ form.logo }}
-                </div>
-                <div class="form-group">
-                  <label for="{{ form.slogan.id_for_label }}" class="form-label">{{ form.slogan.label }}</label>
-                  {{ form.slogan }}
-                </div>
-                <div class="form-group">
-                  <label for="{{ form.primary_color.id_for_label }}" class="form-label">{{ form.primary_color.label }}</label>
-                  {{ form.primary_color }}
-                </div>
-                <div class="form-group">
-                  <label for="{{ form.secondary_color.id_for_label }}" class="form-label">{{ form.secondary_color.label }}</label>
-                  {{ form.secondary_color }}
-                </div>
+                {% for field in form %}
+                  <div class="form-group">
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                      <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                      <div class="alert alert-danger">{{ error }}</div>
+                    {% endfor %}
+                  </div>
+                {% endfor %}
                 <div class="text-center">
                   <button type="submit" class="btn btn-save">Save Changes</button>
                 </div>
