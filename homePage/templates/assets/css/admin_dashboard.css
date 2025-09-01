@@ -37,7 +37,7 @@ body {
 }
 
 .card-header {
-    background: var(--color-orange-light);
+    background: var(--primary-color);
     color: #fff;
     border: none;
     padding: 1rem 1.5rem;
@@ -108,13 +108,13 @@ body {
 }
 
 .btn-view {
-    background: var(--color-orange-light);
+    background: var(--primary-color);
     color: #fff;
     border: none;
 }
 
 .btn-view:hover {
-    background: var(--color-orange-lighter);
+    background: var(--secondary-color);
     color: #fff;
 }
 
@@ -139,7 +139,7 @@ body {
 }
 
 .btn-home {
-    background: var(--color-orange-light);
+    background: var(--primary-color);
     color: #fff;
     padding: 8px 20px;
     border-radius: 50px;
@@ -149,7 +149,7 @@ body {
 }
 
 .btn-home:hover {
-    background: var(--color-orange-lighter);
+    background: var(--secondary-color);
     color: #fff;
     transform: translateY(-2px);
 }
