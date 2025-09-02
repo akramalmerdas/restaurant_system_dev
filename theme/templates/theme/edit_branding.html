@@ -54,6 +54,14 @@
             Customize Your Website
           </div>
           <div class="edit-branding-body">
+            <!-- DEBUG PRINTS -->
+            <div style="background: #eee; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+              <h4>Debug Info:</h4>
+              <p>Branding Primary Color from context: <strong>{{ branding.primary_color }}</strong></p>
+              <p>Form Primary Color initial value: <strong>{{ form.primary_color.value }}</strong></p>
+            </div>
+            <!-- END DEBUG PRINTS -->
+
             {% if messages %}
                 {% for message in messages %}
                     <div class="alert alert-success">{{ message }}</div>
