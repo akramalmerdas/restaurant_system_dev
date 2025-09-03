@@ -2339,7 +2339,7 @@ th:nth-child(1), td:nth-child(1) {
 .total-price {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #ffb03b;
+  color: var(--secondary-color);
 }
 
 /* Plus and minus buttons */

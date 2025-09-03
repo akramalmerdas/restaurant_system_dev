@@ -1,12 +1,6 @@
-:root {
-    --primary-color: #ffb03b;
-    --primary-light: #fff8e8;
-    --primary-dark: #ffa012;
-}
-
 .order-section {
     padding: 120px 0 60px;
-    background: var(--primary-light);
+    background: #f8f9fa;
     min-height: calc(100vh - 100px);
 }
 
@@ -23,14 +17,14 @@
 }
 
 .order-header h2 {
-    color: var(--primary-color);
+    color: var(--secondary-color);
     font-size: 32px;
     font-weight: 700;
     margin-bottom: 10px;
 }
 
 .badge-order-id {
-    background: var(--primary-color);
+    background: var(--secondary-color);
     color: #fff;
     padding: 8px 16px;
     border-radius: 20px;
@@ -42,7 +36,7 @@
 }
 
 .table thead th {
-    background-color: var(--primary-color);
+    background-color: var(--secondary-color);
     color: #fff;
     border: none;
     padding: 15px;
@@ -69,7 +63,7 @@
 }
 
 .total-amount {
-    background: var(--primary-light);
+    background: #f8f9fa;
     padding: 20px;
     border-radius: 10px;
     margin-top: 30px;
@@ -81,7 +75,7 @@
 }
 
 .total-amount span {
-    color: var(--primary-color);
+    color: var(--secondary-color);
     font-size: 1.5rem;
     font-weight: 700;
     margin-left: 10px;
@@ -92,8 +86,8 @@
 }
 
 .btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
     padding: 12px 30px;
     border-radius: 50px;
     font-weight: 500;
@@ -101,8 +95,8 @@
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-dark);
-    border-color: var(--primary-dark);
+    background-color: #c82333;
+    border-color: #c82333;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(255, 176, 59, 0.3);
 }
@@ -126,7 +120,7 @@
 .empty-order {
     text-align: center;
     padding: 40px;
-    background: var(--primary-light);
+    background: #f8f9fa;
     border-radius: 10px;
     color: #666;
 }
@@ -246,4 +240,3 @@
         padding: 6px 10px;
     }
 }
-

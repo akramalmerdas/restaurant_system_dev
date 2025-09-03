@@ -2,15 +2,9 @@
 
 /* New Styles */
 
-:root {
-    --primary-color: #ffb03b;
-    --primary-light: #fff8e8;
-    --primary-dark: #ffa012;
-}
-
 .about {
     padding: 60px 0;
-    background-color: var(--primary-light);
+    background-color: #f8f9fa;
 }
 
 .meal-card {
@@ -58,7 +52,7 @@
 
 .meal-price-tag {
     display: inline-block;
-    background: var(--primary-color);
+    background: var(--secondary-color);
     padding: 8px 20px;
     border-radius: 25px;
     margin-bottom: 20px;
@@ -71,7 +65,7 @@
 }
 
 .quantity-container {
-    background: var(--primary-light);
+    background: #f8f9fa;
     padding: 15px;
     border-radius: 10px;
 }
@@ -90,16 +84,16 @@
     align-items: center;
     justify-content: center;
     background: white;
-    border: 2px solid var(--primary-color);
+    border: 2px solid var(--secondary-color);
     border-radius: 50%;
     cursor: pointer;
     font-size: 1.2rem;
-    color: var(--primary-color);
+    color: var(--secondary-color);
     transition: all 0.3s ease;
 }
 
 .quantity-button:hover {
-    background: var(--primary-color);
+    background: var(--secondary-color);
     color: white;
 }
 
@@ -114,7 +108,7 @@
 }
 
 .extras-section {
-    background: var(--primary-light);
+    background: #f8f9fa;
     padding: 15px;
     border-radius: 10px;
 }
@@ -133,13 +127,13 @@
 }
 
 .extra-item:hover {
-    border-color: var(--primary-color);
+    border-color: var(--secondary-color);
     transform: translateX(5px);
 }
 
 .extra-item.selected {
-    background-color: var(--primary-light);
-    border-color: var(--primary-color);
+    background-color: #f8f9fa;
+    border-color: var(--secondary-color);
 }
 
 .extra-item .price {
@@ -157,7 +151,7 @@
 }
 
 .notes-section textarea:focus {
-    border-color: var(--primary-color);
+    border-color: var(--secondary-color);
     box-shadow: 0 0 0 0.2rem rgba(255, 176, 59, 0.25);
 }
 
@@ -185,7 +179,7 @@
 }
 
 #addButton {
-    background-color: var(--primary-color);
+    background-color: var(--secondary-color);
     border: none;
     padding: 12px 25px;
     color: white;
@@ -198,7 +192,7 @@
 }
 
 #addButton:hover {
-    background-color: var(--primary-dark);
+    background-color: #c82333;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(255, 176, 59, 0.3);
 }
@@ -210,7 +204,7 @@
 }
 
 .breadcrumb-item a {
-    color: var(--primary-color);
+    color: var(--secondary-color);
     text-decoration: none;
 }
 
@@ -225,8 +219,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--primary-light);
-    color: var(--primary-color);
+    background-color: #f8f9fa;
+    color: var(--secondary-color);
 }
 
 .placeholder-image i {
@@ -238,7 +232,7 @@
 .placeholder-image p {
     font-size: 1.1rem;
     margin: 0;
-    color: var(--primary-dark);
+    color: #c82333;
 }
 
 .home-button-container {
@@ -252,7 +246,7 @@
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background-color: var(--primary-color);
+    background-color: var(--secondary-color);
     color: white;
     text-decoration: none;
     border-radius: 25px;
@@ -261,7 +255,7 @@
 }
 
 .home-button:hover {
-    background-color: var(--primary-dark);
+    background-color: #c82333;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(255, 176, 59, 0.3);
     color: white;

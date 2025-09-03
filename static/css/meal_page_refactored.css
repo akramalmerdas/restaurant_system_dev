@@ -18,7 +18,7 @@ body {
 }
 
 .back-link:hover {
-  color: var(--primary-color, #ffb03b);
+  color: var(--secondary-color);
 }
 
 .back-link i {
@@ -76,7 +76,7 @@ body {
 }
 
 .breadcrumb-item a {
-  color: var(--primary-color, #ffb03b);
+  color: var(--secondary-color);
   text-decoration: none;
 }
 
@@ -172,13 +172,13 @@ body {
 }
 
 .extra-item:hover {
-  border-color: var(--primary-color, #ffb03b);
+  border-color: var(--secondary-color);
 }
 
 .extra-item.selected {
-  background: var(--primary-color, #ffb03b);
+  background: var(--secondary-color);
   color: white;
-  border-color: var(--primary-color, #ffb03b);
+  border-color: var(--secondary-color);
 }
 
 .extra-item-name {
@@ -187,7 +187,7 @@ body {
 
 .extra-item-price {
   font-weight: 600;
-  color: var(--primary-color, #ffb03b);
+  color: var(--secondary-color);
 }
 
 .extra-item.selected .extra-item-price {
@@ -202,7 +202,7 @@ body {
 }
 
 .notes-section textarea:focus {
-  border-color: var(--primary-color, #ffb03b);
+  border-color: var(--secondary-color);
   box-shadow: 0 0 0 0.2rem rgba(255, 176, 59, 0.25);
 }
 
@@ -230,7 +230,7 @@ body {
 }
 
 #addButton {
-  background-color: var(--primary-color, #ffb03b);
+  background-color: var(--secondary-color);
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 50px;
@@ -264,7 +264,7 @@ body {
   font-family: 'Satisfy', cursive;
   font-size: 36px;
   font-weight: 700;
-  color: var(--primary-color, #ffb03b);
+  color: var(--secondary-color);
   position: relative;
   padding: 0;
   margin: 0 0 15px 0;
@@ -286,7 +286,7 @@ body {
 }
 
 #footer .social-links a:hover {
-  background: var(--primary-color, #ffb03b);
+  background: var(--secondary-color);
 }
 
 /* Responsive adjustments */
