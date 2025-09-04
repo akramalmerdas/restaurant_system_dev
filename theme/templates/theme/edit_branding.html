@@ -54,14 +54,6 @@
             Customize Your Website
           </div>
           <div class="edit-branding-body">
-            <!-- DEBUG PRINTS -->
-            <div style="background: #eee; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
-              <h4>Debug Info:</h4>
-              <p>Branding Primary Color from context: <strong>{{ branding.primary_color }}</strong></p>
-              <p>Form Primary Color initial value: <strong>{{ form.primary_color.value }}</strong></p>
-            </div>
-            <!-- END DEBUG PRINTS -->
-
             {% if messages %}
                 {% for message in messages %}
                     <div class="alert alert-success">{{ message }}</div>
@@ -83,6 +75,7 @@
                 {% endfor %}
                 <div class="text-center">
                   <button type="submit" class="btn btn-save">Save Changes</button>
+                  <a href="{% url 'theme:restore_default_branding' %}" class="btn btn-secondary" onclick="return confirm('Are you sure you want to restore the branding to its default values? This action cannot be undone.')">Restore to Default</a>
                 </div>
             </form>
           </div>

@@ -10,9 +10,6 @@
 # General
 --------------------------------------------------------------*/
 :root {
-    --primary-color: #d54b27;
-    --secondary-color: #ffa012;
-
     --color-green-light: #18d26e;
     --color-dark: #35322d;
     --color-darkest: #433f39;
@@ -2342,7 +2339,7 @@ th:nth-child(1), td:nth-child(1) {
 .total-price {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #ffb03b;
+  color: var(--secondary-color);
 }
 
 /* Plus and minus buttons */
