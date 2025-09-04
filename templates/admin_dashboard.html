@@ -83,6 +83,12 @@
                                     Customize
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{% url 'admin:theme_branding_changelist' %}">
+                                    <i class="bi bi-gear"></i>
+                                    Manage Branding
+                                </a>
+                            </li>
                           {% if request.user.is_authenticated and request.user.staff.role == "admin" %}
 <li class="nav-item">
     <a class="nav-link text-white" href="{% url 'reports:sales_report' %}">
