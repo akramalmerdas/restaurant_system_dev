@@ -18,7 +18,7 @@ def edit_branding(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Branding updated successfully!')
-            return redirect('edit_branding')
+            return redirect('theme:edit_branding')
     else:
         form = BrandingForm(instance=branding)
 
