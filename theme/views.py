@@ -26,12 +26,19 @@ def edit_branding(request):
 
 @staff_member_required
 def restore_default_branding(request):
-    branding = Branding.objects.get(id=1)
-    branding.primary_color = '#d54b27'
-    branding.secondary_color = '#ffa012'
-    branding.slogan = 'Memories of joy and happiness'
-    branding.name = 'Mocha Cafe'
-    branding.logo = None
-    branding.save()
-    messages.success(request, 'Branding has been restored to default.')
+    try:
+        default_branding = Branding.objects.get(name='Default Settings')
+        active_branding = Branding.objects.get(id=1)
+
+        active_branding.primary_color = default_branding.primary_color
+        active_branding.secondary_color = default_branding.secondary_color
+        active_branding.slogan = default_branding.slogan
+        active_branding.name = default_branding.name
+        active_branding.logo = default_branding.logo
+        active_branding.save()
+
+        messages.success(request, 'Branding has been restored to the saved default.')
+    except Branding.DoesNotExist:
+        messages.error(request, "The 'Default Settings' profile has not been set up. Please create it in the admin dashboard.")
+
     return redirect('theme:edit_branding')
