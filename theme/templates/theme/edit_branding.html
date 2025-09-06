@@ -83,6 +83,7 @@
                 {% endfor %}
                 <div class="text-center">
                   <button type="submit" class="btn btn-save">Save Changes</button>
+                  <a href="{% url 'theme:restore_default_branding' %}" class="btn btn-secondary" onclick="return confirm('Are you sure you want to restore the branding to its default values? This action cannot be undone.')">Restore to Default</a>
                 </div>
             </form>
           </div>
