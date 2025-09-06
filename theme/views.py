@@ -27,7 +27,7 @@ def edit_branding(request):
 @staff_member_required
 def restore_default_branding(request):
     try:
-        default_branding = Branding.objects.get(name='Default Settings')
+        default_branding = Branding.objects.get(is_default_profile=True)
         active_branding = Branding.objects.get(id=1)
 
         active_branding.primary_color = default_branding.primary_color
@@ -39,6 +39,6 @@ def restore_default_branding(request):
 
         messages.success(request, 'Branding has been restored to the saved default.')
     except Branding.DoesNotExist:
-        messages.error(request, "The 'Default Settings' profile has not been set up. Please create it in the admin dashboard.")
+        messages.error(request, "The default branding profile has not been set. Please mark one as default in the admin dashboard.")
 
     return redirect('theme:edit_branding')
