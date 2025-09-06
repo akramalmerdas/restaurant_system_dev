@@ -33,7 +33,6 @@ def restore_default_branding(request):
         active_branding.primary_color = default_branding.primary_color
         active_branding.secondary_color = default_branding.secondary_color
         active_branding.slogan = default_branding.slogan
-        active_branding.name = default_branding.name
         active_branding.logo = default_branding.logo
         active_branding.save()
 
