@@ -1,5 +1,8 @@
 from .models import Branding
 
 def branding_context(request):
-    branding = Branding.objects.first()
+    try:
+        branding = Branding.objects.get(is_active=True)
+    except Branding.DoesNotExist:
+        branding = None
     return {'branding': branding}
