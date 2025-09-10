@@ -4,7 +4,7 @@
     --card-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     --color-darkest: #433f39;
     --color-medium-dark: #444444;
-    --color-orange-light: #d54b27;
+    --color-orange-light: var(--primary-color);
     --color-orange-lighter: #ffc064; 
 }
 

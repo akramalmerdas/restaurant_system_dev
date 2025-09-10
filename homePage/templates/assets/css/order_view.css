@@ -156,7 +156,7 @@ body::before {
 /* Order Info Section */
 .order-info {
     padding: 2rem;
-    background: #d54b27; /* Reddish-brown for the header of the Orders section */
+    background: var(--primary-color); /* Reddish-brown for the header of the Orders section */
     border-bottom: 1px solid #A0522D; /* Darker reddish-brown border */
 }
 
