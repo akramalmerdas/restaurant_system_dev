@@ -85,6 +85,10 @@
                             {% endif %}
                         </td>
                     </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">No branding profiles found.</td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
