@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% load static %}
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Manage Branding - Mocha Cafe</title>
+
+  <!-- Favicons -->
+  <link href={% static 'img/favicon.png' %} rel="icon">
+  <link href={% static "img/apple-touch-icon.png" %} rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,600,600i,700,700i|Satisfy|Comic+Neue:300,300i,400,400i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+
+  <!-- Dynamic Branding Colors -->
+  {% include 'includes/branding_styles.html' %}
+
+  <!-- Main CSS File -->
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+  <link href="{% static 'css/edit_branding.css' %}" rel="stylesheet">
+</head>
+
+<body>
+  <header id="header" class="fixed-top d-flex align-items-center header-transparent">
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+      <div class="logo me-auto">
+        <h1><a href="{% url 'core:index' %}">Mocha Cafe</a></h1>
+      </div>
+      <nav id="navbar" class="navbar order-last order-lg-0">
+        <ul>
+          <li><a class="nav-link scrollto" href="{% url 'core:index' %}">Home</a></li>
+          {% if user.is_staff %}
+          <li><a class="nav-link scrollto" href="{% url 'orders:admin_dashboard' %}">Dashboard</a></li>
+          {% endif %}
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="edit-branding-section">
+      <div class="container">
+        <div class="edit-branding-card">
+          <div class="edit-branding-header">
+            Manage Branding Profiles
+          </div>
+          <div class="edit-branding-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            <div class="text-end mb-3">
+                <a href="{% url 'theme:create_branding' %}" class="btn btn-primary">Create New Profile</a>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Active</th>
+                        <th>Default</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for profile in branding_profiles %}
+                    <tr>
+                        <td>{{ profile.name }}</td>
+                        <td>{% if profile.is_active %}Yes{% else %}No{% endif %}</td>
+                        <td>{% if profile.is_default_profile %}Yes{% else %}No{% endif %}</td>
+                        <td>
+                            <a href="{% url 'theme:edit_branding' profile.id %}" class="btn btn-sm btn-warning">Edit</a>
+                            <a href="{% url 'theme:delete_branding' profile.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this profile?')">Delete</a>
+                            {% if not profile.is_active %}
+                            <a href="{% url 'theme:set_active_branding' profile.id %}" class="btn btn-sm btn-success">Set Active</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer">
+    <div class="container">
+      <h3>Mocha Cafe</h3>
+      <div class="copyright">
+        &copy; Copyright <strong><span>Mocha Cafe</span></strong>. All Rights Reserved
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
