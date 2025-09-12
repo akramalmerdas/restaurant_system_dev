@@ -371,6 +371,8 @@ def print_invoice_view(request, invoice_id):
 def reconcile_customer_debt(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
     unpaid_invoices = customer.invoices.filter(is_paid=False).order_by('created_at')
+    paid_invoices = customer.invoices.filter(is_paid=True).order_by('-created_at')
+    payment_history = Payment.objects.filter(invoice__customer=customer).order_by('-created_at')
 
     if request.method == 'POST':
         amount_paid_str = request.POST.get('amount')
@@ -408,6 +410,8 @@ def reconcile_customer_debt(request, customer_id):
     context = {
         'customer': customer,
         'unpaid_invoices': unpaid_invoices,
+        'paid_invoices': paid_invoices,
+        'payment_history': payment_history,
         'payment_methods': Payment.PAYMENT_METHODS
     }
     return render(request, 'reconcile_debt.html', context)

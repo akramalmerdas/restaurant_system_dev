@@ -108,6 +108,81 @@
             </div>
         </div>
     </div>
+
+    <!-- Paid Invoices and Payment History -->
+    <div class="row mt-4">
+        <!-- Paid Invoices -->
+        <div class="col-md-6">
+            <div class="card" style="background-color: #1a1814; color: white;">
+                <div class="card-header">
+                    <h5>Paid Invoices</h5>
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Invoice ID</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invoice in paid_invoices %}
+                                <tr>
+                                    <td><a href="#">{{ invoice.display_id }}</a></td>
+                                    <td>{{ invoice.created_at|date:"Y-m-d" }}</td>
+                                    <td>{{ invoice.total_amount|floatformat:2 }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center">No paid invoices found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment History -->
+        <div class="col-md-6">
+            <div class="card" style="background-color: #1a1814; color: white;">
+                <div class="card-header">
+                    <h5>Payment History</h5>
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Invoice ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payment_history %}
+                                <tr>
+                                    <td>{{ payment.created_at|date:"Y-m-d H:i" }}</td>
+                                    <td>{{ payment.amount|floatformat:2 }}</td>
+                                    <td>{{ payment.get_method_display }}</td>
+                                    <td><a href="#">{{ payment.invoice.display_id }}</a></td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No payment history found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 </main>
 
