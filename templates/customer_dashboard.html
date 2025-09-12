@@ -1,14 +1,49 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Customer Dashboard Test{% endblock %}
+{% block title %}Customer Management - {{ block.super }}{% endblock %}
 
 {% block content %}
-<section class="container" style="padding-top: 120px;">
-    <div class="row">
-        <div class="col">
-            <h1 style="color: white;">Template Inheritance Test</h1>
-            <p style="color: white;">If you can see the website's header and footer, and this message, then the template inheritance is working correctly.</p>
-            <p style="color: white;">The issue must be with one of the dynamic elements in the original dashboard template.</p>
+<section class="container mt-5 pt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-white">Customer Management</h2>
+        <a href="{% url 'users:add_customer' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add New Customer
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone Number</th>
+                            <th>Total Debt</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in customers %}
+                        <tr>
+                            <td>{{ customer.user.get_full_name|default:customer.user.username }}</td>
+                            <td>{{ customer.phone_number }}</td>
+                            <td>{{ customer.total_debt|floatformat:2 }} RWF</td>
+                            <td>
+                                <a href="{% url 'users:edit_customer' customer.id %}" class="btn btn-sm btn-warning" title="Edit Customer"><i class="bi bi-pencil-square"></i></a>
+                                <a href="{% url 'users:delete_customer' customer.id %}" class="btn btn-sm btn-danger" title="Delete Customer"><i class="bi bi-trash"></i></a>
+                                <a href="{% url 'payments:reconcile_customer_debt' customer.id %}" class="btn btn-sm btn-success" title="View & Reconcile Debt"><i class="bi bi-currency-dollar"></i></a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center">No customers found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </section>
