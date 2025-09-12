@@ -5,7 +5,6 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
     <title>
         {% if customer %}
             Edit Customer - {% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}
@@ -13,22 +12,27 @@
             Add Customer - {% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}
         {% endif %}
     </title>
-
-    <!-- Favicons -->
-    <link href="{% static 'img/favicon.png' %}" rel="icon">
-    <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
-
-    <!-- Google Fonts -->
+    <!-- CSS and Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,600,600i,700,700i|Satisfy|Comic+Neue:300,300i,400,400i,700,700i" rel="stylesheet">
-
-    <!-- Vendor CSS Files -->
     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
-
-    <!-- Template Main CSS File -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
 </head>
 <body>
+
+  <header id="header" class="fixed-top d-flex align-items-center header-transparent">
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+      <div class="logo me-auto">
+        <h1><a href="{% url 'core:index' %}">{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</a></h1>
+      </div>
+      <nav id="navbar" class="navbar order-last order-lg-0">
+        <ul>
+          <li><a class="nav-link scrollto" href="{% url 'users:customer_dashboard' %}">Back to Dashboard</a></li>
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav>
+    </div>
+  </header>
 
 <main id="main">
 <section class="container mt-5 pt-5">
@@ -73,7 +77,15 @@
 </section>
 </main>
 
-  <!-- Vendor JS Files -->
+  <footer id="footer">
+    <div class="container">
+      <h3>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</h3>
+      <div class="copyright">
+        &copy; Copyright <strong><span>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</span></strong>. All Rights Reserved
+      </div>
+    </div>
+  </footer>
+
   <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'js/main.js' %}"></script>
 
