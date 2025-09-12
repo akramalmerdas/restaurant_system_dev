@@ -65,6 +65,7 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
+                      <th>Ne</th>
                         <th>Name</th>
                         <th>Active</th>
                         <th>Default</th>
@@ -72,30 +73,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for profile in branding_profiles %}
-                    <tr>
-                        <td>
-                            <p><strong>ID:</strong> {{ profile.id }}</p>
-                            <p><strong>Name:</strong> '{{ profile.name }}'</p>
-                            <p><strong>Slogan:</strong> '{{ profile.slogan }}'</p>
-                            <p><strong>Is Active:</strong> {{ profile.is_active }}</p>
-                            <p><strong>Is Default:</strong> {{ profile.is_default_profile }}</p>
-                        </td>
-                        <td>{% if profile.is_active %}Yes{% else %}No{% endif %}</td>
-                        <td>{% if profile.is_default_profile %}Yes{% else %}No{% endif %}</td>
-                        <td>
-                            <a href="{% url 'theme:edit_branding' profile.id %}" class="btn btn-sm btn-warning">Edit</a>
-                            <a href="{% url 'theme:delete_branding' profile.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this profile?')">Delete</a>
-                            {% if not profile.is_active %}
-                            <a href="{% url 'theme:set_active_branding' profile.id %}" class="btn btn-sm btn-success">Set Active</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center">No branding profiles found.</td>
-                    </tr>
-                    {% endfor %}
+                  {% for profile in branding_profiles %}
+                  <tr>
+                    <td>{{ profile.name|default:"(no name)" }}</td>
+                    <td>{{ profile.name|default:"(no name)" }}</td>
+                    <td>{% if profile.is_active %}Yes{% else %}No{% endif %}</td>
+                    <td>{% if profile.is_default_profile %}Yes{% else %}No{% endif %}</td>
+                    <td>
+                      <a href="{% url 'theme:edit_branding' profile.id %}" class="btn btn-sm btn-warning">Edit</a>
+                      <a href="{% url 'theme:delete_branding' profile.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this profile?')">Delete</a>
+                      {% if not profile.is_active %}
+                      <a href="{% url 'theme:set_active_branding' profile.id %}" class="btn btn-sm btn-success">Set Active</a>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="4" class="text-center">No branding profiles found.</td>
+                  </tr>
+                  {% endfor %}
                 </tbody>
             </table>
           </div>
