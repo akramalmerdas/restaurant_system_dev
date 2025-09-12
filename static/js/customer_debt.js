@@ -9,8 +9,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // This event is triggered when the payment modal is about to be shown
     paymentModal.addEventListener('show.bs.modal', function (event) {
+        // The modal can be triggered by a button (with event.relatedTarget)
+        // or programmatically from another script (like invoice.js).
+        // We need to handle both cases to reliably get the invoice ID.
+
+        let invoiceId = null;
+
+        // Case 1: Triggered programmatically, ID is stored on the modal's dataset.
+        if (paymentModal.dataset.invoiceId) {
+            invoiceId = paymentModal.dataset.invoiceId;
+        }
+
+        // Case 2: Triggered by a button click, ID is on the button's dataset.
         const button = event.relatedTarget;
-        currentInvoiceId = button.getAttribute('data-invoice-id');
+        if (button && button.getAttribute('data-invoice-id')) {
+            invoiceId = button.getAttribute('data-invoice-id');
+        }
+
+        currentInvoiceId = invoiceId;
     });
 
     payOnAccountBtn.addEventListener('click', function () {

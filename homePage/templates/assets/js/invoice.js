@@ -93,6 +93,9 @@ class PaymentHandler {
 
         if (selectedValue === '1') { // Paid selected
             if (balanceDue > 0) {
+                // The crucial fix: Store the invoice ID on the modal element itself
+                // before showing it programmatically.
+                this.paymentModal._element.dataset.invoiceId = invoiceId;
                 this.populatePaymentModal(balanceDue);
                 this.paymentModal.show();
             } else {
