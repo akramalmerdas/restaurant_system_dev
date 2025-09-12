@@ -74,7 +74,12 @@
                 <tbody>
                     {% for profile in branding_profiles %}
                     <tr>
-                        <td>{{ profile.name }}</td>
+                        <td>
+                            <p><strong>Name:</strong> '{{ profile.name }}'</p>
+                            <p><strong>ID:</strong> {{ profile.id }}</p>
+                            <p><strong>Full object data:</strong></p>
+                            <pre>{{ profile.__dict__ }}</pre>
+                        </td>
                         <td>{% if profile.is_active %}Yes{% else %}No{% endif %}</td>
                         <td>{% if profile.is_default_profile %}Yes{% else %}No{% endif %}</td>
                         <td>
