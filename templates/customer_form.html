@@ -1,15 +1,35 @@
-{% extends "base.html" %}
+{% load static %}
 {% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-{% block title %}
-    {% if customer %}
-        Edit Customer - {{ block.super }}
-    {% else %}
-        Add Customer - {{ block.super }}
-    {% endif %}
-{% endblock %}
+    <title>
+        {% if customer %}
+            Edit Customer - {% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}
+        {% else %}
+            Add Customer - {% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}
+        {% endif %}
+    </title>
 
-{% block content %}
+    <!-- Favicons -->
+    <link href="{% static 'img/favicon.png' %}" rel="icon">
+    <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,600,600i,700,700i|Satisfy|Comic+Neue:300,300i,400,400i,700,700i" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+
 <main id="main">
 <section class="container mt-5 pt-5">
     <div class="card" style="background-color: #1a1814; color: white;">
@@ -52,4 +72,10 @@
     </div>
 </section>
 </main>
-{% endblock %}
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+
+</body>
+</html>
