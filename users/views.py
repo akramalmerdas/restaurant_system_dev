@@ -76,3 +76,81 @@ def customerProfile(request):
         messages.success(request, "Profile updated successfully.")
         return redirect('users:customer_profile')
     return render(request, 'customer_profile.html', {'customer': customer, 'orders': orders})
+
+@login_required
+def get_customers_api(request):
+    customers = Customer.objects.filter(inHold=False).order_by('user__username')
+    customer_list = [
+        {'id': c.id, 'full_name': c.user.get_full_name() or c.user.username}
+        for c in customers
+    ]
+    return JsonResponse(customer_list, safe=False)
+
+@login_required
+def customer_dashboard(request):
+    customers = Customer.objects.filter(inHold=False).select_related('user').order_by('user__username')
+    return render(request, 'customer_dashboard.html', {'customers': customers})
+
+from .forms import CustomerForm
+
+@login_required
+def manage_customer(request, customer_id=None):
+    if customer_id:
+        customer = get_object_or_404(Customer, id=customer_id)
+        instance = customer
+    else:
+        instance = None
+
+    if request.method == 'POST':
+        form = CustomerForm(request.POST, instance=instance)
+        if form.is_valid():
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            email = form.cleaned_data['email']
+
+            if instance: # Editing existing customer
+                user = instance.user
+                user.first_name = first_name
+                user.last_name = last_name
+                user.email = email
+                user.username = email or f"{first_name}_{last_name}"
+                user.save()
+            else: # Creating new customer
+                username = email or f"{first_name}_{last_name}_{User.objects.count()}" # simple way to avoid username collision
+                user = User.objects.create_user(
+                    username=username,
+                    first_name=first_name,
+                    last_name=last_name,
+                    email=email
+                )
+
+            customer = form.save(commit=False)
+            customer.user = user
+            customer.save()
+
+            messages.success(request, f"Customer '{user.get_full_name()}' saved successfully.")
+            return redirect('users:customer_dashboard')
+    else:
+        form = CustomerForm(instance=instance)
+
+    context = {
+        'form': form,
+        'customer': instance
+    }
+    return render(request, 'customer_form.html', context)
+
+@login_required
+def delete_customer(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+    if request.method == 'POST':
+        user = customer.user
+        user.is_active = False
+        user.save()
+
+        customer.inHold = True
+        customer.save()
+
+        messages.success(request, f"Customer '{user.get_full_name()}' has been deactivated.")
+        return redirect('users:customer_dashboard')
+
+    return render(request, 'customer_confirm_delete.html', {'customer': customer})

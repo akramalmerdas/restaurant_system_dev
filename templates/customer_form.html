@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% if customer %}
+        Edit Customer - {{ block.super }}
+    {% else %}
+        Add Customer - {{ block.super }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<main id="main">
+<section class="container mt-5 pt-5">
+    <div class="card" style="background-color: #1a1814; color: white;">
+        <div class="card-header">
+            <h3>{% if customer %}Edit Customer: {{ customer.user.get_full_name }}{% else %}Add New Customer{% endif %}</h3>
+        </div>
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.first_name|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.last_name|as_crispy_field }}
+                    </div>
+                </div>
+                 <div class="mb-3">
+                    {{ form.email|as_crispy_field }}
+                </div>
+                <div class="mb-3">
+                    {{ form.phone_number|as_crispy_field }}
+                </div>
+                <div class="mb-3">
+                    {{ form.address|as_crispy_field }}
+                </div>
+                <div class="mb-3">
+                    {{ form.notes|as_crispy_field }}
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Save Customer
+                    </button>
+                    <a href="{% url 'users:customer_dashboard' %}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+</main>
+{% endblock %}

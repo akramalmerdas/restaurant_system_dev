@@ -14,6 +14,8 @@ from core.decorators import staff_member_required, admin_required
 from django.db.models import Sum, Avg, Count, F, Q, Subquery, Value, DecimalField
 from django.db.models.functions import Coalesce
 from django.core.paginator import Paginator
+from users.models import Customer
+from django.contrib import messages
 
 @staff_member_required
 @transaction.atomic
@@ -264,6 +266,30 @@ def process_payment(request, invoice_id):
         traceback.print_exc()
         return JsonResponse({"success": False, "error": f"An unexpected error occurred: {str(e)}"}, status=500)
 
+@require_http_methods(["POST"])
+@staff_member_required
+@transaction.atomic
+def assign_customer_to_invoice(request, invoice_id):
+    try:
+        data = json.loads(request.body)
+        customer_id = data.get('customer_id')
+        if not customer_id:
+            return JsonResponse({'error': 'Customer ID is required'}, status=400)
+
+        invoice = get_object_or_404(Invoice, id=invoice_id)
+        customer = get_object_or_404(Customer, id=customer_id)
+
+        invoice.customer = customer
+        invoice.status = 'on_account'
+        invoice.save()
+
+        return JsonResponse({'success': True, 'message': f'Invoice {invoice.display_id} assigned to {customer.user.get_full_name()}.'})
+
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
 @staff_member_required
 def mark_unpaid(request):
     if request.method == 'POST':
@@ -339,3 +365,49 @@ def print_invoice_view(request, invoice_id):
         'grouped_items': grouped_items.values()
     }
     return render(request, 'print_invoice.html', context)
+
+@login_required
+@transaction.atomic
+def reconcile_customer_debt(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+    unpaid_invoices = customer.invoices.filter(is_paid=False).order_by('created_at')
+
+    if request.method == 'POST':
+        amount_paid_str = request.POST.get('amount')
+        payment_method = request.POST.get('method')
+
+        try:
+            amount_paid = Decimal(amount_paid_str)
+            if amount_paid <= 0:
+                raise ValueError("Payment must be positive.")
+        except (ValueError, TypeError):
+            messages.error(request, "Invalid payment amount.")
+            return redirect('payments:reconcile_customer_debt', customer_id=customer.id)
+
+        payment_remaining = amount_paid
+        for invoice in unpaid_invoices:
+            if payment_remaining <= 0:
+                break
+
+            balance_due = invoice.balance_due
+            payment_for_invoice = min(payment_remaining, balance_due)
+
+            if payment_for_invoice > 0:
+                Payment.objects.create(
+                    invoice=invoice,
+                    amount=payment_for_invoice,
+                    method=payment_method,
+                    processed_by=request.user,
+                    notes=f"Part of bulk payment for {customer.user.get_full_name()}"
+                )
+                payment_remaining -= payment_for_invoice
+
+        messages.success(request, f"Payment of {amount_paid} RWF successfully applied.")
+        return redirect('payments:reconcile_customer_debt', customer_id=customer.id)
+
+    context = {
+        'customer': customer,
+        'unpaid_invoices': unpaid_invoices,
+        'payment_methods': Payment.PAYMENT_METHODS
+    }
+    return render(request, 'reconcile_debt.html', context)

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Delete - {{ block.super }}{% endblock %}
+
+{% block content %}
+<main id="main">
+<section class="container mt-5 pt-5">
+    <div class="card" style="background-color: #1a1814; color: white;">
+        <div class="card-header">
+            <h3>Delete Customer</h3>
+        </div>
+        <div class="card-body">
+            <p>Are you sure you want to delete the customer "<strong>{{ customer.user.get_full_name|default:customer.user.username }}</strong>"?</p>
+
+            {% if customer.total_debt > 0 %}
+                <div class="alert alert-danger" role="alert">
+                    <strong>Warning:</strong> This customer has an outstanding debt of <strong>{{ customer.total_debt|floatformat:2 }} RWF</strong>. Deleting them will not clear this debt record from associated invoices.
+                </div>
+            {% endif %}
+
+            <p class="text-muted">This action cannot be undone.</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Yes, Delete
+                </button>
+                <a href="{% url 'users:customer_dashboard' %}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</section>
+</main>
+{% endblock %}

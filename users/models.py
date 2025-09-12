@@ -34,4 +34,16 @@ class Customer(models.Model):
     notes = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return self.user.get_full_name()
+        full_name = self.user.get_full_name()
+        return f"{full_name or self.user.username}"
+
+    @property
+    def total_debt(self):
+        from payments.models import Invoice
+        from decimal import Decimal
+
+        total = Decimal('0.00')
+        # We only consider invoices that are not fully paid
+        for invoice in self.invoices.filter(is_paid=False):
+            total += invoice.balance_due
+        return total

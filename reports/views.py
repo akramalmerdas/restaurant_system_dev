@@ -10,6 +10,9 @@ from core.decorators import admin_required
 from django.db.models.functions import Coalesce
 from django.core.paginator import Paginator
 from django.db.models import OuterRef
+from users.models import Customer
+from django.db.models import Min, Q
+from django.utils import timezone
 
 
 @admin_required
@@ -208,3 +211,31 @@ def staff_report(request):
     }
 
     return render(request, 'staff_report.html', context)
+
+@admin_required
+def customer_debt_report(request):
+    customers_with_debt_data = []
+
+    # Get all customers and annotate the date of their oldest unpaid invoice
+    customers_with_oldest_invoice = Customer.objects.filter(inHold=False).annotate(
+        oldest_unpaid_invoice_date=Min('invoices__created_at', filter=Q(invoices__is_paid=False))
+    )
+
+    for customer in customers_with_oldest_invoice:
+        debt = customer.total_debt
+        if debt > 0:
+            age = (timezone.now() - customer.oldest_unpaid_invoice_date).days if customer.oldest_unpaid_invoice_date else 0
+            customers_with_debt_data.append({
+                'customer': customer,
+                'total_debt': debt,
+                'oldest_invoice_date': customer.oldest_unpaid_invoice_date,
+                'debt_age': age,
+            })
+
+    # Sort by debt age, descending
+    customers_with_debt_data.sort(key=lambda x: x['debt_age'], reverse=True)
+
+    context = {
+        'customer_debt_data': customers_with_debt_data,
+    }
+    return render(request, 'reports/customer_debt_report.html', context)

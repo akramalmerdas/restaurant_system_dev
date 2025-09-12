@@ -59,10 +59,43 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-info" id="payOnAccountBtn">
+                    <i class="bi bi-person-check"></i> Pay on Account
+                </button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="location.reload();">Cancel</button>
                 <button type="button" class="btn btn-primary" id="processPaymentBtn">
                     <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     <i class="bi bi-check-circle"></i> Process Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Customer Selection Modal -->
+<div class="modal fade" id="customerSelectionModal" tabindex="-1" aria-labelledby="customerSelectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerSelectionModalLabel">Select Customer for On Account Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Select a customer to assign this invoice to their account. The invoice will be marked as "On Account" and can be paid later from the customer's profile.</p>
+                <div class="mb-3">
+                    <label for="customerSelect" class="form-label">Customer <span class="text-danger">*</span></label>
+                    <select class="form-select" id="customerSelect" required>
+                        <option value="" selected disabled>Loading customers...</option>
+                        <!-- Customer options will be populated here by JavaScript -->
+                    </select>
+                    <div class="invalid-feedback">Please select a customer.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmOnAccountBtn">
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    <i class="bi bi-check-circle"></i> Confirm
                 </button>
             </div>
         </div>

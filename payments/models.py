@@ -8,9 +8,11 @@ class Invoice(models.Model):
     INVOICE_STATUS_CHOICES = [
         ("pending", "Pending"),
         ("paid", "Paid"),
-        ("partial", "Partial Payment")
+        ("partial", "Partial Payment"),
+        ("on_account", "On Account")
     ]
-    table = models.ForeignKey('reservations.Table', on_delete=models.CASCADE)
+    customer = models.ForeignKey('users.Customer', on_delete=models.SET_NULL, null=True, blank=True, related_name='invoices')
+    table = models.ForeignKey('reservations.Table', on_delete=models.SET_NULL, null=True, blank=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -24,7 +26,11 @@ class Invoice(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"Invoice #{self.id} for Table {self.table.number}"
+        if self.customer:
+            return f"Invoice #{self.display_id} for {self.customer}"
+        elif self.table:
+            return f"Invoice #{self.display_id} for Table {self.table.number}"
+        return f"Invoice #{self.display_id}"
 
     @property
     def amount_paid(self):
