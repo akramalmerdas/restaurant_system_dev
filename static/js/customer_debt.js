@@ -31,13 +31,20 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             const customers = await response.json();
 
-            customerSelect.innerHTML = '<option value="" selected disabled>Select a customer...</option>';
-            customers.forEach(customer => {
-                const option = document.createElement('option');
-                option.value = customer.id;
-                option.textContent = customer.full_name;
-                customerSelect.appendChild(option);
-            });
+            customerSelect.innerHTML = ''; // Clear existing options
+            if (customers.length === 0) {
+                customerSelect.innerHTML = '<option value="" selected disabled>No customers found. Please add one first.</option>';
+                confirmOnAccountBtn.disabled = true; // Disable confirm button if no customers
+            } else {
+                customerSelect.innerHTML = '<option value="" selected disabled>Select a customer...</option>';
+                customers.forEach(customer => {
+                    const option = document.createElement('option');
+                    option.value = customer.id;
+                    option.textContent = customer.full_name;
+                    customerSelect.appendChild(option);
+                });
+                confirmOnAccountBtn.disabled = false;
+            }
         } catch (error) {
             console.error('Error loading customers:', error);
             customerSelect.innerHTML = '<option value="" selected disabled>Failed to load customers</option>';
