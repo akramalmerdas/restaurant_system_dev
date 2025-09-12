@@ -75,10 +75,11 @@
                     {% for profile in branding_profiles %}
                     <tr>
                         <td>
-                            <p><strong>Name:</strong> '{{ profile.name }}'</p>
                             <p><strong>ID:</strong> {{ profile.id }}</p>
-                            <p><strong>Full object data:</strong></p>
-                            <pre>{{ profile.__dict__ }}</pre>
+                            <p><strong>Name:</strong> '{{ profile.name }}'</p>
+                            <p><strong>Slogan:</strong> '{{ profile.slogan }}'</p>
+                            <p><strong>Is Active:</strong> {{ profile.is_active }}</p>
+                            <p><strong>Is Default:</strong> {{ profile.is_default_profile }}</p>
                         </td>
                         <td>{% if profile.is_active %}Yes{% else %}No{% endif %}</td>
                         <td>{% if profile.is_default_profile %}Yes{% else %}No{% endif %}</td>
