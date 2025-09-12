@@ -62,8 +62,14 @@
                             </li>
                                 <li class="nav-item">
                                <a href="{% url 'payments:invoice_dashboard' %}" class="nav-link text-white">
-                                <i class="bi bi-box-arrow-right"></i> Manage Invoices
+                                <i class="bi bi-receipt-cutoff"></i> Manage Invoices
                             </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{% url 'users:customer_dashboard' %}">
+                                    <i class="bi bi-people"></i>
+                                    Customers
+                                </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-white" href="{% url 'orders:cancelled_orders' %}">
