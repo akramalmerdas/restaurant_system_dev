@@ -1,0 +1,16 @@
+.card {
+    background-color: var(--secondary-color, #1a1814);
+    color: white;
+}
+.card-header {
+    background-color: var(--primary-color, #000000);
+    color: white;
+}
+.form-control {
+    background-color: #f1f1f1; /* Lighter background for inputs */
+    color: #333; /* Darker text for readability */
+}
+.form-control:focus {
+    background-color: #ffffff;
+    color: #000000;
+}
