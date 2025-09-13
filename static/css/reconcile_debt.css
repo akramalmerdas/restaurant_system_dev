@@ -1,5 +1,5 @@
 .card {
-    background-color: #48485e73;
+    background-color:#48485e73;
     color: white;
 }
 .card-header {
@@ -7,10 +7,10 @@
     color: white;
 }
 .table {
-    color: white;
+    color: #48485e73;
 }
 .table-striped>tbody>tr:nth-of-type(odd)>* {
-    color: white;
+    color: black;
 }
 h2 {
     color: var(--primary-color);
