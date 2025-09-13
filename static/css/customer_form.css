@@ -1,5 +1,5 @@
 .card {
-    background-color: var(--secondary-color, #1a1814);
+    background-color: #48485e73;
     color: white;
 }
 .card-header {
@@ -13,4 +13,9 @@
 .form-control:focus {
     background-color: #ffffff;
     color: #000000;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
 }

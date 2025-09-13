@@ -1,5 +1,5 @@
 .card {
-    background-color: var(--secondary-color, #1a1814);
+    background-color: #48485e73;
     color: white;
 }
 .card-header {
@@ -11,4 +11,21 @@
 }
 .table-striped>tbody>tr:nth-of-type(odd)>* {
     color: white;
+}
+h2 {
+    color: var(--primary-color);
+}
+hr {
+    color: var(--primary-color);
+}
+h4 {
+    color: var(--primary-color);
+}
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.btn-secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
 }
