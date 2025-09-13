@@ -1,0 +1,14 @@
+.card {
+    background-color: var(--secondary-color, #1a1814);
+    color: white;
+}
+.card-header {
+    background-color: var(--primary-color, #000000);
+    color: white;
+}
+.table {
+    color: white;
+}
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+    color: white;
+}
