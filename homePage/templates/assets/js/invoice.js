@@ -150,8 +150,8 @@ class PaymentHandler {
         if (this.elements.transactionId) this.elements.transactionId.value = '';
         if (this.elements.paymentNotes) this.elements.paymentNotes.value = '';
         // Default to cash payment method
-        const cashRadio = document.getElementById('cashPayment');
-        if (cashRadio) cashRadio.checked = true;
+        const momoRadio = document.getElementById('mobileMoney');
+        if (momoRadio) momoRadio.checked = true;
         this.handlePaymentMethodChange(); // Ensure transaction ID group is hidden initially
     }
 
