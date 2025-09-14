@@ -88,7 +88,7 @@
                                     {% endfor %}
                                 </div>
                                 <div class="d-flex justify-content-center gap-2 mt-4">
-                                    <button type="submit" id="saveItemBtn" class="btn btn-primary px-4">
+                                    <button type="button" id="saveItemBtn" class="btn btn-primary px-4">
                                         <i class="bi bi-save"></i> Save Item
                                     </button>
                                     <button type="reset" class="btn btn-outline-secondary px-4">
@@ -112,5 +112,23 @@
 
     {% include "item/custom_dialog.html" %}
     <script src="{% static 'js/item_custom_dialog.js' %}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const saveBtn = document.getElementById('saveItemBtn');
+        const form = document.querySelector('form');
+        if (saveBtn && form) {
+            saveBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showCustomDialog({
+                    title: 'Confirm Save',
+                    message: 'Are you sure you want to save these changes?',
+                    type: 'warning',
+                    showCancel: true,
+                    onOk: function() { form.submit(); }
+                });
+            });
+        }
+    });
+    </script>
 </body>
 </html>
