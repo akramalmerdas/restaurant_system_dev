@@ -96,6 +96,7 @@
                             <thead>
                                 <tr>
                                     <th>Invoice ID</th>
+                                    <th>Invoice ID</th>
                                     <th>Date</th>
                                     <th>Total Amount</th>
                                     <th>Amount Paid</th>
@@ -105,6 +106,7 @@
                             <tbody>
                                 {% for invoice in unpaid_invoices %}
                                 <tr>
+                                    <td><a href="#">{{ invoice.display_id }}</a></td>
                                     <td><a href="#">{{ invoice.display_id }}</a></td>
                                     <td>{{ invoice.created_at|date:"Y-m-d" }}</td>
                                     <td>{{ invoice.total_amount|floatformat:2 }}</td>

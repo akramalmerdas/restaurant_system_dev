@@ -60,6 +60,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Name</th>
                             <th>Phone Number</th>
                             <th>Total Debt</th>
                             <th>Actions</th>
@@ -68,6 +69,7 @@
                     <tbody>
                         {% for customer in customers %}
                         <tr>
+                            <td>{{ customer.user.get_full_name|default:customer.user.username }}</td>
                             <td>{{ customer.user.get_full_name|default:customer.user.username }}</td>
                             <td>{{ customer.phone_number }}</td>
                             <td>{{ customer.total_debt|floatformat:2 }} RWF</td>
