@@ -51,14 +51,46 @@
                             </div>
                             <form method="post" enctype="multipart/form-data" autocomplete="off">
                                 {% csrf_token %}
+
+                                {% if form.non_field_errors %}
+                                    <div class="alert alert-danger">
+                                        {{ form.non_field_errors }}
+                                    </div>
+                                {% endif %}
+
                                 <div class="mb-3">
                                     <label for="itemName" class="form-label">Name <span class="text-danger">*</span></label>
-                                    <input type="text" id="itemName" name="name" class="form-control" required placeholder="e.g. Cappuccino"
+                                    <input type="text" id="itemName" name="name" class="form-control {% if form.name.errors %}is-invalid{% endif %}" required placeholder="e.g. Cappuccino"
                                            value="{{ form.name.value|default_if_none:'' }}">
+                                    {% if form.name.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.name.errors|striptags }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_category" class="form-label">Category <span class="text-danger">*</span></label>
+                                    <select name="category" id="id_category" class="form-select {% if form.category.errors %}is-invalid{% endif %}" required>
+                                        {% for category_choice in form.category.field.queryset %}
+                                            <option value="{{ category_choice.id }}" {% if form.instance.category.id == category_choice.id %}selected{% endif %}>
+                                                {{ category_choice.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    {% if form.category.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.category.errors|striptags }}
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 <div class="mb-3">
                                     <label for="itemImage" class="form-label">Image</label>
-                                    <input type="file" id="itemImage" name="image" class="form-control">
+                                    <input type="file" id="itemImage" name="image" class="form-control {% if form.image.errors %}is-invalid{% endif %}">
+                                    {% if form.image.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.image.errors|striptags }}
+                                        </div>
+                                    {% endif %}
                                     {% if form.instance.image %}
                                         <div class="mt-2">
                                             <img src="{{ form.instance.image.url }}" alt="Current Image" style="max-width:120px;">
@@ -67,25 +99,52 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="itemDescription" class="form-label">Description</label>
-                                    <textarea id="itemDescription" name="description" class="form-control" rows="3" placeholder="Describe the item...">{{ form.description.value|default_if_none:'' }}</textarea>
+                                    <textarea id="itemDescription" name="description" class="form-control {% if form.description.errors %}is-invalid{% endif %}" rows="3" placeholder="Describe the item...">{{ form.description.value|default_if_none:'' }}</textarea>
+                                    {% if form.description.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.description.errors|striptags }}
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 <div class="mb-3">
                                     <label for="itemPrice" class="form-label">Price <span class="text-danger">*</span></label>
-                                    <div class="input-group">
+                                    <div class="input-group has-validation">
                                         <span class="input-group-text">RWF</span>
-                                        <input type="text" id="itemPrice" name="price" class="form-control" required placeholder="e.g. 2500"
+                                        <input type="text" id="itemPrice" name="price" class="form-control {% if form.price.errors %}is-invalid{% endif %}" required placeholder="e.g. 2500"
                                                value="{{ form.price.value|default_if_none:'' }}">
+                                        {% if form.price.errors %}
+                                            <div class="invalid-feedback">
+                                                {{ form.price.errors|striptags }}
+                                            </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Extras</label>
-                                    {% for extra in extras %}
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="extra{{ extra.id }}" name="extras" value="{{ extra.id }}"
-                                                {% if extra.id|stringformat:"s" in form.extras.value|stringformat:"s" %}checked{% endif %}>
-                                            <label class="form-check-label" for="extra{{ extra.id }}">{{ extra.name }}</label>
+                                    <label for="itemAvailability" class="form-label">Availability</label>
+                                    <input type="text" id="itemAvailability" name="availability" class="form-control {% if form.availability.errors %}is-invalid{% endif %}"
+                                           value="{{ form.availability.value|default_if_none:'' }}">
+                                    {% if form.availability.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.availability.errors|striptags }}
                                         </div>
-                                    {% endfor %}
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Extras</label>
+                                    <div class="{% if form.extras.errors %}is-invalid{% endif %}">
+                                        {% for extra in extras %}
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="extra{{ extra.id }}" name="extras" value="{{ extra.id }}"
+                                                    {% if extra.id|stringformat:"s" in form.extras.value|stringformat:"s" %}checked{% endif %}>
+                                                <label class="form-check-label" for="extra{{ extra.id }}">{{ extra.name }}</label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% if form.extras.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.extras.errors|striptags }}
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 <div class="d-flex justify-content-center gap-2 mt-4">
                                     <button type="button" id="saveItemBtn" class="btn btn-primary px-4">
@@ -109,10 +168,9 @@
     </main>
     <!-- Bootstrap JS Bundle CDN (includes Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="{% static 'js/item_form.js' %}"></script>
 
     {% include "item/custom_dialog.html" %}
-    <script src="{% static 'js/item_custom_dialog.js' %}"></script>
+    <script src="{% static 'item/js/item_custom_dialog.js' %}"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const saveBtn = document.getElementById('saveItemBtn');
