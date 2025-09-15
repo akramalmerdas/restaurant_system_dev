@@ -120,6 +120,16 @@
                                     </div>
                                 </div>
                                 <div class="mb-3">
+                                    <label for="itemAvailability" class="form-label">Availability</label>
+                                    <input type="text" id="itemAvailability" name="availability" class="form-control {% if form.availability.errors %}is-invalid{% endif %}"
+                                           value="{{ form.availability.value|default_if_none:'' }}">
+                                    {% if form.availability.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.availability.errors|striptags }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
                                     <label class="form-label">Extras</label>
                                     <div class="{% if form.extras.errors %}is-invalid{% endif %}">
                                         {% for extra in extras %}
