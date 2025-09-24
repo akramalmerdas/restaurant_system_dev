@@ -4,10 +4,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django_ratelimit.decorators import ratelimit
 import json
 from .models import Customer, Staff
 from orders.models import Order
 
+@ratelimit(key='ip', rate='5/m', method='POST', block=True)
 def login_view(request):
     print('Login view reached')
     if request.method == "POST":

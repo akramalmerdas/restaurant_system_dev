@@ -1,4 +1,6 @@
 from django.db import models
+from PIL import Image
+from django.core.exceptions import ValidationError
 
 class Table(models.Model):
     TABLE_STATUS_CHOICES = [
@@ -20,6 +22,16 @@ class Table(models.Model):
 
     def __str__(self):
         return f"Table {self.id}  {self.number} ({self.get_status_display()})"
+
+    def save(self, *args, **kwargs):
+        if self.qr_code:
+            try:
+                # Open the image to verify it's a valid image file
+                img = Image.open(self.qr_code)
+                img.verify()
+            except (IOError, SyntaxError) as e:
+                raise ValidationError("The uploaded QR code is not a valid image.")
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ['number']

@@ -15,7 +15,7 @@ import os
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Load environment variables from .env file
 load_dotenv(os.path.join(BASE_DIR, '.env'))
@@ -24,14 +24,7 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# The SECRET_KEY is now loaded from an environment variable for security.
-# A default value is provided for development, but it's crucial to set a unique,
-# secret key in the production environment.
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'a-default-secret-key-for-development')
-DEBUG = True
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-
+# Base settings, common to all environments
 
 # Application definition
 
@@ -57,10 +50,12 @@ INSTALLED_APPS = [
     'notifications',
     'django_extensions',
     'channels',
+
     # Third-party apps
     'crispy_forms',
     'crispy_bootstrap5',
     'colorfield',
+    'csp',  # Content Security Policy
 ]
 
 # Add Channels configuration
@@ -85,6 +80,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_ratelimit.middleware.RatelimitMiddleware',
 ]
 
 ROOT_URLCONF = 'MochaCafe.urls'
@@ -109,46 +105,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'MochaCafe.wsgi.application'
 
 
-import sys
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-# Database configuration is now loaded from environment variables for security.
-# In a production environment, these variables must be set.
-DATABASES = {}
-# Use SQLite for testing
-if 'test' in sys.argv or 'collectstatic' in sys.argv or os.environ.get('USE_SQLITE'):
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-    CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels.layers.InMemoryChannelLayer',
-        },
-    }
-    STORAGES = {
-        "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
-        },
-        "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-        },
-    }
-    MIDDLEWARE.remove('whitenoise.middleware.WhiteNoiseMiddleware')
-else:
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ['DB_NAME'],
-        'USER': os.environ['DB_USER'],
-        'PASSWORD': os.environ['DB_PASSWORD'],
-        'HOST': os.environ['DB_HOST'],
-        'PORT': os.environ['DB_PORT'],
-    }
-
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -167,21 +123,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# This header is deprecated and no longer recommended by modern browsers.
-# Content Security Policy (CSP) is the recommended replacement.
-# SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-
-# Security settings for production environments.
-# These are enabled when DEBUG is False.
-SECURE_SSL_REDIRECT = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
-
-if not DEBUG:  # Production-specific settings
-    SECURE_HSTS_SECONDS = 31536000  # 1 year
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
 # Authentication settings
 LOGIN_URL = '/users/login/'
 # Internationalization
@@ -218,24 +159,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Add these lines for Crispy Forms configuration
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
-if 'test' in sys.argv or 'collectstatic' in sys.argv:
-    STORAGES = {
-        "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
-        },
-        "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-        },
-    }
-else:
-    STORAGES = {
-        "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
-        },
-        "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-        },
-    }
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
