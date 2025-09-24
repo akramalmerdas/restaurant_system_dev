@@ -5,7 +5,8 @@ import sys
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+# Allow all hosts for local development flexibility
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '*']
 
 # Use a simple, non-secret key for development
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'a-default-secret-key-for-development')
