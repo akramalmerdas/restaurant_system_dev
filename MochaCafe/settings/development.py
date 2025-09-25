@@ -47,8 +47,7 @@ if 'test' in sys.argv:
         },
     }
 
-
-# Simpler static file storage for development
+# Use the default storage backend for development
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -57,7 +56,3 @@ STORAGES = {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
-
-# WhiteNoise is not typically used in development, so we remove it from the middleware.
-if 'whitenoise.middleware.WhiteNoiseMiddleware' in MIDDLEWARE:
-    MIDDLEWARE.remove('whitenoise.middleware.WhiteNoiseMiddleware')
