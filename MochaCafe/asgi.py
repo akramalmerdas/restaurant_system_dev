@@ -15,7 +15,7 @@ from channels.auth import AuthMiddlewareStack
 
 from notifications.routing import websocket_urlpatterns  # We'll create this next
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MochaCafe.settings.production')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MochaCafe.settings.development')
 
 application = ProtocolTypeRouter({
     'http': get_asgi_application(),
