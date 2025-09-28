@@ -24,18 +24,27 @@ class Table(models.Model):
         return f"Table {self.id}  {self.number} ({self.get_status_display()})"
 
     def save(self, *args, **kwargs):
-        # The validation should only run when a new file is uploaded.
-        # A newly uploaded file will have a 'content_type' attribute,
-        # while a file read from storage will not.
-        if self.qr_code and hasattr(self.qr_code.file, 'content_type'):
+        # When saving a Table, we only want to validate a new QR code image file.
+        # An existing file path in the database might not correspond to a file on disk
+        # in a development environment, which would cause a FileNotFoundError.
+        if self.qr_code:
             try:
-                # Open the image from the uploaded file to verify it
-                self.qr_code.file.seek(0)
-                img = Image.open(self.qr_code.file)
-                img.verify()
-            except Exception:
-                # If the file is not a valid image, raise a validation error.
-                raise ValidationError("The uploaded QR code is not a valid image.")
+                # The hasattr check itself can trigger the FileNotFoundError if the file is missing.
+                is_new_upload = hasattr(self.qr_code.file, 'content_type')
+                if is_new_upload:
+                    # This is a new file upload, so we should validate it.
+                    self.qr_code.file.seek(0)
+                    img = Image.open(self.qr_code.file)
+                    img.verify()
+            except FileNotFoundError:
+                # The file doesn't exist on disk. This is acceptable in a dev environment
+                # where the database might have paths to files that don't exist locally.
+                # We pass silently to allow the save operation to continue.
+                pass
+            except Exception as e:
+                # Any other exception during validation is a genuine error.
+                raise ValidationError(f"The uploaded QR code is not a valid image: {e}")
+
         super().save(*args, **kwargs)
 
     class Meta:
