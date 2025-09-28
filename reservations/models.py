@@ -24,12 +24,17 @@ class Table(models.Model):
         return f"Table {self.id}  {self.number} ({self.get_status_display()})"
 
     def save(self, *args, **kwargs):
-        if self.qr_code:
+        # The validation should only run when a new file is uploaded.
+        # A newly uploaded file will have a 'content_type' attribute,
+        # while a file read from storage will not.
+        if self.qr_code and hasattr(self.qr_code.file, 'content_type'):
             try:
-                # Open the image to verify it's a valid image file
-                img = Image.open(self.qr_code)
+                # Open the image from the uploaded file to verify it
+                self.qr_code.file.seek(0)
+                img = Image.open(self.qr_code.file)
                 img.verify()
-            except (IOError, SyntaxError) as e:
+            except Exception:
+                # If the file is not a valid image, raise a validation error.
                 raise ValidationError("The uploaded QR code is not a valid image.")
         super().save(*args, **kwargs)
 
