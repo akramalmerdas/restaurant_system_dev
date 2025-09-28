@@ -257,7 +257,7 @@ def submitOrder(request):
         display_id=display_id
     )
     orderTable.status = 'occupied'
-    orderTable.save()
+    orderTable.save(update_fields=['status'])
     total_order_amount = 0
     for item_data in order_data:
         try:
