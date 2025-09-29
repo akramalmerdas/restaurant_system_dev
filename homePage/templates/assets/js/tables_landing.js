@@ -153,8 +153,10 @@ function setTableNumber(tableNumber) {
     .then(res => res.json())
     .then(data => {
         if (data.status === 'success') {
+            console.log('Table selected successfully!');
             showNotification(`Table ${tableNumber} selected successfully!`, 'success');
             window.location.href = document.body.dataset.menuUrl;
+            console.log('Redirecting to menu URL: ' + document.body.dataset.menuUrl);
         } else {
             showNotification('Error: ' + (data.message || 'Failed to select table'), 'error');
         }
