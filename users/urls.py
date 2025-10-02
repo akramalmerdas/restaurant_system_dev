@@ -14,4 +14,8 @@ urlpatterns = [
     path('customer/add/', views.manage_customer, name='add_customer'),
     path('customer/<int:customer_id>/edit/', views.manage_customer, name='edit_customer'),
     path('customer/<int:customer_id>/delete/', views.delete_customer, name='delete_customer'),
+    path('staff/', views.staff_dashboard, name='staff_dashboard'),
+    path('staff/add/', views.manage_staff, name='add_staff'),
+    path('staff/<int:staff_id>/edit/', views.manage_staff, name='edit_staff'),
+    path('staff/<int:staff_id>/delete/', views.delete_staff, name='delete_staff'),
 ]

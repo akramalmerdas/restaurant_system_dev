@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.utils.crypto import get_random_string
 from django_ratelimit.decorators import ratelimit
 import json
 from .models import Customer, Staff
@@ -93,7 +94,111 @@ def customer_dashboard(request):
     customers = Customer.objects.filter(inHold=False).select_related('user').order_by('user__username')
     return render(request, 'customer_dashboard.html', {'customers': customers})
 
-from .forms import CustomerForm
+from .forms import CustomerForm, StaffForm
+from .decorators import admin_required
+from django.core.paginator import Paginator
+
+@login_required
+@admin_required
+def staff_dashboard(request):
+    staff_list = Staff.objects.select_related('user').order_by('user__username')
+
+    # Search and Filter
+    query = request.GET.get('query')
+    role = request.GET.get('role')
+    status = request.GET.get('status')
+
+    if query:
+        staff_list = staff_list.filter(user__username__icontains=query)
+    if role:
+        staff_list = staff_list.filter(role=role)
+    if status is not None and status != '':
+        staff_list = staff_list.filter(is_active=status)
+
+    paginator = Paginator(staff_list, 10)  # Show 10 staff members per page.
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'roles': Staff.ROLE_CHOICES,
+        'query': query,
+        'selected_role': role,
+        'selected_status': status,
+    }
+    return render(request, 'staff_dashboard.html', context)
+
+@login_required
+@admin_required
+def manage_staff(request, staff_id=None):
+    if staff_id:
+        staff = get_object_or_404(Staff, id=staff_id)
+        user = staff.user
+        instance = staff
+    else:
+        staff = None
+        user = None
+        instance = None
+
+    if request.method == 'POST':
+        form = StaffForm(request.POST, instance=instance)
+        if form.is_valid():
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            email = form.cleaned_data['email']
+
+            if instance:  # Editing existing staff
+                user.first_name = first_name
+                user.last_name = last_name
+                user.email = email
+                user.username = email
+                user.save()
+            else:  # Creating new staff
+                # A default password can be set, which the user should change.
+                password = get_random_string(length=12)
+                user = User.objects.create_user(
+                    username=email,
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name,
+                    password=password
+                )
+                # You might want to log this password or send it to the user.
+                print(f"Generated password for {email}: {password}")
+
+
+            staff = form.save(commit=False)
+            staff.user = user
+            staff.save()
+
+            messages.success(request, f"Staff member '{user.get_full_name()}' saved successfully.")
+            return redirect('users:staff_dashboard')
+    else:
+        form = StaffForm(instance=instance)
+
+    context = {
+        'form': form,
+        'staff': instance
+    }
+    return render(request, 'staff_form.html', context)
+
+@login_required
+@admin_required
+def delete_staff(request, staff_id):
+    staff = get_object_or_404(Staff, id=staff_id)
+    if request.method == 'POST':
+        user = staff.user
+        user.is_active = False
+        user.save()
+
+        staff.inHold = True
+        staff.is_active = False
+        staff.save()
+
+        messages.success(request, f"Staff member '{user.get_full_name()}' has been deactivated.")
+        return redirect('users:staff_dashboard')
+
+    return render(request, 'staff_confirm_delete.html', {'staff': staff})
 
 @login_required
 def manage_customer(request, customer_id=None):
