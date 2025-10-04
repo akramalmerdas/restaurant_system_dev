@@ -20,134 +20,25 @@
 
     <!-- Template Main CSS File -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <!-- Dynamic Branding Colors -->
+    {% include 'includes/branding_styles.html' %}
     <link href="{% static 'css/admin_dashboard.css' %}" rel="stylesheet">
 </head>
 <body>
-    <section class="dashboard-section">
-        <div class="container-fluid">
-            <div class="row">
-                <!-- Sidebar -->
-                <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar">
-                    <div class="position-sticky pt-3">
-                        <div class="text-center py-4">
-                            <h3>Mocha Cafe</h3>
-                            <p class="text-white-50">Admin Dashboard</p>
-                            <hr class="mt-2 mb-4" style="border-color: rgba(255,255,255,0.1);">
-                        </div>
-                        <ul class="nav flex-column">
-                             <li class="nav-item">
-                                <a class="nav-link text-white" href="{% url 'orders:admin_dashboard' %}">
-                                    <i class="bi bi-speedometer2"></i>
-                                    Dashboard
-                                a>
-                            </li>
-                            <li class="nav-item">
-                               <a href="{% url 'payments:invoice_dashboard' %}" class="nav-link text-white">
-                                <i class="bi bi-receipt-cutoff"></i> Manage Invoices
-                            </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" href="{% url 'users:customer_dashboard' %}">
-                                    <i class="bi bi-people"></i>
-                                    Customers
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" href="{% url 'users:staff_dashboard' %}">
-                                    <i class="bi bi-person-badge"></i>
-                                    Staff
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" href="{% url 'orders:cancelled_orders' %}">
-                                    <i class="bi bi-trash"></i>
-                                    Cancelled Orders
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" href="{% url 'reservations:table_dashboard' %}">
-                                    <i class="bi bi-table"></i>
-                                    Tables
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" href="{% url 'theme:manage_branding' %}">
-                                    <i class="bi bi-palette"></i>
-                                    Manage Branding
-                                </a>
-                            </li>
-                          {% if request.user.is_authenticated and request.user.staff.role == "admin" %}
-							<li class="nav-item">
-								<a class="nav-link text-white" href="{% url 'reports:sales_report' %}">
-									<i class="bi bi-graph-up"></i>
-									Sales Reports
-								</a>
-							</li>
-							 <li class="nav-item">
-								<a class="nav-link text-white" href="{% url 'reports:staff_report' %}">
-									<i class="bi bi-graph-up"></i>
-									Staff Reports
-								</a>
-                            </li>
-							{% else %}
-							<li class="nav-item">
-								<a class="nav-link text-white" href="#" onclick="alert('You are not authorized to view this page.'); return false;">
-									<i class="bi bi-graph-up"></i>
-									Sales Reports
-								</a>
-							</li>
-							 <li class="nav-item">
-								<a class="nav-link text-white" onclick="alert('You are not authorized to view this page.'); return false;">
-									<i class="bi bi-graph-up"></i>
-									Staff Reports
-								</a>
-                            </li>
-							{% endif %}
+    <section class="container mt-5">
+        <div class="dashboard-header">
+            <h2 class="dashboard-title">Confirm Deactivation</h2>
+        </div>
 
-                            <li class="nav-item">
-                                <a class="nav-link text-white" href="{% url 'reservations:table_landing_page' %}" target="_blank">
-                                    <i class="bi bi-box"></i>
-                                    Menu Items
-                                </a>
-                            </li>
-                              <li class="nav-item">
-                               <a href="/" class="nav-link text-white">
-                                <i class="bi bi-box-arrow-right"></i>  Back to Home
-                            </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{% url 'menu:item_dashboard' %}" class="nav-link text-white">
-                                 <i class="bi bi-box-arrow-right"></i>Item Dashboard
-                             </a>
-                             </li>
-                            <li class="nav-item mt-4">
-                                <a class="nav-link text-white" href="{% url 'users:logout' %}">
-                                    <i class="bi bi-box-arrow-right"></i>
-                                    Logout
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
-
-                <!-- Main Content -->
-                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content-area">
-                    <div class="dashboard-header">
-                        <h2 class="dashboard-title">Confirm Deactivation</h2>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-body">
-                            <p>Are you sure you want to deactivate the staff member <strong>{{ staff.user.get_full_name|default:staff.user.username }}</strong>?</p>
-                            <p>This action will prevent them from logging in and remove them from the active staff list.</p>
-                            <form method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger">Deactivate</button>
-                                <a href="{% url 'users:staff_dashboard' %}" class="btn btn-secondary">Cancel</a>
-                            </form>
-                        </div>
-                    </div>
-                </main>
+        <div class="dashboard-card">
+            <div class="card-body">
+                <p>Are you sure you want to deactivate the staff member <strong>{{ staff.user.get_full_name|default:staff.user.username }}</strong>?</p>
+                <p>This action will prevent them from logging in and remove them from the active staff list.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Deactivate</button>
+                    <a href="{% url 'users:staff_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                </form>
             </div>
         </div>
     </section>
