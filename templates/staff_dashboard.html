@@ -99,8 +99,8 @@
                                     <tbody>
                                         {% for staff in page_obj %}
                                         <tr>
-                                            <td><a href="{% url 'users:staff_detail' staff.id %}">{{ staff.user.get_full_name|default:staff.user.username }}</a></td>
                                             <td>{{ staff.user.get_full_name|default:staff.user.username }}</td>
+                                            <td><a href="{% url 'users:staff_detail' staff.id %}">{{ staff.user.get_full_name|default:staff.user.username }}</a></td>
                                             <td>{{ staff.get_role_display }}</td>
                                             <td>
                                                 {% if staff.is_active %}
