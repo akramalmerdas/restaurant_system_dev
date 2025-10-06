@@ -1,131 +1,179 @@
-{% extends "base.html" %}
 {% load static %}
-{% block title %}{{ staff.user.get_full_name }} - Staff Details{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ staff.user.get_full_name }} - Staff Details</title>
 
-{% block content %}
-<section class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="dashboard-title">Staff Details: {{ staff.user.get_full_name }}</h2>
-            <p class="text-muted">Manage loans, deductions, and leave for this staff member.</p>
-        </div>
-        <a href="{% url 'users:staff_dashboard' %}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left-circle"></i> Back to Staff Dashboard
-        </a>
-    </div>
+    <!-- Favicons -->
+    <link href="{% static 'img/favicon.png' %}" rel="icon">
+    <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
 
-    <!-- Loan Management Card -->
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4><i class="bi bi-cash-coin"></i> Loan Records</h4>
-            <button class="btn btn-primary btn-sm">
-                <i class="bi bi-plus-circle"></i> Add Loan
-            </button>
-        </div>
-        <div class="card-body">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Date Issued</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for loan in loans %}
-                    <tr>
-                        <td>{{ loan.date_issued }}</td>
-                        <td>{{ loan.amount }}</td>
-                        <td><span class="badge {% if loan.repayment_status == 'paid' %}bg-success{% else %}bg-warning{% endif %}">{{ loan.get_repayment_status_display }}</span></td>
-                        <td>
-                            <button class="btn btn-info btn-sm">View</button>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center">No loan records found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,600,600i,700,700i|Satisfy|Comic+Neue:300,300i,400,400i,700,700i" rel="stylesheet">
 
-    <!-- Deduction Management Card -->
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4><i class="bi bi-journal-minus"></i> Deduction Records</h4>
-            <button class="btn btn-primary btn-sm">
-                <i class="bi bi-plus-circle"></i> Add Deduction
-            </button>
-        </div>
-        <div class="card-body">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Reason</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for deduction in deductions %}
-                    <tr>
-                        <td>{{ deduction.date }}</td>
-                        <td>{{ deduction.amount }}</td>
-                        <td>{{ deduction.reason }}</td>
-                        <td>
-                            <button class="btn btn-info btn-sm">View</button>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center">No deduction records found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
 
-    <!-- Leave Management Card -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4><i class="bi bi-calendar-check"></i> Leave Records</h4>
-            <button class="btn btn-primary btn-sm">
-                <i class="bi bi-plus-circle"></i> Add Leave
-            </button>
+    <!-- Dynamic Branding Colors -->
+    {% include 'includes/branding_styles.html' %}
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/admin_dashboard.css' %}" rel="stylesheet">
+</head>
+<body>
+    <header id="header" class="fixed-top d-flex align-items-center header-transparent">
+        <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+          <div class="logo me-auto">
+            <h1><a href="{% url 'orders:admin_dashboard' %}">{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</a></h1>
+          </div>
+          <nav id="navbar" class="navbar order-last order-lg-0">
+            <ul>
+              <li><a class="nav-link scrollto" href="{% url 'users:staff_dashboard' %}">Back to Staff Dashboard</a></li>
+            </ul>
+            <i class="bi bi-list mobile-nav-toggle"></i>
+          </nav>
         </div>
-        <div class="card-body">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Type</th>
-                        <th>Reason</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for leave in leaves %}
-                    <tr>
-                        <td>{{ leave.start_date }}</td>
-                        <td>{{ leave.end_date }}</td>
-                        <td>{{ leave.get_leave_type_display }}</td>
-                        <td>{{ leave.reason }}</td>
-                        <td>{% if leave.is_approved %}<span class="badge bg-success">Approved</span>{% else %}<span class="badge bg-secondary">Pending</span>{% endif %}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center">No leave records found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    </header>
+
+    <main id="main">
+        <section class="container mt-5 pt-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="dashboard-title">Staff Details: {{ staff.user.get_full_name }}</h2>
+                    <p class="text-muted">Manage loans, deductions, and leave for this staff member.</p>
+                </div>
+            </div>
+
+            <!-- Loan Management Card -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4><i class="bi bi-cash-coin"></i> Loan Records</h4>
+                    <button class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Add Loan
+                    </button>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date Issued</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loan in loans %}
+                            <tr>
+                                <td>{{ loan.date_issued }}</td>
+                                <td>{{ loan.amount }}</td>
+                                <td><span class="badge {% if loan.repayment_status == 'paid' %}bg-success{% else %}bg-warning{% endif %}">{{ loan.get_repayment_status_display }}</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm">View</button>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No loan records found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Deduction Management Card -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4><i class="bi bi-journal-minus"></i> Deduction Records</h4>
+                    <button class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Add Deduction
+                    </button>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Reason</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for deduction in deductions %}
+                            <tr>
+                                <td>{{ deduction.date }}</td>
+                                <td>{{ deduction.amount }}</td>
+                                <td>{{ deduction.reason }}</td>
+                                <td>
+                                    <button class="btn btn-info btn-sm">View</button>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No deduction records found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Leave Management Card -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4><i class="bi bi-calendar-check"></i> Leave Records</h4>
+                    <button class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Add Leave
+                    </button>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Type</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for leave in leaves %}
+                            <tr>
+                                <td>{{ leave.start_date }}</td>
+                                <td>{{ leave.end_date }}</td>
+                                <td>{{ leave.get_leave_type_display }}</td>
+                                <td>{{ leave.reason }}</td>
+                                <td>{% if leave.is_approved %}<span class="badge bg-success">Approved</span>{% else %}<span class="badge bg-secondary">Pending</span>{% endif %}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No leave records found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="footer">
+        <div class="container">
+          <h3>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</h3>
+          <div class="copyright">
+            &copy; Copyright <strong><span>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</span></strong>. All Rights Reserved
+          </div>
         </div>
-    </div>
-</section>
-{% endblock %}
+    </footer>
+
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
