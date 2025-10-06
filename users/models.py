@@ -47,3 +47,44 @@ class Customer(models.Model):
         for invoice in self.invoices.filter(is_paid=False):
             total += invoice.balance_due
         return total
+
+class Loan(models.Model):
+    REPAYMENT_STATUS_CHOICES = [
+        ('ongoing', 'Ongoing'),
+        ('paid', 'Paid'),
+    ]
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='loans')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date_issued = models.DateField(auto_now_add=True)
+    repayment_status = models.CharField(max_length=20, choices=REPAYMENT_STATUS_CHOICES, default='ongoing')
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Loan of {self.amount} for {self.staff.user.username} on {self.date_issued}"
+
+class Deduction(models.Model):
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='deductions')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
+    reason = models.CharField(max_length=255)
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Deduction of {self.amount} for {self.staff.user.username} on {self.date}"
+
+class Leave(models.Model):
+    LEAVE_TYPE_CHOICES = [
+        ('sick', 'Sick Leave'),
+        ('vacation', 'Vacation'),
+        ('unpaid', 'Unpaid Leave'),
+        ('other', 'Other'),
+    ]
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='leaves')
+    start_date = models.DateField()
+    end_date = models.DateField()
+    leave_type = models.CharField(max_length=20, choices=LEAVE_TYPE_CHOICES)
+    reason = models.TextField()
+    is_approved = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Leave for {self.staff.user.username} from {self.start_date} to {self.end_date}"

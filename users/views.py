@@ -201,6 +201,21 @@ def delete_staff(request, staff_id):
     return render(request, 'staff_confirm_delete.html', {'staff': staff})
 
 @login_required
+@admin_required
+def staff_detail(request, staff_id):
+    staff = get_object_or_404(Staff, id=staff_id)
+    loans = staff.loans.all()
+    deductions = staff.deductions.all()
+    leaves = staff.leaves.all()
+    context = {
+        'staff': staff,
+        'loans': loans,
+        'deductions': deductions,
+        'leaves': leaves,
+    }
+    return render(request, 'staff_detail.html', context)
+
+@login_required
 def manage_customer(request, customer_id=None):
     if customer_id:
         customer = get_object_or_404(Customer, id=customer_id)
