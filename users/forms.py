@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Customer, Staff
+from .models import Customer, Staff, Loan, Deduction, Leave
 
 class StaffForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30, required=True)
@@ -17,6 +17,33 @@ class StaffForm(forms.ModelForm):
             self.fields['first_name'].initial = self.instance.user.first_name
             self.fields['last_name'].initial = self.instance.user.last_name
             self.fields['email'].initial = self.instance.user.email
+
+class LoanForm(forms.ModelForm):
+    class Meta:
+        model = Loan
+        fields = ['amount', 'notes']
+        widgets = {
+            'notes': forms.Textarea(attrs={'rows': 3}),
+        }
+
+class DeductionForm(forms.ModelForm):
+    class Meta:
+        model = Deduction
+        fields = ['amount', 'date', 'reason', 'notes']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'notes': forms.Textarea(attrs={'rows': 3}),
+        }
+
+class LeaveForm(forms.ModelForm):
+    class Meta:
+        model = Leave
+        fields = ['start_date', 'end_date', 'leave_type', 'reason']
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
+            'reason': forms.Textarea(attrs={'rows': 3}),
+        }
 
 class CustomerForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30, required=True, help_text='Required.')

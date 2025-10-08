@@ -94,7 +94,7 @@ def customer_dashboard(request):
     customers = Customer.objects.filter(inHold=False).select_related('user').order_by('user__username')
     return render(request, 'customer_dashboard.html', {'customers': customers})
 
-from .forms import CustomerForm, StaffForm
+from .forms import CustomerForm, StaffForm, LoanForm, DeductionForm, LeaveForm
 from .decorators import admin_required
 from django.core.paginator import Paginator
 
@@ -214,6 +214,69 @@ def staff_detail(request, staff_id):
         'leaves': leaves,
     }
     return render(request, 'staff_detail.html', context)
+
+@login_required
+@admin_required
+def manage_loan(request, staff_id):
+    staff = get_object_or_404(Staff, id=staff_id)
+    if request.method == 'POST':
+        form = LoanForm(request.POST)
+        if form.is_valid():
+            loan = form.save(commit=False)
+            loan.staff = staff
+            loan.save()
+            messages.success(request, 'Loan record added successfully.')
+            return redirect('users:staff_detail', staff_id=staff.id)
+    else:
+        form = LoanForm()
+
+    context = {
+        'form': form,
+        'staff': staff,
+    }
+    return render(request, 'loan_form.html', context)
+
+@login_required
+@admin_required
+def manage_deduction(request, staff_id):
+    staff = get_object_or_404(Staff, id=staff_id)
+    if request.method == 'POST':
+        form = DeductionForm(request.POST)
+        if form.is_valid():
+            deduction = form.save(commit=False)
+            deduction.staff = staff
+            deduction.save()
+            messages.success(request, 'Deduction record added successfully.')
+            return redirect('users:staff_detail', staff_id=staff.id)
+    else:
+        form = DeductionForm()
+
+    context = {
+        'form': form,
+        'staff': staff,
+    }
+    return render(request, 'deduction_form.html', context)
+
+@login_required
+@admin_required
+def manage_leave(request, staff_id):
+    staff = get_object_or_404(Staff, id=staff_id)
+    if request.method == 'POST':
+        form = LeaveForm(request.POST)
+        if form.is_valid():
+            leave = form.save(commit=False)
+            leave.staff = staff
+            leave.save()
+            messages.success(request, 'Leave record added successfully.')
+            return redirect('users:staff_detail', staff_id=staff.id)
+    else:
+        form = LeaveForm()
+
+    context = {
+        'form': form,
+        'staff': staff,
+    }
+    return render(request, 'leave_form.html', context)
 
 @login_required
 def manage_customer(request, customer_id=None):

@@ -52,9 +52,9 @@
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4><i class="bi bi-cash-coin"></i> Loan Records</h4>
-                    <button class="btn btn-primary btn-sm">
+            <a href="{% url 'users:add_loan' staff.id %}" class="btn btn-primary btn-sm">
                         <i class="bi bi-plus-circle"></i> Add Loan
-                    </button>
+            </a>
                 </div>
                 <div class="card-body">
                     <table class="table table-hover">
@@ -90,9 +90,9 @@
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4><i class="bi bi-journal-minus"></i> Deduction Records</h4>
-                    <button class="btn btn-primary btn-sm">
+            <a href="{% url 'users:add_deduction' staff.id %}" class="btn btn-primary btn-sm">
                         <i class="bi bi-plus-circle"></i> Add Deduction
-                    </button>
+            </a>
                 </div>
                 <div class="card-body">
                     <table class="table table-hover">
@@ -128,9 +128,9 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4><i class="bi bi-calendar-check"></i> Leave Records</h4>
-                    <button class="btn btn-primary btn-sm">
+            <a href="{% url 'users:add_leave' staff.id %}" class="btn btn-primary btn-sm">
                         <i class="bi bi-plus-circle"></i> Add Leave
-                    </button>
+            </a>
                 </div>
                 <div class="card-body">
                     <table class="table table-hover">

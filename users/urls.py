@@ -19,4 +19,7 @@ urlpatterns = [
     path('staff/<int:staff_id>/edit/', views.manage_staff, name='edit_staff'),
     path('staff/<int:staff_id>/delete/', views.delete_staff, name='delete_staff'),
     path('staff/<int:staff_id>/', views.staff_detail, name='staff_detail'),
+    path('staff/<int:staff_id>/loan/add/', views.manage_loan, name='add_loan'),
+    path('staff/<int:staff_id>/deduction/add/', views.manage_deduction, name='add_deduction'),
+    path('staff/<int:staff_id>/leave/add/', views.manage_leave, name='add_leave'),
 ]
