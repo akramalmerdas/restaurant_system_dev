@@ -215,9 +215,12 @@ def staff_detail(request, staff_id):
     }
     return render(request, 'staff_detail.html', context)
 
+from django.http import HttpResponse
+
 @login_required
 @admin_required
 def manage_loan(request, staff_id):
+    return HttpResponse("<h1>Testing</h1>")
     staff = get_object_or_404(Staff, id=staff_id)
     if request.method == 'POST':
         form = LoanForm(request.POST)
