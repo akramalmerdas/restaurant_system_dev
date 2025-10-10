@@ -1,13 +1,17 @@
 from django.shortcuts import redirect, render, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.utils.crypto import get_random_string
 from django_ratelimit.decorators import ratelimit
 import json
-from .models import Customer, Staff
+from .models import Customer, Staff, Loan, Deduction, Leave
 from orders.models import Order
+from .forms import CustomerForm, StaffForm, LoanForm, DeductionForm, LeaveForm
+from .decorators import admin_required
+from django.core.paginator import Paginator
 
 @ratelimit(key='ip', rate='5/m', method='POST', block=True)
 def login_view(request):
@@ -93,8 +97,6 @@ def customer_dashboard(request):
     customers = Customer.objects.filter(inHold=False).select_related('user').order_by('user__username')
     return render(request, 'customer_dashboard.html', {'customers': customers})
 
-from .forms import CustomerForm
-
 @login_required
 def manage_customer(request, customer_id=None):
     if customer_id:
@@ -156,3 +158,158 @@ def delete_customer(request, customer_id):
         return redirect('users:customer_dashboard')
 
     return render(request, 'customer_confirm_delete.html', {'customer': customer})
+
+# --- Staff Management Views ---
+
+@login_required
+@admin_required
+def staff_dashboard(request):
+    staff_list = Staff.objects.select_related('user').order_by('user__username')
+
+    query = request.GET.get('query')
+    role = request.GET.get('role')
+    status = request.GET.get('status')
+
+    if query:
+        staff_list = staff_list.filter(user__username__icontains=query)
+    if role:
+        staff_list = staff_list.filter(role=role)
+    if status is not None and status != '':
+        staff_list = staff_list.filter(is_active=status)
+
+    paginator = Paginator(staff_list, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'roles': Staff.ROLE_CHOICES,
+        'query': query,
+        'selected_role': role,
+        'selected_status': status,
+    }
+    return render(request, 'staff_dashboard.html', context)
+
+@login_required
+@admin_required
+def manage_staff(request, staff_id=None):
+    if staff_id:
+        staff = get_object_or_404(Staff, id=staff_id)
+        instance = staff
+    else:
+        staff = None
+        instance = None
+
+    if request.method == 'POST':
+        form = StaffForm(request.POST, instance=instance)
+        if form.is_valid():
+            user = instance.user if instance else None
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            email = form.cleaned_data['email']
+
+            if instance:
+                user.first_name = first_name
+                user.last_name = last_name
+                user.email = email
+                user.username = email
+                user.save()
+            else:
+                password = get_random_string(length=12)
+                user = User.objects.create_user(
+                    username=email,
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name,
+                    password=password
+                )
+                print(f"Generated password for {email}: {password}")
+
+            staff = form.save(commit=False)
+            staff.user = user
+            staff.save()
+
+            messages.success(request, f"Staff member '{user.get_full_name()}' saved successfully.")
+            return redirect('users:staff_dashboard')
+    else:
+        form = StaffForm(instance=instance)
+
+    context = {
+        'form': form,
+        'staff': instance
+    }
+    return render(request, 'staff_form.html', context)
+
+@login_required
+@admin_required
+def delete_staff(request, staff_id):
+    staff = get_object_or_404(Staff, id=staff_id)
+    if request.method == 'POST':
+        user = staff.user
+        user.is_active = False
+        user.save()
+        staff.inHold = True
+        staff.is_active = False
+        staff.save()
+        messages.success(request, f"Staff member '{user.get_full_name()}' has been deactivated.")
+        return redirect('users:staff_dashboard')
+    return render(request, 'staff_confirm_delete.html', {'staff': staff})
+
+@login_required
+@admin_required
+def staff_detail(request, staff_id):
+    staff = get_object_or_404(Staff, id=staff_id)
+    context = {
+        'staff': staff,
+        'loans': staff.loans.all(),
+        'deductions': staff.deductions.all(),
+        'leaves': staff.leaves.all(),
+    }
+    return render(request, 'staff_detail.html', context)
+
+from django.http import HttpResponse
+
+@login_required
+@admin_required
+def manage_loan(request, staff_id):
+    return HttpResponse("<h1>Testing</h1>")
+
+@login_required
+@admin_required
+def manage_deduction(request, staff_id):
+    staff = get_object_or_404(Staff, id=staff_id)
+    if request.method == 'POST':
+        form = DeductionForm(request.POST)
+        if form.is_valid():
+            deduction = form.save(commit=False)
+            deduction.staff = staff
+            deduction.save()
+            messages.success(request, 'Deduction record added successfully.')
+            return redirect('users:staff_detail', staff_id=staff.id)
+    else:
+        form = DeductionForm()
+    context = {
+        'form': form,
+        'staff': staff,
+    }
+    return render(request, 'deduction_form.html', context)
+
+@login_required
+@admin_required
+def manage_leave(request, staff_id):
+    staff = get_object_or_404(Staff, id=staff_id)
+    if request.method == 'POST':
+        form = LeaveForm(request.POST)
+        if form.is_valid():
+            leave = form.save(commit=False)
+            leave.staff = staff
+            leave.save()
+            messages.success(request, 'Leave record added successfully.')
+            return redirect('users:staff_detail', staff_id=staff.id)
+    else:
+        form = LeaveForm()
+    context = {
+        'form': form,
+        'staff': staff,
+    }
+    return render(request, 'leave_form.html', context)
