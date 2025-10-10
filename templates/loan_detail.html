@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Details - {{ loan.staff.user.get_full_name }}</title>
+
+    <!-- Favicons -->
+    <link href="{% static 'img/favicon.png' %}" rel="icon">
+    <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,600,600i,700,700i|Satisfy|Comic+Neue:300,300i,400,400i,700,700i" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+
+    <!-- Dynamic Branding Colors -->
+    {% include 'includes/branding_styles.html' %}
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/admin_dashboard.css' %}" rel="stylesheet">
+</head>
+<body>
+    <header id="header" class="fixed-top d-flex align-items-center header-transparent">
+        <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+          <div class="logo me-auto">
+            <h1><a href="{% url 'orders:admin_dashboard' %}">{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</a></h1>
+          </div>
+          <nav id="navbar" class="navbar order-last order-lg-0">
+            <ul>
+              <li><a class="nav-link scrollto" href="{% url 'users:staff_detail' loan.staff.id %}">Back to Staff Details</a></li>
+            </ul>
+            <i class="bi bi-list mobile-nav-toggle"></i>
+          </nav>
+        </div>
+    </header>
+
+    <main id="main">
+        <section class="container mt-5 pt-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="dashboard-title">Loan Details</h2>
+                    <p class="text-muted">For {{ loan.staff.user.get_full_name }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Summary</h4>
+                </div>
+                <div class="card-body">
+                    <p><strong>Total Loan Amount:</strong> {{ loan.amount }}</p>
+                    <p><strong>Balance Due:</strong> {{ loan.balance }}</p>
+                    <p><strong>Date Issued:</strong> {{ loan.date_issued }}</p>
+                    <p><strong>Status:</strong> {{ loan.get_repayment_status_display }}</p>
+                    <p><strong>Notes:</strong> {{ loan.notes|default:"N/A" }}</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Repayment History</h4>
+                    <a href="{% url 'users:add_repayment' loan.id %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Add Repayment
+                    </a>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date Paid</th>
+                                <th>Amount</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for repayment in repayments %}
+                            <tr>
+                                <td>{{ repayment.date_paid }}</td>
+                                <td>{{ repayment.amount }}</td>
+                                <td>{{ repayment.notes|default:"-" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">No repayment records found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="footer">
+        <div class="container">
+          <h3>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</h3>
+          <div class="copyright">
+            &copy; Copyright <strong><span>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</span></strong>. All Rights Reserved
+          </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

@@ -9,7 +9,7 @@ from django_ratelimit.decorators import ratelimit
 import json
 from .models import Customer, Staff, Loan, Deduction, Leave
 from orders.models import Order
-from .forms import CustomerForm, StaffForm, LoanForm, DeductionForm, LeaveForm
+from .forms import CustomerForm, StaffForm, LoanForm, DeductionForm, LeaveForm, LoanRepaymentForm
 from .decorators import admin_required
 from django.core.paginator import Paginator
 
@@ -160,6 +160,42 @@ def delete_customer(request, customer_id):
     return render(request, 'customer_confirm_delete.html', {'customer': customer})
 
 # --- Staff Management Views ---
+
+@login_required
+@admin_required
+def add_repayment(request, loan_id):
+    loan = get_object_or_404(Loan, id=loan_id)
+    if request.method == 'POST':
+        form = LoanRepaymentForm(request.POST)
+        if form.is_valid():
+            repayment = form.save(commit=False)
+            repayment.loan = loan
+            repayment.save()
+            # Check if the loan is fully paid
+            if loan.balance <= 0:
+                loan.repayment_status = 'paid'
+                loan.save()
+            messages.success(request, 'Repayment added successfully.')
+            return redirect('users:loan_detail', loan_id=loan.id)
+    else:
+        form = LoanRepaymentForm()
+
+    context = {
+        'form': form,
+        'loan': loan,
+    }
+    return render(request, 'repayment_form.html', context)
+
+@login_required
+@admin_required
+def loan_detail(request, loan_id):
+    loan = get_object_or_404(Loan, id=loan_id)
+    repayments = loan.repayments.all().order_by('-date_paid')
+    context = {
+        'loan': loan,
+        'repayments': repayments,
+    }
+    return render(request, 'loan_detail.html', context)
 
 @login_required
 @admin_required

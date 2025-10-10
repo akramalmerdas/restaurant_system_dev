@@ -96,6 +96,23 @@ class StaffAdvancedManagementTest(TestCase):
 
         self.client.login(username='admin', password='password')
 
+    def test_add_loan_and_repayment(self):
+        # Add a loan
+        self.client.post(reverse('users:add_loan', args=[self.test_staff.id]), {'amount': '1000.00'})
+        loan = Loan.objects.get(staff=self.test_staff)
+        self.assertEqual(loan.balance, 1000)
+
+        # Add a repayment
+        self.client.post(reverse('users:add_repayment', args=[loan.id]), {'amount': '200.00'})
+        loan.refresh_from_db()
+        self.assertEqual(loan.balance, 800)
+
+        # Add another repayment that pays off the loan
+        self.client.post(reverse('users:add_repayment', args=[loan.id]), {'amount': '800.00'})
+        loan.refresh_from_db()
+        self.assertEqual(loan.balance, 0)
+        self.assertEqual(loan.repayment_status, 'paid')
+
     def test_add_loan(self):
         response = self.client.post(reverse('users:add_loan', args=[self.test_staff.id]), {
             'amount': '1000.00',

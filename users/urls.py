@@ -22,4 +22,6 @@ urlpatterns = [
     path('staff/<int:staff_id>/loan/add/', views.manage_loan, name='add_loan'),
     path('staff/<int:staff_id>/deduction/add/', views.manage_deduction, name='add_deduction'),
     path('staff/<int:staff_id>/leave/add/', views.manage_leave, name='add_leave'),
+    path('loan/<int:loan_id>/', views.loan_detail, name='loan_detail'),
+    path('loan/<int:loan_id>/repayment/add/', views.add_repayment, name='add_repayment'),
 ]

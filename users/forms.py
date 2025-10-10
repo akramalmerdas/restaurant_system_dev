@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Customer, Staff, Loan, Deduction, Leave
+from .models import Customer, Staff, Loan, Deduction, Leave, LoanRepayment
 
 class StaffForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30, required=True)
@@ -43,6 +43,14 @@ class LeaveForm(forms.ModelForm):
             'start_date': forms.DateInput(attrs={'type': 'date'}),
             'end_date': forms.DateInput(attrs={'type': 'date'}),
             'reason': forms.Textarea(attrs={'rows': 3}),
+        }
+
+class LoanRepaymentForm(forms.ModelForm):
+    class Meta:
+        model = LoanRepayment
+        fields = ['amount', 'notes']
+        widgets = {
+            'notes': forms.Textarea(attrs={'rows': 3}),
         }
 
 class CustomerForm(forms.ModelForm):

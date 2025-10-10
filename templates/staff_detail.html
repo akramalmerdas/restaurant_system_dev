@@ -48,6 +48,25 @@
                 </div>
             </div>
 
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-journal-minus"></i> Total Deductions</h5>
+                    <p class="card-text fs-4">{{ staff.total_deductions }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-calendar-check"></i> Total Leave Days</h5>
+                    <p class="card-text fs-4">{{ staff.total_leave_days }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
             <!-- Loan Management Card -->
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -62,6 +81,7 @@
                             <tr>
                                 <th>Date Issued</th>
                                 <th>Amount</th>
+                        <th>Balance Due</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -71,9 +91,10 @@
                             <tr>
                                 <td>{{ loan.date_issued }}</td>
                                 <td>{{ loan.amount }}</td>
+                        <td>{{ loan.balance }}</td>
                                 <td><span class="badge {% if loan.repayment_status == 'paid' %}bg-success{% else %}bg-warning{% endif %}">{{ loan.get_repayment_status_display }}</span></td>
                                 <td>
-                                    <button class="btn btn-info btn-sm">View</button>
+                            <a href="{% url 'users:loan_detail' loan.id %}" class="btn btn-info btn-sm">View</a>
                                 </td>
                             </tr>
                             {% empty %}

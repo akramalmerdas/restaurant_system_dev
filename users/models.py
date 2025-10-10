@@ -25,6 +25,17 @@ class Staff(models.Model):
         full_name = self.user.get_full_name()
         return f"{full_name or self.user.username} - {self.role.capitalize()}"
 
+    @property
+    def total_deductions(self):
+        return self.deductions.aggregate(total=models.Sum('amount'))['total'] or 0
+
+    @property
+    def total_leave_days(self):
+        total_days = 0
+        for leave in self.leaves.all():
+            total_days += (leave.end_date - leave.start_date).days + 1
+        return total_days
+
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     address = models.TextField(null=True, blank=True)
@@ -59,8 +70,22 @@ class Loan(models.Model):
     repayment_status = models.CharField(max_length=20, choices=REPAYMENT_STATUS_CHOICES, default='ongoing')
     notes = models.TextField(blank=True, null=True)
 
+    @property
+    def balance(self):
+        total_repaid = self.repayments.aggregate(total=models.Sum('amount'))['total'] or 0
+        return self.amount - total_repaid
+
     def __str__(self):
         return f"Loan of {self.amount} for {self.staff.user.username} on {self.date_issued}"
+
+class LoanRepayment(models.Model):
+    loan = models.ForeignKey(Loan, on_delete=models.CASCADE, related_name='repayments')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date_paid = models.DateField(auto_now_add=True)
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Repayment of {self.amount} for loan {self.loan.id}"
 
 class Deduction(models.Model):
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='deductions')
