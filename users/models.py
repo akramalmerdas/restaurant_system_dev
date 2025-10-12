@@ -70,22 +70,8 @@ class Loan(models.Model):
     repayment_status = models.CharField(max_length=20, choices=REPAYMENT_STATUS_CHOICES, default='ongoing')
     notes = models.TextField(blank=True, null=True)
 
-    @property
-    def balance(self):
-        total_repaid = self.repayments.aggregate(total=models.Sum('amount'))['total'] or 0
-        return self.amount - total_repaid
-
     def __str__(self):
         return f"Loan of {self.amount} for {self.staff.user.username} on {self.date_issued}"
-
-class LoanRepayment(models.Model):
-    loan = models.ForeignKey(Loan, on_delete=models.CASCADE, related_name='repayments')
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    date_paid = models.DateField(auto_now_add=True)
-    notes = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f"Repayment of {self.amount} for loan {self.loan.id}"
 
 class FinancialTransaction(models.Model):
     TRANSACTION_TYPE_CHOICES = [
@@ -102,16 +88,6 @@ class FinancialTransaction(models.Model):
 
     def __str__(self):
         return f"{self.get_transaction_type_display()} of {self.amount} for {self.staff.user.username} on {self.date}"
-
-class Deduction(models.Model):
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='deductions')
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    date = models.DateField()
-    reason = models.CharField(max_length=255)
-    notes = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f"Deduction of {self.amount} for {self.staff.user.username} on {self.date}"
 
 class Leave(models.Model):
     LEAVE_TYPE_CHOICES = [

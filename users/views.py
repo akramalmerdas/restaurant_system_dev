@@ -7,9 +7,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils.crypto import get_random_string
 from django_ratelimit.decorators import ratelimit
 import json
-from .models import Customer, Staff, Loan, Deduction, Leave
+from .models import Customer, Staff, Leave, FinancialTransaction, Loan
 from orders.models import Order
-from .forms import CustomerForm, StaffForm, LoanForm, DeductionForm, LeaveForm, LoanRepaymentForm
+from .forms import CustomerForm, StaffForm, LoanForm, LeaveForm, FinancialTransactionForm
 from .decorators import admin_required
 from django.core.paginator import Paginator
 
