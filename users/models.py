@@ -87,6 +87,22 @@ class LoanRepayment(models.Model):
     def __str__(self):
         return f"Repayment of {self.amount} for loan {self.loan.id}"
 
+class FinancialTransaction(models.Model):
+    TRANSACTION_TYPE_CHOICES = [
+        ('loan', 'Loan'),
+        ('deduction', 'Deduction'),
+        ('repayment', 'Repayment'),
+    ]
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='financial_transactions')
+    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPE_CHOICES)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
+    description = models.CharField(max_length=255)
+    related_loan = models.ForeignKey(Loan, on_delete=models.SET_NULL, null=True, blank=True, help_text="Link to the original loan if this is a repayment.")
+
+    def __str__(self):
+        return f"{self.get_transaction_type_display()} of {self.amount} for {self.staff.user.username} on {self.date}"
+
 class Deduction(models.Model):
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='deductions')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
