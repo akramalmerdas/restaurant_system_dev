@@ -26,10 +26,6 @@ class Staff(models.Model):
         return f"{full_name or self.user.username} - {self.role.capitalize()}"
 
     @property
-    def total_deductions(self):
-        return self.deductions.aggregate(total=models.Sum('amount'))['total'] or 0
-
-    @property
     def total_leave_days(self):
         total_days = 0
         for leave in self.leaves.all():

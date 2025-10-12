@@ -163,28 +163,25 @@ def delete_customer(request, customer_id):
 
 @login_required
 @admin_required
-def add_repayment(request, loan_id):
-    loan = get_object_or_404(Loan, id=loan_id)
+def add_repayment(request, staff_id):
+    staff = get_object_or_404(Staff, id=staff_id)
     if request.method == 'POST':
-        form = LoanRepaymentForm(request.POST)
+        form = FinancialTransactionForm(request.POST)
         if form.is_valid():
-            repayment = form.save(commit=False)
-            repayment.loan = loan
-            repayment.save()
-            # Check if the loan is fully paid
-            if loan.balance <= 0:
-                loan.repayment_status = 'paid'
-                loan.save()
+            transaction = form.save(commit=False)
+            transaction.staff = staff
+            transaction.transaction_type = 'repayment'
+            transaction.save()
             messages.success(request, 'Repayment added successfully.')
-            return redirect('users:loan_detail', loan_id=loan.id)
+            return redirect('users:staff_detail', staff_id=staff.id)
     else:
-        form = LoanRepaymentForm()
-
+        form = FinancialTransactionForm()
     context = {
         'form': form,
-        'loan': loan,
+        'staff': staff,
+        'form_title': 'Add Repayment'
     }
-    return render(request, 'repayment_form.html', context)
+    return render(request, 'financial_transaction_form.html', context)
 
 @login_required
 @admin_required
@@ -295,10 +292,20 @@ def delete_staff(request, staff_id):
 @admin_required
 def staff_detail(request, staff_id):
     staff = get_object_or_404(Staff, id=staff_id)
+    transactions = staff.financial_transactions.all().order_by('-date')
+
+    # Calculate running balance
+    balance = staff.salary or 0
+    for transaction in reversed(transactions):
+        if transaction.transaction_type == 'loan' or transaction.transaction_type == 'deduction':
+            balance -= transaction.amount
+        elif transaction.transaction_type == 'repayment':
+            balance += transaction.amount
+        transaction.balance = balance
+
     context = {
         'staff': staff,
-        'loans': staff.loans.all(),
-        'deductions': staff.deductions.all(),
+        'transactions': transactions,
         'leaves': staff.leaves.all(),
     }
     return render(request, 'staff_detail.html', context)
@@ -308,40 +315,44 @@ def staff_detail(request, staff_id):
 def manage_loan(request, staff_id):
     staff = get_object_or_404(Staff, id=staff_id)
     if request.method == 'POST':
-        form = LoanForm(request.POST)
+        form = FinancialTransactionForm(request.POST)
         if form.is_valid():
-            loan = form.save(commit=False)
-            loan.staff = staff
-            loan.save()
+            transaction = form.save(commit=False)
+            transaction.staff = staff
+            transaction.transaction_type = 'loan'
+            transaction.save()
             messages.success(request, 'Loan record added successfully.')
             return redirect('users:staff_detail', staff_id=staff.id)
     else:
-        form = LoanForm()
+        form = FinancialTransactionForm()
     context = {
         'form': form,
         'staff': staff,
+        'form_title': 'Add Loan'
     }
-    return render(request, 'loan_form.html', context)
+    return render(request, 'financial_transaction_form.html', context)
 
 @login_required
 @admin_required
 def manage_deduction(request, staff_id):
     staff = get_object_or_404(Staff, id=staff_id)
     if request.method == 'POST':
-        form = DeductionForm(request.POST)
+        form = FinancialTransactionForm(request.POST)
         if form.is_valid():
-            deduction = form.save(commit=False)
-            deduction.staff = staff
-            deduction.save()
+            transaction = form.save(commit=False)
+            transaction.staff = staff
+            transaction.transaction_type = 'deduction'
+            transaction.save()
             messages.success(request, 'Deduction record added successfully.')
             return redirect('users:staff_detail', staff_id=staff.id)
     else:
-        form = DeductionForm()
+        form = FinancialTransactionForm()
     context = {
         'form': form,
         'staff': staff,
+        'form_title': 'Add Deduction'
     }
-    return render(request, 'deduction_form.html', context)
+    return render(request, 'financial_transaction_form.html', context)
 
 @login_required
 @admin_required

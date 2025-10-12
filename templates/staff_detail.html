@@ -67,77 +67,53 @@
         </div>
     </div>
 
-            <!-- Loan Management Card -->
+            <!-- Financial History Card -->
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4><i class="bi bi-cash-coin"></i> Loan Records</h4>
-            <a href="{% url 'users:add_loan' staff.id %}" class="btn btn-primary btn-sm">
-                        <i class="bi bi-plus-circle"></i> Add Loan
-            </a>
-                </div>
-                <div class="card-body">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Date Issued</th>
-                                <th>Amount</th>
-                        <th>Balance Due</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for loan in loans %}
-                            <tr>
-                                <td>{{ loan.date_issued }}</td>
-                                <td>{{ loan.amount }}</td>
-                        <td>{{ loan.balance }}</td>
-                                <td><span class="badge {% if loan.repayment_status == 'paid' %}bg-success{% else %}bg-warning{% endif %}">{{ loan.get_repayment_status_display }}</span></td>
-                                <td>
-                            <a href="{% url 'users:loan_detail' loan.id %}" class="btn btn-info btn-sm">View</a>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4" class="text-center">No loan records found.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Deduction Management Card -->
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4><i class="bi bi-journal-minus"></i> Deduction Records</h4>
-            <a href="{% url 'users:add_deduction' staff.id %}" class="btn btn-primary btn-sm">
-                        <i class="bi bi-plus-circle"></i> Add Deduction
-            </a>
+                    <h4><i class="bi bi-cash-stack"></i> Financial History</h4>
+                    <div>
+                        <a href="{% url 'users:add_loan' staff.id %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-circle"></i> Add Loan
+                        </a>
+                        <a href="{% url 'users:add_deduction' staff.id %}" class="btn btn-warning btn-sm">
+                            <i class="bi bi-journal-minus"></i> Add Deduction
+                        </a>
+                        <a href="{% url 'users:add_repayment' staff.id %}" class="btn btn-success btn-sm">
+                            <i class="bi bi-plus-circle"></i> Add Repayment
+                        </a>
+                    </div>
                 </div>
                 <div class="card-body">
                     <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th>Date</th>
+                                <th>Type</th>
+                                <th>Description</th>
                                 <th>Amount</th>
-                                <th>Reason</th>
-                                <th>Actions</th>
+                                <th>Running Balance</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for deduction in deductions %}
+                            {% for transaction in transactions %}
                             <tr>
-                                <td>{{ deduction.date }}</td>
-                                <td>{{ deduction.amount }}</td>
-                                <td>{{ deduction.reason }}</td>
+                                <td>{{ transaction.date }}</td>
                                 <td>
-                                    <button class="btn btn-info btn-sm">View</button>
+                                    <span class="badge
+                                        {% if transaction.transaction_type == 'loan' %}bg-danger
+                                        {% elif transaction.transaction_type == 'deduction' %}bg-warning
+                                        {% elif transaction.transaction_type == 'repayment' %}bg-success
+                                        {% endif %}">
+                                        {{ transaction.get_transaction_type_display }}
+                                    </span>
                                 </td>
+                                <td>{{ transaction.description }}</td>
+                                <td>{{ transaction.amount }}</td>
+                                <td>{{ transaction.balance }}</td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="4" class="text-center">No deduction records found.</td>
+                                <td colspan="5" class="text-center">No financial records found.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
