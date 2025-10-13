@@ -61,7 +61,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title"><i class="bi bi-calendar-check"></i> Total Leave Days</h5>
-                    <p class="card-text fs-4">{{ staff.total_leave_days }}</p>
+                    <p class="card-text fs-4">{{ staff.total_leave_days }} Days</p>
                 </div>
             </div>
         </div>
@@ -77,9 +77,6 @@
                         </a>
                         <a href="{% url 'users:add_deduction' staff.id %}" class="btn btn-warning btn-sm">
                             <i class="bi bi-journal-minus"></i> Add Deduction
-                        </a>
-                        <a href="{% url 'users:add_repayment' staff.id %}" class="btn btn-success btn-sm">
-                            <i class="bi bi-plus-circle"></i> Add Repayment
                         </a>
                     </div>
                 </div>

@@ -89,7 +89,6 @@
                                     <thead>
                                         <tr>
                                             <th>Name</th>
-                                            <th>Name</th>
                                             <th>Role</th>
                                             <th>Status</th>
                                             <th>Last Login</th>
@@ -99,7 +98,6 @@
                                     <tbody>
                                         {% for staff in page_obj %}
                                         <tr>
-                                            <td>{{ staff.user.get_full_name|default:staff.user.username }}</td>
                                             <td><a href="{% url 'users:staff_detail' staff.id %}">{{ staff.user.get_full_name|default:staff.user.username }}</a></td>
                                             <td>{{ staff.get_role_display }}</td>
                                             <td>
@@ -121,7 +119,7 @@
                                         </tr>
                                         {% empty %}
                                         <tr>
-                                            <td colspan="6">
+                                            <td colspan="5">
                                                 <div class="empty-state text-center py-5">
                                                     <i class="bi bi-inbox fs-1 mb-3"></i>
                                                     <p>No staff members found.</p>
