@@ -1,7 +1,7 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirm Deactivation - Mocha Cafe</title>
@@ -16,31 +16,58 @@
     <!-- Vendor CSS Files -->
     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
-    <link href="{% static 'vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+
+    <!-- Dynamic Branding Colors -->
+    {% include 'includes/branding_styles.html' %}
 
     <!-- Template Main CSS File -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
-    <!-- Dynamic Branding Colors -->
-    {% include 'includes/branding_styles.html' %}
     <link href="{% static 'css/admin_dashboard.css' %}" rel="stylesheet">
 </head>
 <body>
-    <section class="container mt-5">
-        <div class="dashboard-header">
-            <h2 class="dashboard-title">Confirm Deactivation</h2>
+    <header id="header" class="fixed-top d-flex align-items-center header-transparent">
+        <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+          <div class="logo me-auto">
+            <h1><a href="{% url 'orders:admin_dashboard' %}">{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</a></h1>
+          </div>
+          <nav id="navbar" class="navbar order-last order-lg-0">
+            <ul>
+              <li><a class="nav-link scrollto" href="{% url 'users:staff_dashboard' %}">Back to Staff Dashboard</a></li>
+            </ul>
+            <i class="bi bi-list mobile-nav-toggle"></i>
+          </nav>
         </div>
+    </header>
 
-        <div class="dashboard-card">
-            <div class="card-body">
-                <p>Are you sure you want to deactivate the staff member <strong>{{ staff.user.get_full_name|default:staff.user.username }}</strong>?</p>
-                <p>This action will prevent them from logging in and remove them from the active staff list.</p>
-                <form method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Deactivate</button>
-                    <a href="{% url 'users:staff_dashboard' %}" class="btn btn-secondary">Cancel</a>
-                </form>
+    <main id="main">
+        <section class="container mt-5 pt-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Confirm Deactivation</h3>
+                </div>
+                <div class="card-body">
+                    <p>Are you sure you want to deactivate the staff member <strong>{{ staff.user.get_full_name|default:staff.user.username }}</strong>?</p>
+                    <p>This action will prevent them from logging in and remove them from the active staff list.</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Deactivate</button>
+                        <a href="{% url 'users:staff_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
             </div>
+        </section>
+    </main>
+
+    <footer id="footer">
+        <div class="container">
+          <h3>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</h3>
+          <div class="copyright">
+            &copy; Copyright <strong><span>{% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</span></strong>. All Rights Reserved
+          </div>
         </div>
-    </section>
+    </footer>
+
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
 </body>
 </html>

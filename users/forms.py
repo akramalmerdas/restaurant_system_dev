@@ -18,14 +18,6 @@ class StaffForm(forms.ModelForm):
             self.fields['last_name'].initial = self.instance.user.last_name
             self.fields['email'].initial = self.instance.user.email
 
-class LoanForm(forms.ModelForm):
-    class Meta:
-        model = Loan
-        fields = ['amount', 'notes']
-        widgets = {
-            'notes': forms.Textarea(attrs={'rows': 3}),
-        }
-
 class LeaveForm(forms.ModelForm):
     class Meta:
         model = Leave

@@ -1,0 +1,706 @@
+#ffb03b
+#fff8e8
+#ffa012
+#fff
+rgba(255, 176, 59, 0.15)
+#333
+#666
+#ddd
+#ddd
+#666
+#ddd
+rgba(255, 176, 59, 0.25)
+#eee
+#666
+#333
+#add
+#add
+rgba(255, 176, 59, 0.3)
+#666
+rgba(255, 176, 59, 0.3)
+#ffb03b
+#fff8e8
+#ffa012
+#fff
+rgba(0, 0, 0, 0.1)
+#fff
+#fff
+#dc3545
+#fff
+#c82333
+#fff
+rgba(255, 176, 59, 0.3)
+#6c757d
+#6c757d
+#5a6268
+#545b62
+rgba(108, 117, 125, 0.3)
+#666
+#c82333
+#a12e39
+#fff
+#a12e39
+#a12e39
+rgba(255, 99, 71, 0.3)
+#28a745
+#269640
+#fff
+#269640
+#269640
+rgba(255, 99, 71, 0.3)
+#343a40
+#f8f9fa
+#495057
+#80bdff
+rgba(0, 123, 255, .25)
+#2c3e50
+#3498db
+#27ae60
+#e67e22
+#e74a3b
+#f8f9fa
+#ecf0f1
+#2c3e50
+#34495e
+#7f8c8d
+#1a2a3a
+rgba(255, 255, 255, 0.8)
+rgba(255, 255, 255, 0.1)
+rgba(255, 255, 255, 0.15)
+#f5f7fa
+rgba(0,0,0,0.05)
+rgba(0,0,0,0.05)
+#f8f9fa
+#fcfcfc
+rgba(78, 115, 223, 0.05)
+rgba(231, 74, 59, 0.15)
+#dee2e6
+#6c757d
+#f8f9fa
+#495057
+#ced4da
+#f8f9fa
+#d54b27
+#ffa012
+#18d26e
+#35322d
+#433f39
+#444444
+#46423b
+#5f5950
+#6c665c
+#6c757d
+#777777
+#7a7368
+#848484
+#948c81
+#aaaaaa
+#ccc
+#ced4da
+#dad8d4
+#ddd
+#e8e7e4
+#ed3c0d
+#eee
+#f0f0f0
+#f2f1ef
+#f8f9fa
+#ff0000
+#d56127
+#ffc064
+#ffc56e
+#ffcf88
+#fff
+#fff6e8
+#fffaf3
+rgba(198, 16, 0, 0)
+#444444
+#fff
+#fff
+#fff
+#fff
+#ff7e5f
+#feb47b
+rgba(0, 0, 0, 0.1)
+rgba(39, 37, 34, 0.9)
+#fff
+rgba(12, 11, 9, 0.9)
+rgba(12, 11, 9, 0.6)
+rgba(12, 11, 9, 0.9)
+rgba(12, 11, 9, 0.9)
+#fff
+#fff
+#fff
+rgba(12, 11, 9, 0.9)
+#fff
+rgba(127, 137, 161, 0.25)
+#433f39
+rgba(12, 11, 9, 0.95)
+rgba(12, 11, 9, 0.95)
+rgba(255, 176, 59, 0.1)
+#fff
+rgba(12, 11, 9, 0.95)
+rgba(12, 11, 9, 0.95)
+rgba(39, 37, 34, 0.9)
+#fff
+#433f39
+#fff
+rgba(127, 137, 161, 0.25)
+rgba(39, 37, 34, 0.8)
+rgba(12, 11, 10, 0.5)
+#fff
+#fff
+rgba(255, 255, 255, 0.2)
+rgba(255, 255, 255, 0.5)
+rgba(255, 255, 255, 0.3)
+rgba(255, 255, 255, 0.8)
+#fff
+#fff
+#5f5950
+#f2f1ef
+#6c757d
+#5f5950
+#848484
+rgba(255, 176, 59, 0.4)
+#fff
+rgba(255, 176, 59, 0.7)
+rgba(198, 16, 0, 0)
+#fff
+rgba(0, 0, 0, 0.1)
+#6c665c
+#aaaaaa
+rgba(0, 0, 0, 0.18)
+#fff
+#444444
+#fff
+#fff
+#fff
+rgba(0,0,0,0.05)
+#bab3a6
+#fff
+#fff
+#948c81
+rgba(255, 176, 59, 0.1)
+rgba(255, 176, 59, 0.1)
+#ffffff
+rgba(0, 0, 0, 0.05)
+rgba(0, 0, 0, 0.1)
+#333333
+#ffffff
+#ffffff
+rgba(255, 176, 59, 0.2)
+#433f39
+#e8e7e4
+#433f39
+#777777
+#fff
+rgba(12, 11, 10, 0.8)
+#fff
+rgba(255, 255, 255, 0.08)
+#fff
+rgba(255, 255, 255, 0.5)
+rgba(0, 0, 0, 0.12)
+#fff
+#fff
+#ed3c0d
+#fff
+#fff
+#eee
+#fff
+#fff
+#fff
+rgba(255, 255, 255, 0.8)
+#fff
+#433f39
+rgba(0, 0, 0, 0.1)
+#6c665c
+#7a7368
+rgba(12, 11, 10, 0.7)
+#fff
+rgba(255, 255, 255, 0.15)
+#fff
+#ddd
+rgba(255, 255, 255, 0.4)
+#eee
+rgba(255, 255, 255, 0.5)
+rgba(0, 0, 0, 0.1)
+#fff
+#433f39
+#7a7368
+#fff
+rgba(0, 0, 0, 0.12)
+#fff
+#fff
+#ed3c0d
+#fff
+#fff
+#eee
+#fff
+#35322d
+#fff
+#46423b
+#fff
+rgba(39, 37, 34, 0.9)
+#fff
+#f8f9fa
+#ced4da
+#ced4da
+#ddd
+#ddd
+#ff0000
+#ccc
+#f0f0f0
+#4CAF50
+#45aaf2
+#20c997
+#fff
+rgba(0,0,0,0.18)
+#dc3545
+#fff
+rgba(0,0,0,0.15)
+#ffa012
+#fff
+rgba(0,0,0,0.22)
+#f8f9fa
+#fff
+rgba(0, 0, 0, 0.07)
+#f0f0f0
+#fafafa
+#333
+#6c757d
+#ffb03b
+#f8f9fa
+#dee2e6
+#495057
+#e9ecef
+#ced4da
+#000
+#dee2e6
+#fff
+rgba(0, 0, 0, 0.1)
+#fff
+#fff
+#f0f0f0
+#28a745
+#fff
+#de3912
+#000
+#17a2b8
+#fff
+#fff
+#fff
+#fff
+#fff
+#f8f9fa
+#e67e40
+#d65a1f
+rgba(230, 126, 64, 0.3)
+#fff
+#495057
+rgba(0, 0, 0, 0.1)
+#e9ecef
+#e9ecef
+rgba(0, 0, 0, 0.15)
+#e67e40
+#28a745
+#dc3545
+#fd7e14
+#6c757d
+#adb5bd
+#ffc107
+#28a745
+#dc3545
+#fd7e14
+#6c757d
+#ffc107
+#2c3e50
+#6c757d
+#28a745
+#dc3545
+#fd7e14
+#6c757d
+#e9ecef
+#8e9aa3
+#e67e40
+#d65a1f
+#6c757d
+#d65a1f
+#e67e40
+#d65a1f
+rgba(230, 126, 64, 0.4)
+rgba(230, 126, 64, 0.6)
+rgba(0, 0, 0, 0.2)
+#e67e40
+#d65a1f
+#f1f3f4
+#495057
+#6c757d
+rgba(0, 0, 0, 0.2)
+#28a745
+#dc3545
+#fd7e14
+#6c757d
+#ffc107
+#212529
+#17a2b8
+rgba(255, 255, 255, 0.2)
+#ffc107
+#6c757d
+#f8f9fa
+rgba(0, 0, 0, 0.1)
+#fff
+#fff
+#fff
+#dc3545
+#000
+#17a2b8
+#fff
+#28a745
+#fff
+#b52157
+#fff
+#6f42c1
+#fff
+#ffc107
+#000
+#fff
+#fff
+#fff
+#dc3545
+#fff
+#c82333
+#fff
+#fff
+rgba(12, 11, 9, 0.9)
+rgba(255, 255, 255, 0.1)
+#fff
+#fff
+#fff
+rgba(0, 0, 0, 0.1)
+rgba(255, 193, 7, 0.1)
+rgba(255, 193, 7, 0.3)
+#198754
+#dc3545
+#ffc107
+#000
+#667eea
+#764ba2
+#222222
+#ffffff
+#f0f0f0
+#007bff
+#800080
+#28a745
+#ffc107
+#dc3545
+#333333
+#6c757d
+#aaaaaa
+#dddddd
+rgba(0, 0, 0, 0.1)
+rgba(0, 0, 0, 0.15)
+#333333
+#555555
+#333333
+#ffffff
+#ffffff
+#ffffff
+#cccccc
+rgba(0, 0, 0, 0.2)
+#d54b27
+#A0522D
+#ffffff
+#e0e0e0
+rgba(255, 255, 255, 0.2)
+#8A2BE2
+#7c3aed
+#f5f505
+#22c55e
+rgba(255, 255, 255, 0.2)
+rgba(0, 123, 255, 0.3)
+rgba(40, 167, 69, 0.3)
+rgba(220, 53, 69, 0.3)
+#fff
+#fff
+rgba(0, 0, 0, 0.1)
+#e0e0e0
+#e0e0e0
+rgba(255, 255, 255, 0.1)
+rgba(255, 255, 255, 0.8)
+#adb5bd
+#0d6efd
+#0d6efd
+#0d6efd
+#f0f6ff
+#f8f9fa
+rgba(0, 0, 0, 0.1)
+#433f39
+#444444
+#d54b27
+#ffc064
+#fff
+#fff
+#fff
+#fff
+#fff
+#fff
+#555
+#fff
+#6c757d
+#6c757d
+#f8f9fa
+#4a4a4a
+#2c2c2c
+rgba(0,0,0,0.1)
+#2c2c2c
+rgba(0,0,0,0.1)
+#f8f9fa
+#e9ecef
+#6c757d
+#fff3cd
+#856404
+#d1ecf1
+#0c5460
+#d4edda
+#155724
+#d1ecf1
+#0c5460
+#e2e3e5
+#383d41
+#f8f9fa
+#007bff
+rgba(0, 123, 255, 0.05)
+#007bff
+#2c2c2c
+#007bff
+#6c757d
+#e9ecef
+#f8f9fa
+#e9ecef
+rgba(0,0,0,0.1)
+#2c2c2c
+#2c2c2c
+#4a4a4a
+rgba(44, 44, 44, 0.3)
+#e9ecef
+#6c757d
+#007bff
+#007bff
+rgba(0, 123, 255, 0.25)
+#eee
+rgba(0, 123, 255, 0.1)
+#007bff
+rgba(0,0,0,0.1)
+#007bff
+#2c2c2c
+#495057
+#dee2e6
+#f8f9fa
+#007bff
+rgba(0, 123, 255, 0.25)
+#007bff
+#0056b3
+rgba(0, 123, 255, 0.3)
+#0056b3
+#004085
+#6c757d
+#f8f9fa
+#e9ecef
+#495057
+#ced4da
+#007bff
+rgba(0, 123, 255, 0.15)
+#dee2e6
+rgba(0,0,0,0.1)
+#e9ecef
+#495057
+#007bff
+#d4edda
+#155724
+#28a745
+#f8d7da
+#721c24
+#dc3545
+#fff3cd
+#856404
+#ffc107
+#ffffff
+#f1f1f1
+#007bff
+#f8f9fa
+rgba(0, 0, 0, 0.1)
+#e4572e
+#f2855d
+#2d2d2d
+#444
+#f5e9da
+#dc3545
+#adb5bd
+#fff
+#fff
+#e0e0e0
+#fafbfc
+rgba(228,87,46,.10)
+#fff
+#f5f5f5
+#e0e0e0
+#fff
+#fff
+#fff
+#868e96
+#fff
+#fff
+#b52a37
+#fff
+#fff
+#fff
+#eee
+rgba(0,0,0,0.04)
+#f8f9fa
+rgba(0, 0, 0, 0.1)
+#e4572e
+#f2855d
+#2d2d2d
+#444
+#f5e9da
+#dc3545
+#adb5bd
+#fff
+rgba(0,0,0,0.13)
+#fff
+#fff
+#6c757d
+#fff
+#fff
+#fff
+#fff
+#b52a37
+#fff
+#fff
+#fff
+#f1f1f1
+#e0e0e0
+#f8f9fa
+#fff
+rgba(0, 0, 0, 0.1)
+#d54b27
+#fff
+#444444
+#ced4da
+#d54b27
+#fff
+#ffa012
+#f8f9fa
+#5c5c5c
+#ffb03b
+#fff
+rgba(0, 0, 0, 0.1)
+#f5f5f5
+#aaa
+#ffb03b
+#6c757d
+#444
+#6c757d
+#f8f9fa
+#444
+#ddd
+#f8f9fa
+#e9ecef
+#ddd
+#ffb03b
+#ffb03b
+#ffb03b
+#ffb03b
+#ddd
+#ffb03b
+rgba(255, 176, 59, 0.25)
+#ddd
+#6c757d
+#444
+#add
+#ffb03b
+#add
+#e69c2e
+rgba(0, 0, 0, 0.1)
+#add
+#35322d
+#fff
+#ffb03b
+#46423b
+#fff
+#ffb03b
+#f5f7fa
+rgba(0, 0, 0, 0.1)
+#eaeaea
+rgba(52, 152, 219, 0.04)
+#3498db
+#3498db
+#f8f9fa
+#3498db
+#555
+#2c3e50
+#3498db
+#2c3e50
+rgba(52, 152, 219, 0.2)
+#3498db
+#eee
+#f8f9fa
+#e3f2fd
+#e0e0e0
+#7f8c8d
+#f8f9fa
+#2c3e50
+#e74c3c
+#e8f6ef
+#27ae60
+#27ae60
+#fdedee
+#e74c3c
+#e74c3c
+#7f8c8d
+#3498db
+rgba(52, 152, 219, 0.3)
+#2c3e50
+rgba(44, 62, 80, 0.3)
+rgba(0, 0, 0, 0.15)
+#eee
+#7f8c8d
+rgba(255, 255, 255, 0.95)
+rgba(0, 0, 0, 0.1)
+#fff
+rgba(0, 0, 0, 0.1)
+#fff
+#fff
+#343a40
+rgba(255, 255, 255, 0.8)
+rgba(255, 255, 255, 0.1)
+#495057
+#dee2e6
+#0d6efd
+#0d6efd
+#e9ecef
+#fff7f0
+#4b4b4b
+#ffffff
+#ddd
+#4b4b4b
+rgba(0, 0, 0, 0.1)
+#ffffff
+#ff7a59
+#ffffff
+#ff7a59
+#e6694d
+#6c757d
+#5a6268
+#fff7f0
+#ffe8dc
+rgba(0, 0, 0, 0.1)
+#ffefd5
+#4b4b4b
+#4b4b4b
+#ddd
+#f8f9fa
+#f3f3f3
+#ff7a59
+#ffffff
+#ddd

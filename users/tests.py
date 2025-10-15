@@ -105,8 +105,6 @@ class StaffAdvancedManagementTest(TestCase):
         # Add a repayment
         self.client.post(reverse('users:add_repayment', args=[self.test_staff.id]), {'amount': '200.00', 'date': '2025-10-12', 'description': 'Repayment'})
 
-        # This test is simplified as the balance is now calculated in the view, not the model.
-        # A full balance test would require a different approach.
         self.assertEqual(FinancialTransaction.objects.filter(staff=self.test_staff, transaction_type='repayment').count(), 1)
 
     def test_add_loan(self):
@@ -147,3 +145,30 @@ class StaffAdvancedManagementTest(TestCase):
         self.assertContains(response, '500')
         self.assertContains(response, 'Late')
         self.assertContains(response, 'Holiday')
+
+    def test_leave_filtering_and_editing(self):
+        # Create some leave records
+        leave1 = Leave.objects.create(staff=self.test_staff, start_date='2025-03-01', end_date='2025-03-05', leave_type='vacation', reason='Trip')
+        leave2 = Leave.objects.create(staff=self.test_staff, start_date='2025-04-10', end_date='2025-04-11', leave_type='sick', reason='Flu')
+
+        # Test filtering
+        response = self.client.get(reverse('users:staff_detail', args=[self.test_staff.id]), {'start_date': '2025-03-01', 'end_date': '2025-03-31'})
+        self.assertContains(response, 'Trip')
+        self.assertNotContains(response, 'Flu')
+        self.assertEqual(response.context['total_filtered_leave_days'], 5)
+
+        # Test editing a leave entry
+        response = self.client.post(reverse('users:manage_leave_entry', args=[leave1.id]), {
+            'start_date': '2025-03-02',
+            'end_date': '2025-03-06',
+            'leave_type': 'vacation',
+            'reason': 'Extended Trip'
+        })
+        self.assertEqual(response.status_code, 302)
+        leave1.refresh_from_db()
+        self.assertEqual(leave1.reason, 'Extended Trip')
+
+        # Test deleting a leave entry
+        response = self.client.post(reverse('users:manage_leave_entry', args=[leave2.id]), {'delete': '1'})
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Leave.objects.filter(id=leave2.id).exists())

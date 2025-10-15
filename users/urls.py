@@ -23,4 +23,5 @@ urlpatterns = [
     path('staff/<int:staff_id>/deduction/add/', views.manage_deduction, name='add_deduction'),
     path('staff/<int:staff_id>/leave/add/', views.manage_leave, name='add_leave'),
     path('staff/<int:staff_id>/repayment/add/', views.add_repayment, name='add_repayment'),
+    path('leave/<int:leave_id>/manage/', views.manage_leave_entry, name='manage_leave_entry'),
 ]
