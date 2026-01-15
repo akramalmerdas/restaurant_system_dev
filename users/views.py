@@ -15,7 +15,6 @@ from django.core.paginator import Paginator
 
 @ratelimit(key='ip', rate='5/m', method='POST', block=True)
 def login_view(request):
-    print('Login view reached')
     if request.method == "POST":
         try:
             username = request.POST.get('username') or json.loads(request.body).get('username')
@@ -74,7 +73,15 @@ def customerProfile(request):
     customer = get_object_or_404(Customer, user=request.user)
     orders = Order.objects.filter(customer=customer)
     if request.method == 'POST':
-        customer.user.username = request.POST.get('name')
+        # Parse the full name into first and last name
+        full_name = request.POST.get('name', '').strip()
+        if ' ' in full_name:
+            name_parts = full_name.split(' ', 1)
+            customer.user.first_name = name_parts[0]
+            customer.user.last_name = name_parts[1]
+        else:
+            customer.user.first_name = full_name
+            customer.user.last_name = ''
         customer.phone_number = request.POST.get('phone_number')
         customer.address = request.POST.get('address')
         customer.save()
@@ -212,18 +219,20 @@ def manage_staff(request, staff_id=None):
                 user.first_name = first_name
                 user.last_name = last_name
                 user.email = email
-                user.username = email
+                # Set username as just the first name
+                user.username = first_name.lower().replace(' ', '_')
                 user.save()
             else:
                 password = get_random_string(length=12)
+                username = email or f"{first_name}_{last_name}_{User.objects.count()}"
                 user = User.objects.create_user(
-                    username=email,
+                    username=username,
                     email=email,
                     first_name=first_name,
                     last_name=last_name,
                     password=password
                 )
-                print(f"Generated password for {email}: {password}")
+
 
             staff = form.save(commit=False)
             staff.user = user

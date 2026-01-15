@@ -67,7 +67,8 @@ class Loan(models.Model):
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Loan of {self.amount} for {self.staff.user.username} on {self.date_issued}"
+        staff_name = self.staff.user.get_full_name() or self.staff.user.username
+        return f"Loan of {self.amount} for {staff_name} on {self.date_issued}"
 
 class FinancialTransaction(models.Model):
     TRANSACTION_TYPE_CHOICES = [
@@ -83,7 +84,8 @@ class FinancialTransaction(models.Model):
     related_loan = models.ForeignKey(Loan, on_delete=models.SET_NULL, null=True, blank=True, help_text="Link to the original loan if this is a repayment.")
 
     def __str__(self):
-        return f"{self.get_transaction_type_display()} of {self.amount} for {self.staff.user.username} on {self.date}"
+        staff_name = self.staff.user.get_full_name() or self.staff.user.username
+        return f"{self.get_transaction_type_display()} of {self.amount} for {staff_name} on {self.date}"
 
 class Leave(models.Model):
     LEAVE_TYPE_CHOICES = [
@@ -100,4 +102,5 @@ class Leave(models.Model):
     is_approved = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"Leave for {self.staff.user.username} from {self.start_date} to {self.end_date}"
+        staff_name = self.staff.user.get_full_name() or self.staff.user.username
+        return f"Leave for {staff_name} from {self.start_date} to {self.end_date}"

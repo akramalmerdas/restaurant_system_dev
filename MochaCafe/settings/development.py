@@ -23,15 +23,8 @@ DATABASES = {
     }
 }
 
-# Use Redis channel layer for development to match production
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [('127.0.0.1', 6379)],
-        },
-    },
-}
+# Redis configuration is inherited from base.py
+# No need to override CHANNEL_LAYERS here unless specific to development
 
 # For running tests, switch to a fast in-memory SQLite database to avoid conflicts
 # and speed up test execution.

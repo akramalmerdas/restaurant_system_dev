@@ -55,7 +55,7 @@
                     
                         <div class="info-item">
                             <strong>Waiter Name</strong>
-                            <div class="value">{{ order.waiter.user.username }}</div>
+                            <div class="value">{{ order.waiter.user.get_full_name|default:order.waiter.user.username }}</div>
                         </div>
                         <div class="info-item">
                             <strong>Order Date</strong>

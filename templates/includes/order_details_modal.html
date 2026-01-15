@@ -167,7 +167,7 @@ function loadOrderDetails(orderId) {
     // Show loading indicator
     document.getElementById('modalOrderId').textContent = 'Loading...';
 
-    fetch(`/order_details_api/${orderId}/`)
+    fetch(`/orders/order_details_api/${orderId}/`)
         .then(response => response.json())
         .then(order => {
             // Populate modal with real data

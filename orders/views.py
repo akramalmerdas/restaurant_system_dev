@@ -302,7 +302,7 @@ def submitOrder(request):
         {
             "type": "order_notification",
             "order_id": order.id,
-            "customer": order.customer.user.username if customer and customer.user else "Guest",
+            "customer": (order.customer.user.get_full_name() or order.customer.user.username) if customer and customer.user else "Guest",
             "total": str(order.total_amount),
             "timestamp": timezone.now().isoformat(),
             "redirect_url": redirect_url,

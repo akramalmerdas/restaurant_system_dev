@@ -62,14 +62,22 @@ INSTALLED_APPS = [
 ASGI_APPLICATION = 'MochaCafe.asgi.application'
 
 # Configure Channel Layers with Redis
+REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
+REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
+REDIS_PASSWORD = os.getenv('REDIS_PASSWORD', None)
+
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('127.0.0.1', 6379)],
+            'hosts': [(REDIS_HOST, REDIS_PORT)],
         },
     },
 }
+
+# Add Redis password if provided
+if REDIS_PASSWORD:
+    CHANNEL_LAYERS['default']['CONFIG']['hosts'] = [f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

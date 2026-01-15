@@ -24,6 +24,22 @@
     <!-- Template Main CSS File -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <link href="{% static 'css/customer_form.css' %}" rel="stylesheet">
+    
+    <style>
+        .form-control.is-invalid {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+        
+        #first-name-error {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        
+        #first-name-error i {
+            margin-right: 0.5rem;
+        }
+    </style>
 
 </head>
 <body>
@@ -97,5 +113,61 @@
 
     <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstNameField = document.getElementById('id_first_name');
+            const form = document.querySelector('form');
+            
+            // Real-time validation as user types
+            firstNameField.addEventListener('input', function() {
+                const value = this.value;
+                const errorDiv = document.getElementById('first-name-error');
+                
+                // Remove existing error message
+                if (errorDiv) {
+                    errorDiv.remove();
+                }
+                
+                if (value.includes(' ')) {
+                    // Create error message
+                    const errorMessage = document.createElement('div');
+                    errorMessage.id = 'first-name-error';
+                    errorMessage.className = 'alert alert-danger mt-2';
+                    errorMessage.innerHTML = '<i class="bi bi-exclamation-triangle"></i> First name cannot contain spaces. Please use only single words.';
+                    
+                    // Insert after the input field
+                    this.parentNode.appendChild(errorMessage);
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+            
+            // Form submission validation
+            form.addEventListener('submit', function(e) {
+                const firstNameValue = firstNameField.value;
+                
+                if (firstNameValue.includes(' ')) {
+                    e.preventDefault();
+                    
+                    // Focus on the first name field
+                    firstNameField.focus();
+                    
+                    // Show error if not already shown
+                    if (!document.getElementById('first-name-error')) {
+                        const errorMessage = document.createElement('div');
+                        errorMessage.id = 'first-name-error';
+                        errorMessage.className = 'alert alert-danger mt-2';
+                        errorMessage.innerHTML = '<i class="bi bi-exclamation-triangle"></i> First name cannot contain spaces. Please use only single words.';
+                        firstNameField.parentNode.appendChild(errorMessage);
+                    }
+                    
+                    firstNameField.classList.add('is-invalid');
+                    return false;
+                }
+            });
+        });
+    </script>
 </body>
 </html>

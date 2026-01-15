@@ -18,6 +18,12 @@ class StaffForm(forms.ModelForm):
             self.fields['last_name'].initial = self.instance.user.last_name
             self.fields['email'].initial = self.instance.user.email
 
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get('first_name')
+        if first_name and ' ' in first_name:
+            raise forms.ValidationError("First name cannot contain spaces. Please use only single words.")
+        return first_name
+
 class LeaveForm(forms.ModelForm):
     class Meta:
         model = Leave

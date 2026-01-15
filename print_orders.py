@@ -1,12 +1,12 @@
 import os
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MochaCafe.settings')  
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MochaCafe.settings.development')  
 
 import django
 import webbrowser
 
 django.setup()
 
-from item.models import Order, OrderStatus
+from orders.models import Order, OrderStatus
 
 
 class PrintOrders:
