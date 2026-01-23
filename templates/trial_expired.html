@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trial Expired - {% if branding.name %}{{ branding.name }}{% else %}Mocha Cafe{% endif %}</title>
+
+    <!-- Favicons -->
+    <link href="{% static 'img/favicon.png' %}" rel="icon">
+    <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,600,600i,700,700i|Satisfy|Comic+Neue:300,300i,400,400i,700,700i" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+
+    <!-- Dynamic Branding Colors -->
+    {% include 'includes/branding_styles.html' %}
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <style>
+        .trial-expired-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .trial-expired-card {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            margin: 2rem;
+        }
+        .trial-expired-icon {
+            font-size: 4rem;
+            color: #dc3545;
+            margin-bottom: 1.5rem;
+        }
+        .trial-expired-title {
+            color: #333;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .trial-expired-message {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        .contact-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        .contact-title {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .contact-details {
+            color: #555;
+            font-size: 0.95rem;
+        }
+        .home-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1rem;
+            transition: transform 0.2s;
+        }
+        .home-btn:hover {
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="trial-expired-container">
+        <div class="trial-expired-card">
+            <div class="trial-expired-icon">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            
+            <h1 class="trial-expired-title">Trial Period Expired</h1>
+            
+            <p class="trial-expired-message">
+                Your trial period has ended as of February 29, 2026. 
+                To continue using the admin dashboard and all system features, 
+                please contact the system owner to upgrade your account.
+            </p>
+
+            <div class="contact-info">
+                <h4 class="contact-title">
+                    <i class="bi bi-person-circle"></i> Contact System Owner
+                </h4>
+                <div class="contact-details">
+                    <p><strong>Email:</strong> admin@mochacafe.com</p>
+                    <p><strong>Phone:</strong> +250 782 987 011</p>
+                    <p><strong>Business Hours:</strong> Wed-Mon: 8:00 AM - 7:00 PM</p>
+                </div>
+            </div>
+
+            <a href="/" class="home-btn">
+                <i class="bi bi-house"></i> Return to Home
+            </a>
+        </div>
+    </div>
+
+    <!-- Vendor JS Files -->
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

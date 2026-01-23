@@ -27,6 +27,7 @@ from django.db import transaction
 from django.core.paginator import Paginator
 from django.db.models.functions import Coalesce
 from core.decorators import staff_member_required, admin_required
+from users.decorators import trial_expiration_check
 
 def orderPage(request, menu_item_id):
     item = get_object_or_404(Item, id=menu_item_id)
@@ -341,6 +342,7 @@ def printOrder(request):
         'total_amount': total_amount
     })
 
+@trial_expiration_check
 @staff_member_required
 def adminDashboard(request):
     tables = Table.objects.all().order_by('id')
