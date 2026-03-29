@@ -44,7 +44,7 @@
 <body>
 
 
-
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 
   <!-- ======= Header ======= -->
   <header id="header" class="fixed-top d-flex align-items-center ">
@@ -985,7 +985,7 @@ async function addItemToOrder(itemId, addToOrderUrl) {
     try {
         // Get the CSRF token from the cookie (a helper function is recommended).
         const csrfToken = getCookie('csrftoken'); 
-
+        console.log('got the tocken '+csrfToken);
         const response = await fetch('/orders/add_to_order/', {
             method: 'POST',
             headers: {

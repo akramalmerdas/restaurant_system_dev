@@ -74,11 +74,13 @@ def restore_default_branding(request):
         default_branding = Branding.objects.get(is_default_profile=True)
         active_branding = Branding.objects.get(is_active=True)
 
+        if default_branding.pk == active_branding.pk:
+            messages.error(request, "The active profile is already the default profile. No changes made.")
+            return redirect('theme:edit_branding_active')
+
         active_branding.primary_color = default_branding.primary_color
         active_branding.secondary_color = default_branding.secondary_color
         active_branding.slogan = default_branding.slogan
-        # Do not copy the name
-        # active_branding.name = default_branding.name
         active_branding.logo = default_branding.logo
         active_branding.save()
 
@@ -86,4 +88,4 @@ def restore_default_branding(request):
     except Branding.DoesNotExist:
         messages.error(request, "A default or active branding profile has not been set. Please configure one in the admin dashboard.")
 
-    return redirect('theme:edit_branding')
+    return redirect('theme:edit_branding_active')

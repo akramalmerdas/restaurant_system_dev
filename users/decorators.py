@@ -14,8 +14,8 @@ def trial_expiration_check(view_func):
         trial_end_date = date(2026, 2, 28)  # February 28, 2026 (2026 is not a leap year)
         current_date = date.today()
         
-        if current_date > trial_end_date:
-            return render(request, 'trial_expired.html')
+        # if current_date > trial_end_date:
+        #     return render(request, 'trial_expired.html')
         
         return view_func(request, *args, **kwargs)
     return _wrapped_view
